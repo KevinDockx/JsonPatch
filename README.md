@@ -1,7 +1,5 @@
-JsonPatch
-=========
-
 JSON Patch (JsonPatchDocument) RFC 6902 implementation for .NET
+===============================================================
 
 NuGet package: 
 
@@ -18,7 +16,7 @@ It consists of two parts:
 This combination should make partial update support for your RESTful API a breeze.
 
 Here's how to use it:
-- Build a patch document on the client.  You can use all operations as described in the IETF document: Add, Remove, Replace, Copy, Move & Test.
+- Build a patch document on the client.  You can use the operations as described in the IETF document: Add, Remove, Replace, Copy, Move.  Test support is planned.
 
 ```csharp
 JsonPatchDocument<DTO.Expense> patchDoc = new JsonPatchDocument<DTO.Expense>();
@@ -60,6 +58,7 @@ public IHttpActionResult Patch(int id, [FromBody]JsonPatchDocument<DTO.Expense> 
 If you want to provide your own adapter (responsible for applying the operations to your objects), inherit IObjectAdapter, implement the interface and pass in an instance of that in the Apply method.
 
 A few more examples of how you can create a JsonPatchDocument:
+
 ```csharp
 JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
 
@@ -91,7 +90,7 @@ patchDoc.Move<int>(o => o.IntegerList, 0, o => o.IntegerList, 1);
 
 
 
-As the package is distributed as a Portable Class library, you can use it from ASP .NET, Windows Phone, Windows Store apps, ...
+As the package is distributed as a Portable Class library, you can use it from (ASP) .NET (4+), Windows Phone (8.1), Windows Store apps (8+), ...
 
 Please consider this an alpha version.  Not everything has been implemented (eg: ExpandoObject support), but the package is made with extensibility in mind.  
 
