@@ -3,6 +3,8 @@ JsonPatch
 
 JSON Patch (JsonPatchDocument) RFC 6902 implementation for .NET
 
+NuGet package: 
+
 JSON Patch (https://tools.ietf.org/html/rfc6902) defines a JSON document structure for expressing a sequence of operations to apply to a JavaScript Object Notation (JSON) document; it is suitable for use with the HTTP PATCH method. The "application/json-patch+json" media type is used to identify such patch documents.
 
 One of the things this can be used for is partial updates for REST-ful API's, or, to quote the IETF: "This format is also potentially useful in other cases in which it is necessary to make partial updates to a JSON document or to a data structure that has similar constraints (i.e., they can be serialized as an object or an array using the JSON grammar)."
@@ -17,6 +19,25 @@ This combination should make partial update support for your RESTful API a breez
 
 Here's how to use it:
 - Building a patch document on the client:
+
+'''
+JsonPatchDocument<DTO.Expense> patchDoc = new JsonPatchDocument<DTO.Expense>();
+patchDoc.Replace(e => e.Description, expense.Description);
+
+// serialize
+var serializedItemToUpdate = JsonConvert.SerializeObject(patchDoc);
+
+// create the patch request
+var method = new HttpMethod("PATCH");
+var request = new HttpRequestMessage(method, "api/expenses/" + id)
+{
+    Content = new StringContent(serializedItemToUpdate,
+    System.Text.Encoding.Unicode, "application/json")
+};
+
+// send it, using an HttpClient instance
+client.SendAsync(request);
+'''
 
 
 - On your API, in the patch method (accept document as parameter & use Apply method)
