@@ -31,8 +31,9 @@ namespace Marvin.JsonPatch
         /// Add operation.  Will result in, for example, 
         /// { "op": "add", "path": "/a/b/c", "value": [ "foo", "bar" ] }
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="value"></param>
+        /// <typeparam name="TProp">value type</typeparam>
+        /// <param name="path">path</param>
+        /// <param name="value">value</param>
         /// <returns></returns>
         public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, TProp>> path, TProp value)
         {
@@ -40,13 +41,27 @@ namespace Marvin.JsonPatch
             return this;
         }
 
+        /// <summary>
+        /// Add value to list at given position
+        /// </summary>
+        /// <typeparam name="TProp">value type</typeparam>
+        /// <param name="path">path</param>
+        /// <param name="value">value</param>
+        /// <param name="position">position</param>
+        /// <returns></returns>
         public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value, int position)
         {
             Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/" + position, null, value));
             return this;
         }
 
-
+         /// <summary>
+         /// At value at end of list
+         /// </summary>
+        /// <typeparam name="TProp">value type</typeparam>
+        /// <param name="path">path</param>
+        /// <param name="value">value</param>
+        /// <returns></returns>
         public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value)
         {
             Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/-", null, value));
@@ -64,6 +79,31 @@ namespace Marvin.JsonPatch
         public JsonPatchDocument<T> Remove<TProp>(Expression<Func<T, TProp>> path)
         {
             Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, TProp>(path).ToLower(), null));
+            return this;
+        }
+
+        /// <summary>
+        /// Remove value from list at given position
+        /// </summary>
+        /// <typeparam name="TProp">value type</typeparam>
+        /// <param name="path">target location</param>
+        /// <param name="position">position</param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Remove<TProp>(Expression<Func<T, IList<TProp>>> path, int position)
+        {
+            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/" + position, null));
+            return this;
+        }
+
+        /// <summary>
+        /// Remove value from end of list
+        /// </summary>
+        /// <typeparam name="TProp">value type</typeparam>
+        /// <param name="path">target location</param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Remove<TProp>(Expression<Func<T, IList<TProp>>> path)
+        {
+            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/-", null));
             return this;
         }
 

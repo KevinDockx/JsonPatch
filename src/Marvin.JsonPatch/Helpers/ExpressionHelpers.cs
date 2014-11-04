@@ -20,6 +20,7 @@ namespace Marvin.JsonPatch.Helpers
         }
 
 
+        // from Ramone helpers.
         private static string GetPath(Expression expr, bool firstTime)
         {
             if (expr.NodeType == ExpressionType.MemberAccess)

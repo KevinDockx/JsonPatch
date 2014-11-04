@@ -270,8 +270,30 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Remove(Operation<T> operation, T objectToApplyTo)
         {
+
+            bool removeFromList = false;
+            int positionAsInteger = -1;
+            string actualPathToProperty = operation.path;
+
+            if (operation.path.EndsWith("/-"))
+            {
+                removeFromList = true;
+                actualPathToProperty = operation.path.Substring(0, operation.path.Length - 2);
+            }
+            else
+            {
+                positionAsInteger = PropertyHelpers.GetNumericEnd(operation.path);
+
+                if (positionAsInteger > -1)
+                {
+                    actualPathToProperty = operation.path.Substring(0,
+                        operation.path.IndexOf('/' + positionAsInteger.ToString()));
+                }
+            }
+
+
             // does the target location exist?
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
+            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualPathToProperty)))
             {
                 throw new JsonPatchException<T>(operation,
                     string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
@@ -279,12 +301,62 @@ namespace Marvin.JsonPatch.Adapters
             }
 
             // get the property, and remove it - in this case, for DTO's, that means setting
-            // it to null or its default value.
-            PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.path);
+            // it to null or its default value; in case of an array, remove at provided index
+            // or at the end.
 
-            // setting the value to "null" will use the default value in case of value types, and
-            // null in case of reference types
-            PropertyHelpers.SetValue(pathProperty, objectToApplyTo, null);
+            PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualPathToProperty);
+
+
+            if (removeFromList || positionAsInteger > -1)
+            {
+
+                var isNonStringArray = !(pathProperty.PropertyType == typeof(string))
+                    && typeof(IList).IsAssignableFrom(pathProperty.PropertyType);
+
+                // what if it's an array but there's no position??
+                if (isNonStringArray)
+                {
+                    // now, get the generic type of the enumerable
+                    var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
+ 
+                    // get value (it can be cast, we just checked that)
+                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo) as IList;
+
+                    if (removeFromList)
+                    {
+                        array.RemoveAt(array.Count - 1);
+                    }
+                    else
+                    {
+                        if (positionAsInteger < array.Count)
+                        {
+                            array.RemoveAt(positionAsInteger);
+                        }
+                        else
+                        {
+                            throw new JsonPatchException<T>(operation,
+                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
+                       operation.path),
+                       objectToApplyTo);
+                        }
+                    }
+
+                }
+                else
+                {
+                    throw new JsonPatchException<T>(operation,
+                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: expected array",
+                       operation.path),
+                       objectToApplyTo);
+                }
+            }
+            else
+            {
+               
+                // setting the value to "null" will use the default value in case of value types, and
+                // null in case of reference types
+                PropertyHelpers.SetValue(pathProperty, objectToApplyTo, null);
+            }
         }
 
 

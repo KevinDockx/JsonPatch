@@ -141,5 +141,99 @@ namespace Marvin.JsonPatch.Test
 
         }
 
+
+
+        [TestMethod]
+        public void RemoveFromList()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Remove<int>(o => o.IntegerList, 2);
+
+            patchDoc.ApplyTo(doc);
+
+            CollectionAssert.AreEquivalent(new List<int>() { 1, 2 }, doc.IntegerList);
+        }
+
+
+        [TestMethod]
+        public void RemoveFromListInvalidPositionTooLarge()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Remove<int>(o => o.IntegerList, 3);
+
+
+            try
+            {
+                patchDoc.ApplyTo(doc);
+
+                // if we get here, we should fail b/c no exception was thrown
+                Assert.Fail();
+
+            }
+            catch (JsonPatchException) { }
+
+        }
+
+
+        [TestMethod]
+        public void RemoveFromListInvalidPositionTooSmall()
+        {
+
+            var doc = new SimpleDTO()
+            {
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Remove<int>(o => o.IntegerList,-1);
+
+            try
+            {
+                patchDoc.ApplyTo(doc);
+
+                // if we get here, we should fail b/c no exception was thrown
+                Assert.Fail();
+
+            }
+            catch (JsonPatchException)
+            {
+            }
+
+
+
+        }
+
+        [TestMethod]
+        public void RemoveFromEndOfList()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Remove<int>(o => o.IntegerList);
+
+            patchDoc.ApplyTo(doc);
+
+            CollectionAssert.AreEquivalent(new List<int>() { 1, 2 }, doc.IntegerList);
+
+        }
+
+
     }
 }
