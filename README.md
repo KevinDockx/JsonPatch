@@ -18,9 +18,9 @@ It consists of two parts:
 This combination should make partial update support for your RESTful API a breeze.
 
 Here's how to use it:
-- Building a patch document on the client:
+- Build a patch document on the client.  You can use all operations as described in the IETF document: Add, Remove, Replace, Copy, Move & Test.
 
-'''
+```
 JsonPatchDocument<DTO.Expense> patchDoc = new JsonPatchDocument<DTO.Expense>();
 patchDoc.Replace(e => e.Description, expense.Description);
 
@@ -37,14 +37,28 @@ var request = new HttpRequestMessage(method, "api/expenses/" + id)
 
 // send it, using an HttpClient instance
 client.SendAsync(request);
-'''
+```
 
 
 - On your API, in the patch method (accept document as parameter & use Apply method)
 
+```
+[Route("api/expenses/{id}")]
+[HttpPatch]
+public IHttpActionResult Patch(int id, [FromBody]JsonPatchDocument<DTO.Expense> expensePatchDocument)
+{
+      // get the expense from the repository
+      var expense = _repository.GetExpense(id);
+
+      // apply the patch document 
+      expensePatchDocument.ApplyTo(expense);
+
+      // changes have been applied.  Submit to backend, ... 
+}
+```
 
 
-- if you want to provide your own adapter (responsible for applying the operations to your objects), inherit IObjectAdapter, implement the interface and pass in an instance of that in the Apply method.
+If you want to provide your own adapter (responsible for applying the operations to your objects), inherit IObjectAdapter, implement the interface and pass in an instance of that in the Apply method.
 
 As the package is distributed as a Portable Class library, you can use it from ASP .NET, Windows Phone, Windows Store apps, ...
 
