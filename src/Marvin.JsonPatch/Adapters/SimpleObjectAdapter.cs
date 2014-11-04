@@ -78,7 +78,7 @@ namespace Marvin.JsonPatch.Adapters
         {
 
             Add(operation.path, operation.value, objectToApplyTo, operation);
-      
+
         }
 
 
@@ -226,41 +226,88 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Move(Operation<T> operation, T objectToApplyTo)
         {
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.from)))
+            // get value at from location
+
+            // get value at from location
+            object valueAtFromLocation = null;
+            int positionAsInteger = -1;
+            string actualFromProperty = operation.from;
+
+
+            positionAsInteger = PropertyHelpers.GetNumericEnd(operation.from);
+
+            if (positionAsInteger > -1)
+            {
+                actualFromProperty = operation.from.Substring(0,
+                    operation.from.IndexOf('/' + positionAsInteger.ToString()));
+            }
+
+
+            // does property at from exist?
+            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualFromProperty)))
             {
                 throw new JsonPatchException<T>(operation,
                     string.Format("Patch failed: property at location from: {0} does not exist", operation.from),
                     objectToApplyTo);
             }
 
+            // get the property path
+            PropertyInfo fromProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualFromProperty);
 
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
+            // is the path an array (but not a string (= char[]))?  In this case,
+            // the path must end with "/position" or "/-", which we already determined before.
+
+            if (positionAsInteger > -1)
             {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
-                    objectToApplyTo);
+
+                var isNonStringArray = !(fromProperty.PropertyType == typeof(string))
+                    && typeof(IList).IsAssignableFrom(fromProperty.PropertyType);
+
+                if (isNonStringArray)
+                {
+                    // now, get the generic type of the enumerable
+                    var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
+
+                    // get value (it can be cast, we just checked that)
+                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo) as IList;
+
+                    if (array.Count <= positionAsInteger)
+                    {
+                        throw new JsonPatchException<T>(operation,
+                       string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: invalid position",
+                         operation.from),
+                         objectToApplyTo);
+                    }
+
+                    valueAtFromLocation = array[positionAsInteger];
+
+                }
+                else
+                {
+                    throw new JsonPatchException<T>(operation,
+                       string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: expected array",
+                       operation.from),
+                       objectToApplyTo);
+                }
+            }
+            else
+            {
+                // no list, just get the value
+
+                // set the new value
+
+                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo);
+
             }
 
-            // are both properties of the same type?
 
-            PropertyInfo fromProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.from);
-            PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.path);
+            // remove that value
 
-            if (!(fromProperty.PropertyType == pathProperty.PropertyType))
-            {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Path failed: property at path {0} has a different type than property at from {1}",
-                    operation.path, operation.from),
-                    objectToApplyTo);
-            }
+            Remove(operation.from, objectToApplyTo, operation);
 
-            // if it exists, and it's of the same type as the "from" property, 
-            // copy over the value of "from" to "path"
+            // add that value to the path location
 
-            PropertyHelpers.CopyValue(objectToApplyTo, fromProperty, pathProperty);
-
-            // remove the value at the "from" location
-            PropertyHelpers.SetValue(fromProperty, objectToApplyTo, null);
+            Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
 
         }
 
@@ -445,7 +492,7 @@ namespace Marvin.JsonPatch.Adapters
             if (!(PropertyHelpers.CheckIfValueCanBeCast(pathProperty.PropertyType, operation.value)))
             {
                 throw new JsonPatchException<T>(operation,
-                  string.Format("Patch failed: provided value is invalid for property type at location path: {0}", 
+                  string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
                   operation.path),
                   objectToApplyTo);
             }
@@ -488,7 +535,7 @@ namespace Marvin.JsonPatch.Adapters
         {
 
             Remove(operation.path, objectToApplyTo, operation);
-            Add(operation.path, operation.value, objectToApplyTo, operation); 
+            Add(operation.path, operation.value, objectToApplyTo, operation);
 
             //// does property at path exist?
             //if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
@@ -542,20 +589,18 @@ namespace Marvin.JsonPatch.Adapters
 
             // get value at from location
             object valueAtFromLocation = null;
-
-
             int positionAsInteger = -1;
             string actualFromProperty = operation.from;
 
-          
-                positionAsInteger = PropertyHelpers.GetNumericEnd(operation.from);
 
-                if (positionAsInteger > -1)
-                {
-                    actualFromProperty = operation.from.Substring(0,
-                        operation.from.IndexOf('/' + positionAsInteger.ToString()));
-                }
-           
+            positionAsInteger = PropertyHelpers.GetNumericEnd(operation.from);
+
+            if (positionAsInteger > -1)
+            {
+                actualFromProperty = operation.from.Substring(0,
+                    operation.from.IndexOf('/' + positionAsInteger.ToString()));
+            }
+
 
             // does property at from exist?
             if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualFromProperty)))
@@ -563,7 +608,7 @@ namespace Marvin.JsonPatch.Adapters
                 throw new JsonPatchException<T>(operation,
                     string.Format("Patch failed: property at location from: {0} does not exist", operation.from),
                     objectToApplyTo);
-            } 
+            }
 
             // get the property path
             PropertyInfo fromProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualFromProperty);
@@ -581,7 +626,7 @@ namespace Marvin.JsonPatch.Adapters
                 {
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
-                    
+
                     // get value (it can be cast, we just checked that)
                     var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo) as IList;
 
@@ -607,22 +652,22 @@ namespace Marvin.JsonPatch.Adapters
             else
             {
                 // no list, just get the value
- 
+
                 // set the new value
 
                 valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo);
-          
-            } 
+
+            }
 
             // add operation to target location with that value.
-  
+
             Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
 
             //// note: this get executed at the API side.  However, there's nothing that guarantees that
             //// the object we're working on on the client is the exact same as the one at the server
             //// (eg: same namespace & classname, different class implementation) - therefore, we execute all checks.
 
-            
+
             //// find the property in "from" on T
 
             //if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.from)))

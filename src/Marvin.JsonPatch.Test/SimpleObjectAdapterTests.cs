@@ -464,6 +464,24 @@ namespace Marvin.JsonPatch.Test
         }
 
 
+        [TestMethod]
+        public void CopyFromListToEndOfList()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Copy<int>(o => o.IntegerList, 0, o => o.IntegerList);
+
+            patchDoc.ApplyTo(doc);
+
+            CollectionAssert.AreEquivalent(new List<int>() { 1, 2, 3, 1 }, doc.IntegerList);
+        }
+
+
 
 
         [TestMethod]
@@ -524,7 +542,133 @@ namespace Marvin.JsonPatch.Test
             CollectionAssert.AreEquivalent(new List<int>() { 1, 2, 3, 5 }, doc.IntegerList);
 
         }
-         
+
+
+        [TestMethod]
+        public void Move()
+        {
+            var doc = new SimpleDTO()
+            {
+                StringProperty = "A",
+                AnotherStringProperty = "B"
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Move<string>(o => o.StringProperty, o => o.AnotherStringProperty);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.AreEqual("A", doc.AnotherStringProperty);
+            Assert.AreEqual(null, doc.StringProperty);
+        }
+
+
+
+
+
+        [TestMethod]
+        public void MoveInList()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Move<int>(o => o.IntegerList, 0, o => o.IntegerList, 1);
+
+            patchDoc.ApplyTo(doc);
+
+            CollectionAssert.AreEquivalent(new List<int>() { 2, 1, 3 }, doc.IntegerList);
+        }
+
+        [TestMethod]
+        public void MoveFromListToEndOfList()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Move<int>(o => o.IntegerList, 0, o => o.IntegerList);
+
+            patchDoc.ApplyTo(doc);
+
+            CollectionAssert.AreEquivalent(new List<int>() { 2, 3, 1 }, doc.IntegerList);
+        }
+
+
+
+
+
+        [TestMethod]
+        public void MoveFomListToNonList()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Move<int>(o => o.IntegerList, 0, o => o.IntegerValue);
+
+            patchDoc.ApplyTo(doc);
+
+            CollectionAssert.AreEquivalent(new List<int>() { 2, 3 }, doc.IntegerList);
+            Assert.AreEqual(1, doc.IntegerValue);
+        }
+
+
+        [TestMethod]
+        public void MoveFromNonListToList()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerValue = 5,
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Move<int>(o => o.IntegerValue, o => o.IntegerList, 0);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.AreEqual(0, doc.IntegerValue);
+            CollectionAssert.AreEqual(new List<int>() { 5, 1, 2, 3 }, doc.IntegerList);
+        }
+
+
+ 
+
+
+
+
+        [TestMethod]
+        public void MoveToEndOfList()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerValue = 5,
+                IntegerList = new List<int>() { 1, 2, 3 }
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Move<int>(o => o.IntegerValue, o => o.IntegerList);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.AreEqual(0, doc.IntegerValue);
+            CollectionAssert.AreEquivalent(new List<int>() { 1, 2, 3, 5 }, doc.IntegerList);
+
+        }
+
 
     }
 }

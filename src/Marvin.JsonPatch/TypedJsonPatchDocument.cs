@@ -163,6 +163,98 @@ namespace Marvin.JsonPatch
             return this;
         }
 
+
+
+        /// <summary>
+        /// Move from a position in a list to a new location
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom, Expression<Func<T, TProp>> path)
+        {
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, TProp>(path).ToLower()
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
+            return this;
+        }
+
+
+
+        /// <summary>
+        /// Move from a property to a location in a list
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, TProp>> from,
+            Expression<Func<T, IList<TProp>>> path, int positionTo)
+        {
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower()
+                + "/" + positionTo
+              , ExpressionHelpers.GetPath<T, TProp>(from).ToLower()));
+            return this;
+        }
+
+
+        /// <summary>
+        /// Move from a position in a list to another location in a list
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom,
+            Expression<Func<T, IList<TProp>>> path, int positionTo)
+        {
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower()
+                + "/" + positionTo
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
+            return this;
+        }
+
+
+        /// <summary>
+        /// Move from a position in a list to the end of another list
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom,
+            Expression<Func<T, IList<TProp>>> path)
+        {
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower()
+                + "/-"
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
+            return this;
+        }
+
+
+
+        /// <summary>
+        /// Move to the end of a list
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, IList<TProp>>> path)
+        {
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/-"
+              , ExpressionHelpers.GetPath<T, TProp>(from).ToLower()));
+            return this;
+        }
+
+
+
+
         /// <summary>
         /// Copy the value at specified location to the target location.  Willr esult in, for example:
         /// { "op": "copy", "from": "/a/b/c", "path": "/a/b/e" }
