@@ -121,5 +121,25 @@ namespace Marvin.JsonPatch.Test
             CollectionAssert.AreEquivalent(new List<int>() { 1, 2, 3, 4 }, doc.IntegerList);
 
         }
+
+
+        [TestMethod]
+        public void Remove()
+        {
+            var doc = new SimpleDTO()
+            {
+                StringProperty = "A"
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Remove<string>(o => o.StringProperty); 
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.AreEqual(null, doc.StringProperty);
+
+        }
+
     }
 }
