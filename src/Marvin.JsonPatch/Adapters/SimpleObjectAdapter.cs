@@ -80,18 +80,29 @@ namespace Marvin.JsonPatch.Adapters
             // technically impossible;  It can however be used to add items to arrays,
             // or to replace values.
 
-            // first up: if the path ends in a numeric value, we're adding to a list and
-            // that value represents the position
+            // first up: if the path ends in a numeric value, we're inserting in a list and
+            // that value represents the position; if the path ends in "-", we're appending
+            // to the list.
 
+            bool appendList = false;
+            int positionAsInteger = -1;
             string actualPathToProperty = operation.path;
-            int positionInInteger = PropertyHelpers.GetNumericEnd(operation.path);
-
-            if (positionInInteger > -1)
+            
+            if (operation.path.EndsWith("/-"))
             {
-                actualPathToProperty = operation.path.Substring(0,
-                    operation.path.IndexOf('/' + positionInInteger.ToString()));
+                appendList = true;
+                actualPathToProperty = operation.path.Substring(0, operation.path.Length-2);
             }
-                
+            else
+            {
+                 positionAsInteger = PropertyHelpers.GetNumericEnd(operation.path);
+
+                if (positionAsInteger > -1)
+                {
+                    actualPathToProperty = operation.path.Substring(0,
+                        operation.path.IndexOf('/' + positionAsInteger.ToString()));
+                }
+            }
 
             // does property at path exist?
             if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualPathToProperty)))
@@ -106,34 +117,62 @@ namespace Marvin.JsonPatch.Adapters
             // get the property path
             PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualPathToProperty);
 
-            // is the path an array (but not a string (= char[]))?
+            // is the path an array (but not a string (= char[]))?  In this case,
+            // the path must end with "/position" or "/-", which we already determined before.
 
-            var isNonStringArray = !(pathProperty.PropertyType == typeof(string))
-                && typeof(IList).IsAssignableFrom(pathProperty.PropertyType);
 
-            // what if it's an array but there's no position??
-            if (isNonStringArray)
+            if (appendList || positionAsInteger > -1)
             {
-             
-                // now, get the generic type of the enumerable
-                var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
-              
-                // check if the value can be cast to that type
-                if (!(PropertyHelpers.CheckIfValueCanBeCast(genericTypeOfArray, operation.value)))
+
+                var isNonStringArray = !(pathProperty.PropertyType == typeof(string))
+                    && typeof(IList).IsAssignableFrom(pathProperty.PropertyType);
+
+                // what if it's an array but there's no position??
+                if (isNonStringArray)
+                {
+                    // now, get the generic type of the enumerable
+                    var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
+
+                    // check if the value can be cast to that type
+                    if (!(PropertyHelpers.CheckIfValueCanBeCast(genericTypeOfArray, operation.value)))
+                    {
+                        throw new JsonPatchException<T>(operation,
+                          string.Format("Patch failed: provided value is invalid for array property type at location path: {0}",
+                          operation.path),
+                          objectToApplyTo);
+                    }
+
+
+                    // get value (it can be cast, we just checked that)
+                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo) as IList;
+
+                    if (appendList)
+                    {
+                        array.Add(operation.value);
+                    }
+                    else
+                    {
+                        if (positionAsInteger < array.Count)
+                        {
+                            array.Insert(positionAsInteger, operation.value);
+                        }
+                        else
+                        {
+                            throw new JsonPatchException<T>(operation,
+                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
+                       operation.path),
+                       objectToApplyTo);
+                        }
+                    }
+                                 
+                }
+                else
                 {
                     throw new JsonPatchException<T>(operation,
-                      string.Format("Patch failed: provided value is invalid for array property type at location path: {0}",
-                      operation.path),
-                      objectToApplyTo);
+                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: expected array",
+                       operation.path),
+                       objectToApplyTo);
                 }
-
-                
-                // get value (it can be cast, we just checked that)
-                var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo) as IList;
-
-                // TODO: place to insert!
-                array.Insert(0, operation.value);
-                
             }
             else
             {

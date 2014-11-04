@@ -10,6 +10,9 @@ namespace Marvin.JsonPatch.Exceptions
     {
         public Operation FailedOperation { get; private set; }
 
+
+
+     
         public JsonPatchException()
         {
 
@@ -22,7 +25,7 @@ namespace Marvin.JsonPatch.Exceptions
     }
 
 
-    public class JsonPatchException<T> : Exception where T: class
+    public class JsonPatchException<T> : JsonPatchException where T : class
     {
         public Operation<T> FailedOperation { get; private set; }
         public T AffectedObject { get; private set; }
@@ -34,6 +37,7 @@ namespace Marvin.JsonPatch.Exceptions
             {
                 return _message;
             }
+
         }
 
         public JsonPatchException()

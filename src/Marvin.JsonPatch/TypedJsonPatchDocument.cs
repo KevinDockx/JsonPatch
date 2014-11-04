@@ -40,9 +40,16 @@ namespace Marvin.JsonPatch
             return this;
         }
 
-        public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, IList<TProp>>> path, int position, TProp value)
+        public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value, int position)
         {
             Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/" + position, null, value));
+            return this;
+        }
+
+
+        public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value)
+        {
+            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/-", null, value));
             return this;
         }
 
