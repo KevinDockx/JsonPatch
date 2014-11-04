@@ -226,8 +226,7 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Move(Operation<T> operation, T objectToApplyTo)
         {
-            // get value at from location
-
+           
             // get value at from location
             object valueAtFromLocation = null;
             int positionAsInteger = -1;
@@ -469,6 +468,10 @@ namespace Marvin.JsonPatch.Adapters
         ///
         /// Also, note that ordering of the serialization of object members is
         /// not significant.
+        /// 
+        /// Note that we divert from the rules here - we use .NET's comparison,
+        /// not the one above.  In a future version, a "strict" setting might
+        /// be added (configurable), that takes into account above rules.
         ///
         /// For example:
         ///
@@ -478,35 +481,96 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Test(Operation<T> operation, T objectToApplyTo)
         {
-            // does the target location exist?
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
+            // get value at path location
+
+            object valueAtPathLocation = null;
+            int positionInPathAsInteger = -1;
+            string actualPathProperty = operation.path;
+
+
+            positionInPathAsInteger = PropertyHelpers.GetNumericEnd(operation.path);
+
+            if (positionInPathAsInteger > -1)
+            {
+                actualPathProperty = operation.path.Substring(0,
+                    operation.path.IndexOf('/' + positionInPathAsInteger.ToString()));
+            }
+
+
+            // does property at path exist?
+            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualPathProperty)))
             {
                 throw new JsonPatchException<T>(operation,
                     string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
                     objectToApplyTo);
             }
 
-            // get the type of the property, and check if the value can be casted to that type.
-            PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.path);
+            // get the property path
+            PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualPathProperty);
+            Type typeOfFinalPropertyAtPathLocation;
 
-            if (!(PropertyHelpers.CheckIfValueCanBeCast(pathProperty.PropertyType, operation.value)))
+            // is the path an array (but not a string (= char[]))?  In this case,
+            // the path must end with "/position" or "/-", which we already determined before.
+
+            if (positionInPathAsInteger > -1)
+            {
+
+                var isNonStringArray = !(pathProperty.PropertyType == typeof(string))
+                    && typeof(IList).IsAssignableFrom(pathProperty.PropertyType);
+
+                if (isNonStringArray)
+                {
+                    // now, get the generic type of the enumerable
+                    typeOfFinalPropertyAtPathLocation = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
+
+                    // get value (it can be cast, we just checked that)
+                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo) as IList;
+
+                    if (array.Count <= positionInPathAsInteger)
+                    {
+                        throw new JsonPatchException<T>(operation,
+                       string.Format("Patch failed: provided from path is invalid for array property type at location path: {0}: invalid position",
+                         operation.path),
+                         objectToApplyTo);
+                    }
+
+                    valueAtPathLocation = array[positionInPathAsInteger];
+
+                }
+                else
+                {
+                    throw new JsonPatchException<T>(operation,
+                       string.Format("Patch failed: provided from path is invalid for array property type at location path: {0}: expected array",
+                       operation.path),
+                       objectToApplyTo);
+                }
+            }
+            else
+            {
+                // no list, just get the value
+                valueAtPathLocation = PropertyHelpers.GetValue(pathProperty, objectToApplyTo);
+                typeOfFinalPropertyAtPathLocation = pathProperty.PropertyType;
+            }
+
+
+
+            if (!(PropertyHelpers.CheckIfValueCanBeCast(typeOfFinalPropertyAtPathLocation, operation.value)))
             {
                 throw new JsonPatchException<T>(operation,
                   string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
                   operation.path),
                   objectToApplyTo);
             }
+ 
 
-            // do the test
-            var valueToTest = PropertyHelpers.GetValue(pathProperty, objectToApplyTo);
 
-            if (!(valueToTest.Equals(operation.value)))
-            {
-                throw new JsonPatchException<T>(operation,
-                 string.Format("Patch failed: provided value at target location path: {0} does not match value to test against.",
-                 operation.path),
-                 objectToApplyTo);
-            }
+            //if (!(valueToTest.Equals(operation.value)))
+            //{
+            //    throw new JsonPatchException<T>(operation,
+            //     string.Format("Patch failed: provided value at target location path: {0} does not match value to test against.",
+            //     operation.path),
+            //     objectToApplyTo);
+            //}
 
         }
 

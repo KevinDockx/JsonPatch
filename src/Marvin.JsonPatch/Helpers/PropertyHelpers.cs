@@ -57,21 +57,21 @@ namespace Marvin.JsonPatch.Helpers
             try
             {
 
-                string[] bits = propertyPath.Split('/');
+                string[] splitPath = propertyPath.Split('/');
 
                 // skip the first one if it's empty
-                int startIndex = (string.IsNullOrWhiteSpace(bits[0]) ? 1 : 0);
+                int startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
 
-                for (int i = startIndex; i < bits.Length - 1; i++)
+                for (int i = startIndex; i < splitPath.Length - 1; i++)
                 {
-                    PropertyInfo propertyToGet = targetObject.GetType().GetProperty(bits[i]);
-                    targetObject = propertyToGet.GetValue(targetObject, null);
+                    PropertyInfo propertyInfoToGet = targetObject.GetType().GetProperty(splitPath[i]);
+                    targetObject = propertyInfoToGet.GetValue(targetObject, null);
                 }
 
-                PropertyInfo propertyToSet = targetObject.GetType().GetProperty(bits.Last(),
+                PropertyInfo propertyToCheck = targetObject.GetType().GetProperty(splitPath.Last(),
                     BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
-                return propertyToSet != null;
+                return propertyToCheck != null;
             }
             catch (Exception)
             {
@@ -86,37 +86,27 @@ namespace Marvin.JsonPatch.Helpers
             try
             {
 
-                string[] bits = propertyPath.Split('/');
+                string[] splitPath = propertyPath.Split('/');
 
                 // skip the first one if it's empty
-                int startIndex = (string.IsNullOrWhiteSpace(bits[0]) ? 1 : 0);
+                int startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
 
-                for (int i = startIndex; i < bits.Length - 1; i++)
+                for (int i = startIndex; i < splitPath.Length - 1; i++)
                 {
-                    PropertyInfo propertyToGet = targetObject.GetType().GetProperty(bits[i]);
+                    PropertyInfo propertyToGet = targetObject.GetType().GetProperty(splitPath[i]);
                     targetObject = propertyToGet.GetValue(targetObject, null);
                 }
 
-                PropertyInfo propertyToSet = targetObject.GetType().GetProperty(bits.Last(),
+                PropertyInfo propertyToFind = targetObject.GetType().GetProperty(splitPath.Last(),
                     BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
-                return propertyToSet;
+                return propertyToFind;
             }
             catch (Exception)
             {
                 return null;
             }
         }
-
-
-        internal static void CopyValue(object objectToApplyTo, PropertyInfo fromProperty, PropertyInfo pathProperty)
-        {
-            var value = fromProperty.GetValue(objectToApplyTo, null);
-            pathProperty.SetValue(objectToApplyTo, value, null);
-
-        }
-
-
 
 
         internal static bool CheckIfValueCanBeCast(Type propertyType, object value)
@@ -162,5 +152,7 @@ namespace Marvin.JsonPatch.Helpers
             return -1;
 
         }
+
+ 
     }
 }

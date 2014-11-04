@@ -667,8 +667,7 @@ namespace Marvin.JsonPatch.Test
             Assert.AreEqual(0, doc.IntegerValue);
             CollectionAssert.AreEquivalent(new List<int>() { 1, 2, 3, 5 }, doc.IntegerList);
 
-        }
-
+        } 
 
     }
 }
