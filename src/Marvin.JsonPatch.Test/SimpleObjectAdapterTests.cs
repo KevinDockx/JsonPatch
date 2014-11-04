@@ -235,5 +235,23 @@ namespace Marvin.JsonPatch.Test
         }
 
 
+        [TestMethod]
+        public void Replace()
+        {
+            var doc = new SimpleDTO()
+            {
+                StringProperty = "A"
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Replace<string>(o => o.StringProperty, "B");
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.AreEqual("B", doc.StringProperty);
+
+        }
+
     }
 }
