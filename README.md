@@ -1,5 +1,7 @@
+JSON Patch for .NET (Web API / clients)
+=======================================
+
 JSON Patch (JsonPatchDocument) RFC 6902 implementation for .NET
-===============================================================
 
 NuGet package: 
 
