@@ -1,7 +1,8 @@
 JSON Patch for .NET (Web API / clients)
 =======================================
 
-JSON Patch (JsonPatchDocument) RFC 6902 implementation for .NET
+JSON Patch (JsonPatchDocument) RFC 6902 implementation for .NET to easily allow & apply partial REST-ful service (through Web API) updates from any client (portable class library).
+
 
 NuGet package: 
 
