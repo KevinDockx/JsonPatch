@@ -20,7 +20,7 @@ This combination should make partial update support for your RESTful API a breez
 Here's how to use it:
 - Build a patch document on the client.  You can use all operations as described in the IETF document: Add, Remove, Replace, Copy, Move & Test.
 
-```
+```csharp
 JsonPatchDocument<DTO.Expense> patchDoc = new JsonPatchDocument<DTO.Expense>();
 patchDoc.Replace(e => e.Description, expense.Description);
 
@@ -39,10 +39,9 @@ var request = new HttpRequestMessage(method, "api/expenses/" + id)
 client.SendAsync(request);
 ```
 
-
 - On your API, in the patch method (accept document as parameter & use Apply method)
 
-```
+```csharp
 [Route("api/expenses/{id}")]
 [HttpPatch]
 public IHttpActionResult Patch(int id, [FromBody]JsonPatchDocument<DTO.Expense> expensePatchDocument)
@@ -59,6 +58,38 @@ public IHttpActionResult Patch(int id, [FromBody]JsonPatchDocument<DTO.Expense> 
 
 
 If you want to provide your own adapter (responsible for applying the operations to your objects), inherit IObjectAdapter, implement the interface and pass in an instance of that in the Apply method.
+
+A few more examples of how you can create a JsonPatchDocument:
+```csharp
+JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+
+// add "4" to a list of integers at position 0
+patchDoc.Add<int>(o => o.IntegerList, 4, 0);
+
+// add "4" to the end of that list
+patchDoc.Add<int>(o => o.IntegerList, 5);
+
+// remove the current value of StringProperty
+patchDoc.Remove<string>(o => o.StringProperty);
+
+// remove the value at position two from a list of integers
+patchDoc.Remove<int>(o => o.IntegerList, 2);
+
+// replace StringProperty with value "B"
+patchDoc.Replace<string>(o => o.StringProperty, "B");
+
+// replace value at position 4 in a list of integers with value 5
+patchDoc.Replace<int>(o => o.IntegerList, 5, 4);
+
+//copy value IntegerValue to position 0 in a list of integers
+patchDoc.Copy<int>(o => o.IntegerValue, o => o.IntegerList, 0);
+
+// move the integers at position 0 in a list of integers to position 1 in that same list
+patchDoc.Move<int>(o => o.IntegerList, 0, o => o.IntegerList, 1);
+```
+
+
+
 
 As the package is distributed as a Portable Class library, you can use it from ASP .NET, Windows Phone, Windows Store apps, ...
 
