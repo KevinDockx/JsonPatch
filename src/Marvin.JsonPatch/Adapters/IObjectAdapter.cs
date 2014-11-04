@@ -1,4 +1,12 @@
-﻿using System;
+﻿// Kevin Dockx
+//
+// Any comments, input: @KevinDockx
+// Any issues, requests: https://github.com/KevinDockx/JsonPatch
+//
+// Enjoy :-)
+
+
+using System;
 namespace Marvin.JsonPatch.Adapters
 {
     public interface IObjectAdapter<T>
@@ -12,13 +20,14 @@ namespace Marvin.JsonPatch.Adapters
         void Test(Marvin.JsonPatch.Operations.Operation<T> operation, T objectToApplyTo);
     }
 
-    public interface IObjectAdapter
-    {
-        void Add(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
-        void Copy(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
-        void Move(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
-        void Remove(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
-        void Replace(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
-        void Test(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
-    }
+    // TO BE IMPLEMENTED
+    //public interface IObjectAdapter
+    //{
+    //    void Add(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
+    //    void Copy(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
+    //    void Move(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
+    //    void Remove(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
+    //    void Replace(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
+    //    void Test(Marvin.JsonPatch.Operations.Operation operation, object objectToApplyTo);
+    //}
 }

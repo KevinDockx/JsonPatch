@@ -1,4 +1,11 @@
-﻿using Marvin.JsonPatch.Operations;
+﻿// Kevin Dockx
+//
+// Any comments, input: @KevinDockx
+// Any issues, requests: https://github.com/KevinDockx/JsonPatch
+//
+// Enjoy :-)
+
+using Marvin.JsonPatch.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +16,6 @@ namespace Marvin.JsonPatch.Exceptions
     public class JsonPatchException : Exception
     {
         public Operation FailedOperation { get; private set; }
-
-
 
      
         public JsonPatchException()
@@ -27,7 +32,7 @@ namespace Marvin.JsonPatch.Exceptions
 
     public class JsonPatchException<T> : JsonPatchException where T : class
     {
-        public Operation<T> FailedOperation { get; private set; }
+        public new Operation<T> FailedOperation { get; private set; }
         public T AffectedObject { get; private set; }
 
         private string _message = "";

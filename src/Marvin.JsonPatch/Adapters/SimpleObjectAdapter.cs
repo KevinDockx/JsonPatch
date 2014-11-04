@@ -1,4 +1,13 @@
-﻿using Marvin.JsonPatch.Exceptions;
+﻿// Kevin Dockx
+//
+// Any comments, input: @KevinDockx
+// Any issues, requests: https://github.com/KevinDockx/JsonPatch
+//
+// Enjoy :-)
+
+
+
+using Marvin.JsonPatch.Exceptions;
 using Marvin.JsonPatch.Helpers;
 using Marvin.JsonPatch.Operations;
 using System;
@@ -563,15 +572,8 @@ namespace Marvin.JsonPatch.Adapters
             }
  
 
-
-            //if (!(valueToTest.Equals(operation.value)))
-            //{
-            //    throw new JsonPatchException<T>(operation,
-            //     string.Format("Patch failed: provided value at target location path: {0} does not match value to test against.",
-            //     operation.path),
-            //     objectToApplyTo);
-            //}
-
+            // COMPARE - TODO
+ 
         }
 
 

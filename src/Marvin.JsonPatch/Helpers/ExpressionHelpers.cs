@@ -1,4 +1,12 @@
-﻿using System;
+﻿// Kevin Dockx
+//
+// Any comments, input: @KevinDockx
+// Any issues, requests: https://github.com/KevinDockx/JsonPatch
+//
+// Enjoy :-)
+
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;

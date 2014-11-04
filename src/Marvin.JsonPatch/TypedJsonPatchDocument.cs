@@ -1,4 +1,11 @@
-﻿using Marvin.JsonPatch.Adapters;
+﻿// Kevin Dockx
+//
+// Any comments, input: @KevinDockx
+// Any issues, requests: https://github.com/KevinDockx/JsonPatch
+//
+// Enjoy :-)
+
+using Marvin.JsonPatch.Adapters;
 using Marvin.JsonPatch.Helpers;
 using Marvin.JsonPatch.Operations;
 using Newtonsoft.Json;
@@ -360,18 +367,18 @@ namespace Marvin.JsonPatch
 
 
 
-        /// <summary>
-        /// Tests that a value at the target location is equal to a specified value.  
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public JsonPatchDocument<T> Test<TProp>(Expression<Func<T, TProp>> path, TProp value)
-        {
-            Operations.Add(new Operation<T>("test", ExpressionHelpers.GetPath<T, TProp>(path).ToLower()
-              , null, value));
-            return this;
-        }
+        ///// <summary>
+        ///// Tests that a value at the target location is equal to a specified value.  
+        ///// </summary>
+        ///// <param name="path"></param>
+        ///// <param name="value"></param>
+        ///// <returns></returns>
+        //public JsonPatchDocument<T> Test<TProp>(Expression<Func<T, TProp>> path, TProp value)
+        //{
+        //    Operations.Add(new Operation<T>("test", ExpressionHelpers.GetPath<T, TProp>(path).ToLower()
+        //      , null, value));
+        //    return this;
+        //}
 
 
         public void ApplyTo(T objectToApplyTo)

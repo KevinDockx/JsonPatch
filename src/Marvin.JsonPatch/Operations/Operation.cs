@@ -1,4 +1,11 @@
-﻿using Marvin.JsonPatch.Helpers;
+﻿// Kevin Dockx
+//
+// Any comments, input: @KevinDockx
+// Any issues, requests: https://github.com/KevinDockx/JsonPatch
+//
+// Enjoy :-)
+
+using Marvin.JsonPatch.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
