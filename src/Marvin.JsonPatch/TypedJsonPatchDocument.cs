@@ -122,6 +122,34 @@ namespace Marvin.JsonPatch
 
 
         /// <summary>
+        /// Replace value in a list at given position
+        /// </summary>
+        /// <typeparam name="TProp">value type</typeparam>
+        /// <param name="path">target location</param>
+        /// <param name="position">position</param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Replace<TProp>(Expression<Func<T, IList<TProp>>> path,  TProp value, int position)
+        {
+            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/" + position, null, value));
+            return this;
+        }
+
+        /// <summary>
+        /// Replace value at end of a list
+        /// </summary>
+        /// <typeparam name="TProp">value type</typeparam>
+        /// <param name="path">target location</param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Replace<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value)
+        {
+            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/-", null, value));
+            return this;
+        }
+
+       
+
+
+        /// <summary>
         /// Removes value at specified location and add it to the target location.  Will result in, for example:
         /// { "op": "move", "from": "/a/b/c", "path": "/a/b/d" }
         /// </summary>

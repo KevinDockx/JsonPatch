@@ -463,27 +463,31 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Replace(Operation<T> operation, T objectToApplyTo)
         {
-            // does property at path exist?
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
-            {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
-                    objectToApplyTo);
-            }
 
-            // get the type of the property, and check if the value can be casted to that type.
-            PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.path);
+            Remove(operation, objectToApplyTo);
+            Add(operation, objectToApplyTo);
 
-            if (!(PropertyHelpers.CheckIfValueCanBeCast(pathProperty.PropertyType, operation.value)))
-            {
-                throw new JsonPatchException<T>(operation,
-                  string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
-                  operation.path),
-                  objectToApplyTo);
-            }
+            //// does property at path exist?
+            //if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
+            //{
+            //    throw new JsonPatchException<T>(operation,
+            //        string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
+            //        objectToApplyTo);
+            //}
 
-            // set the new value
-            PropertyHelpers.SetValue(pathProperty, objectToApplyTo, operation.value);
+            //// get the type of the property, and check if the value can be casted to that type.
+            //PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.path);
+
+            //if (!(PropertyHelpers.CheckIfValueCanBeCast(pathProperty.PropertyType, operation.value)))
+            //{
+            //    throw new JsonPatchException<T>(operation,
+            //      string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
+            //      operation.path),
+            //      objectToApplyTo);
+            //}
+
+            //// set the new value
+            //PropertyHelpers.SetValue(pathProperty, objectToApplyTo, operation.value);
 
         }
 
@@ -516,7 +520,7 @@ namespace Marvin.JsonPatch.Adapters
             // the object we're working on on the client is the exact same as the one at the server
             // (eg: same namespace & classname, different class implementation) - therefore, we execute all checks.
 
-
+            
             // find the property in "from" on T
 
             if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.from)))
