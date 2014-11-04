@@ -93,4 +93,6 @@ patchDoc.Move<int>(o => o.IntegerList, 0, o => o.IntegerList, 1);
 
 As the package is distributed as a Portable Class library, you can use it from ASP .NET, Windows Phone, Windows Store apps, ...
 
-Please consider this an alpha version.  Not everything has been implemented (eg: ExpandoObject support), but the package is made with extensibility in mind.  Any and all comments, issues, ... are welcome.
+Please consider this an alpha version.  Not everything has been implemented (eg: ExpandoObject support), but the package is made with extensibility in mind.  
+
+Any and all comments, issues, ... are welcome. :-)
