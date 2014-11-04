@@ -76,7 +76,19 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Add(Operation<T> operation, T objectToApplyTo)
         {
-            // add, in our implementation, does not just "add" properties - that's
+
+            Add(operation.path, operation.value, objectToApplyTo, operation);
+      
+        }
+
+
+        /// <summary>
+        /// Add is used by various operations (eg: add, copy, ...), yet through different operations;
+        /// This method allows code reuse yet reporting the correct operation on error
+        /// </summary>
+        private void Add(string path, object value, T objectToApplyTo, Operation<T> operationToReport)
+        {
+            // add, in this implementation, does not just "add" properties - that's
             // technically impossible;  It can however be used to add items to arrays,
             // or to replace values.
 
@@ -86,29 +98,29 @@ namespace Marvin.JsonPatch.Adapters
 
             bool appendList = false;
             int positionAsInteger = -1;
-            string actualPathToProperty = operation.path;
-            
-            if (operation.path.EndsWith("/-"))
+            string actualPathToProperty = path;
+
+            if (path.EndsWith("/-"))
             {
                 appendList = true;
-                actualPathToProperty = operation.path.Substring(0, operation.path.Length-2);
+                actualPathToProperty = path.Substring(0, path.Length - 2);
             }
             else
             {
-                 positionAsInteger = PropertyHelpers.GetNumericEnd(operation.path);
+                positionAsInteger = PropertyHelpers.GetNumericEnd(path);
 
                 if (positionAsInteger > -1)
                 {
-                    actualPathToProperty = operation.path.Substring(0,
-                        operation.path.IndexOf('/' + positionAsInteger.ToString()));
+                    actualPathToProperty = path.Substring(0,
+                        path.IndexOf('/' + positionAsInteger.ToString()));
                 }
             }
 
             // does property at path exist?
             if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualPathToProperty)))
             {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
+                throw new JsonPatchException<T>(operationToReport,
+                    string.Format("Patch failed: property at location path: {0} does not exist", path),
                     objectToApplyTo);
             }
 
@@ -134,11 +146,11 @@ namespace Marvin.JsonPatch.Adapters
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
 
                     // check if the value can be cast to that type
-                    if (!(PropertyHelpers.CheckIfValueCanBeCast(genericTypeOfArray, operation.value)))
+                    if (!(PropertyHelpers.CheckIfValueCanBeCast(genericTypeOfArray, value)))
                     {
-                        throw new JsonPatchException<T>(operation,
+                        throw new JsonPatchException<T>(operationToReport,
                           string.Format("Patch failed: provided value is invalid for array property type at location path: {0}",
-                          operation.path),
+                          path),
                           objectToApplyTo);
                     }
 
@@ -148,47 +160,46 @@ namespace Marvin.JsonPatch.Adapters
 
                     if (appendList)
                     {
-                        array.Add(operation.value);
+                        array.Add(value);
                     }
                     else
                     {
                         if (positionAsInteger < array.Count)
                         {
-                            array.Insert(positionAsInteger, operation.value);
+                            array.Insert(positionAsInteger, value);
                         }
                         else
                         {
-                            throw new JsonPatchException<T>(operation,
+                            throw new JsonPatchException<T>(operationToReport,
                        string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
-                       operation.path),
+                       path),
                        objectToApplyTo);
                         }
                     }
-                                 
+
                 }
                 else
                 {
-                    throw new JsonPatchException<T>(operation,
+                    throw new JsonPatchException<T>(operationToReport,
                        string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: expected array",
-                       operation.path),
+                       path),
                        objectToApplyTo);
                 }
             }
             else
             {
-                if (!(PropertyHelpers.CheckIfValueCanBeCast(pathProperty.PropertyType, operation.value)))
+                if (!(PropertyHelpers.CheckIfValueCanBeCast(pathProperty.PropertyType, value)))
                 {
-                    throw new JsonPatchException<T>(operation,
+                    throw new JsonPatchException<T>(operationToReport,
                       string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
-                      operation.path),
+                      path),
                       objectToApplyTo);
                 }
 
                 // set the new value
-                PropertyHelpers.SetValue(pathProperty, objectToApplyTo, operation.value);
+                PropertyHelpers.SetValue(pathProperty, objectToApplyTo, value);
             }
         }
-
 
         /// <summary>
         /// The "move" operation removes the value at a specified location and
@@ -270,24 +281,34 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Remove(Operation<T> operation, T objectToApplyTo)
         {
+            Remove(operation.path, objectToApplyTo, operation);
+        }
+
+
+        /// <summary>
+        /// Remove is used by various operations (eg: remove, move, ...), yet through different operations;
+        /// This method allows code reuse yet reporting the correct operation on error
+        /// </summary>
+        private void Remove(string path, T objectToApplyTo, Operation<T> operationToReport)
+        {
 
             bool removeFromList = false;
             int positionAsInteger = -1;
-            string actualPathToProperty = operation.path;
+            string actualPathToProperty = path;
 
-            if (operation.path.EndsWith("/-"))
+            if (path.EndsWith("/-"))
             {
                 removeFromList = true;
-                actualPathToProperty = operation.path.Substring(0, operation.path.Length - 2);
+                actualPathToProperty = path.Substring(0, path.Length - 2);
             }
             else
             {
-                positionAsInteger = PropertyHelpers.GetNumericEnd(operation.path);
+                positionAsInteger = PropertyHelpers.GetNumericEnd(path);
 
                 if (positionAsInteger > -1)
                 {
-                    actualPathToProperty = operation.path.Substring(0,
-                        operation.path.IndexOf('/' + positionAsInteger.ToString()));
+                    actualPathToProperty = path.Substring(0,
+                        path.IndexOf('/' + positionAsInteger.ToString()));
                 }
             }
 
@@ -295,8 +316,8 @@ namespace Marvin.JsonPatch.Adapters
             // does the target location exist?
             if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualPathToProperty)))
             {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
+                throw new JsonPatchException<T>(operationToReport,
+                    string.Format("Patch failed: property at location path: {0} does not exist", path),
                     objectToApplyTo);
             }
 
@@ -318,7 +339,7 @@ namespace Marvin.JsonPatch.Adapters
                 {
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
- 
+
                     // get value (it can be cast, we just checked that)
                     var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo) as IList;
 
@@ -334,9 +355,9 @@ namespace Marvin.JsonPatch.Adapters
                         }
                         else
                         {
-                            throw new JsonPatchException<T>(operation,
+                            throw new JsonPatchException<T>(operationToReport,
                        string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
-                       operation.path),
+                       path),
                        objectToApplyTo);
                         }
                     }
@@ -344,20 +365,22 @@ namespace Marvin.JsonPatch.Adapters
                 }
                 else
                 {
-                    throw new JsonPatchException<T>(operation,
+                    throw new JsonPatchException<T>(operationToReport,
                        string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: expected array",
-                       operation.path),
+                       path),
                        objectToApplyTo);
                 }
             }
             else
             {
-               
+
                 // setting the value to "null" will use the default value in case of value types, and
                 // null in case of reference types
                 PropertyHelpers.SetValue(pathProperty, objectToApplyTo, null);
             }
+
         }
+
 
 
 
@@ -464,8 +487,8 @@ namespace Marvin.JsonPatch.Adapters
         public void Replace(Operation<T> operation, T objectToApplyTo)
         {
 
-            Remove(operation, objectToApplyTo);
-            Add(operation, objectToApplyTo);
+            Remove(operation.path, objectToApplyTo, operation);
+            Add(operation.path, operation.value, objectToApplyTo, operation); 
 
             //// does property at path exist?
             //if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
@@ -516,48 +539,127 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Copy(Operation<T> operation, T objectToApplyTo)
         {
-            // note: this get executed at the API side.  However, there's nothing that guarantees that
-            // the object we're working on on the client is the exact same as the one at the server
-            // (eg: same namespace & classname, different class implementation) - therefore, we execute all checks.
 
-            
-            // find the property in "from" on T
+            // get value at from location
+            object valueAtFromLocation = null;
 
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.from)))
+
+            int positionAsInteger = -1;
+            string actualFromProperty = operation.from;
+
+          
+                positionAsInteger = PropertyHelpers.GetNumericEnd(operation.from);
+
+                if (positionAsInteger > -1)
+                {
+                    actualFromProperty = operation.from.Substring(0,
+                        operation.from.IndexOf('/' + positionAsInteger.ToString()));
+                }
+           
+
+            // does property at from exist?
+            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualFromProperty)))
             {
                 throw new JsonPatchException<T>(operation,
                     string.Format("Patch failed: property at location from: {0} does not exist", operation.from),
                     objectToApplyTo);
-            }
+            } 
 
-            // find the property in "path" on T - as we're working on a typed object, this MUST exist;
-            // for untyped operations, a copy operation will add the field dynamically if needed.
+            // get the property path
+            PropertyInfo fromProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualFromProperty);
 
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
+            // is the path an array (but not a string (= char[]))?  In this case,
+            // the path must end with "/position" or "/-", which we already determined before.
+
+            if (positionAsInteger > -1)
             {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
-                    objectToApplyTo);
+
+                var isNonStringArray = !(fromProperty.PropertyType == typeof(string))
+                    && typeof(IList).IsAssignableFrom(fromProperty.PropertyType);
+
+                if (isNonStringArray)
+                {
+                    // now, get the generic type of the enumerable
+                    var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
+                    
+                    // get value (it can be cast, we just checked that)
+                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo) as IList;
+
+                    if (array.Count <= positionAsInteger)
+                    {
+                        throw new JsonPatchException<T>(operation,
+                       string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: invalid position",
+                         operation.from),
+                         objectToApplyTo);
+                    }
+
+                    valueAtFromLocation = array[positionAsInteger];
+
+                }
+                else
+                {
+                    throw new JsonPatchException<T>(operation,
+                       string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: expected array",
+                       operation.from),
+                       objectToApplyTo);
+                }
             }
-
-            // are both properties of the same type?
-
-            PropertyInfo fromProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.from);
-            PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.path);
-
-            if (!(fromProperty.PropertyType == pathProperty.PropertyType))
+            else
             {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Path failed: property at path {0} has a different type than property at from {1}",
-                    operation.path,
-                    operation.from),
-                    objectToApplyTo);
-            }
+                // no list, just get the value
+ 
+                // set the new value
 
-            // if it exists, and it's of the same type as the "from" property, 
-            // copy over the value of "from" to "path"
+                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo);
+          
+            } 
 
-            PropertyHelpers.CopyValue(objectToApplyTo, fromProperty, pathProperty);
+            // add operation to target location with that value.
+  
+            Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
+
+            //// note: this get executed at the API side.  However, there's nothing that guarantees that
+            //// the object we're working on on the client is the exact same as the one at the server
+            //// (eg: same namespace & classname, different class implementation) - therefore, we execute all checks.
+
+            
+            //// find the property in "from" on T
+
+            //if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.from)))
+            //{
+            //    throw new JsonPatchException<T>(operation,
+            //        string.Format("Patch failed: property at location from: {0} does not exist", operation.from),
+            //        objectToApplyTo);
+            //}
+
+            //// find the property in "path" on T - as we're working on a typed object, this MUST exist;
+            //// for untyped operations, a copy operation will add the field dynamically if needed.
+
+            //if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
+            //{
+            //    throw new JsonPatchException<T>(operation,
+            //        string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
+            //        objectToApplyTo);
+            //}
+
+            //// are both properties of the same type?
+
+            //PropertyInfo fromProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.from);
+            //PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.path);
+
+            //if (!(fromProperty.PropertyType == pathProperty.PropertyType))
+            //{
+            //    throw new JsonPatchException<T>(operation,
+            //        string.Format("Path failed: property at path {0} has a different type than property at from {1}",
+            //        operation.path,
+            //        operation.from),
+            //        objectToApplyTo);
+            //}
+
+            //// if it exists, and it's of the same type as the "from" property, 
+            //// copy over the value of "from" to "path"
+
+            //PropertyHelpers.CopyValue(objectToApplyTo, fromProperty, pathProperty);
         }
 
     }

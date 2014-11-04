@@ -179,6 +179,96 @@ namespace Marvin.JsonPatch
 
 
         /// <summary>
+        /// Copy from a position in a list to a new location
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom, Expression<Func<T, TProp>> path)
+        {
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, TProp>(path).ToLower()
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
+            return this;
+        }
+
+
+
+        /// <summary>
+        /// Copy from a property to a location in a list
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, TProp>> from, 
+            Expression<Func<T, IList<TProp>>> path,  int positionTo)
+        {
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T,IList< TProp>>(path).ToLower()
+                + "/" + positionTo
+              , ExpressionHelpers.GetPath<T, TProp>(from).ToLower()));
+            return this;
+        }
+
+
+        /// <summary>
+        /// Copy from a position in a list to a new location in a list
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom, 
+            Expression<Func<T, IList<TProp>>> path, int positionTo)
+        {
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() 
+                + "/" + positionTo
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
+            return this;
+        }
+
+
+        /// <summary>
+        /// Copy from a position in a list to the end of another list
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom,
+            Expression<Func<T, IList<TProp>>> path)
+        {
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() 
+                + "/-"
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
+            return this;
+        }
+
+
+
+        /// <summary>
+        /// Copy to the end of a list
+        /// </summary>
+        /// <typeparam name="TProp"></typeparam>
+        /// <param name="from"></param>
+        /// <param name="positionFrom"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, IList<TProp>>> path)
+        {
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/-"
+              , ExpressionHelpers.GetPath<T, TProp>(from).ToLower()));
+            return this;
+        }
+
+
+
+
+        /// <summary>
         /// Tests that a value at the target location is equal to a specified value.  
         /// </summary>
         /// <param name="path"></param>
@@ -208,6 +298,7 @@ namespace Marvin.JsonPatch
             }
 
         }
- 
+
+
     }
 }

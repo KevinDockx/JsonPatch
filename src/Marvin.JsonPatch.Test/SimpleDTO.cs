@@ -7,6 +7,7 @@ namespace Marvin.JsonPatch.Test
     public class SimpleDTO
     {
         public List<int> IntegerList { get; set; }
+        public int IntegerValue { get; set; }
         public string StringProperty { get; set; }
         public string AnotherStringProperty { get; set; }
     }
