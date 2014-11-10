@@ -5,6 +5,7 @@
 //
 // Enjoy :-)
 
+using Marvin.JsonPatch.Adapters;
 using Marvin.JsonPatch.Helpers;
 using Newtonsoft.Json;
 using System;
@@ -42,13 +43,30 @@ namespace Marvin.JsonPatch.Operations
         }
 
 
-        public void Apply(object objectToApplyTo)
+        public void Apply<T>(T objectToApplyTo, IDynamicObjectAdapter<T> adapter) where T : class
         {
-            if (OperationType == Operations.OperationType.Replace)
+            switch (OperationType)
             {
-                // find the property in "path" on T
-                PropertyHelpers.FindAndSetProperty(objectToApplyTo, path, value);
-
+                case OperationType.Add:
+                    adapter.Add(this, objectToApplyTo);
+                    break;
+                case OperationType.Remove:
+                    adapter.Remove(this, objectToApplyTo);
+                    break;
+                case OperationType.Replace:
+                    adapter.Replace(this, objectToApplyTo);
+                    break;
+                case OperationType.Move:
+                    adapter.Move(this, objectToApplyTo);
+                    break;
+                case OperationType.Copy:
+                    adapter.Copy(this, objectToApplyTo);
+                    break;
+                case OperationType.Test:
+                    adapter.Test(this, objectToApplyTo);
+                    break;
+                default:
+                    break;
             }
         }
 

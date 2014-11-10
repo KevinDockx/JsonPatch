@@ -38,6 +38,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Adapters\ExpandoObjectAdapter.cs" />
     <Compile Include="Adapters\IObjectAdapter.cs" />
     <Compile Include="Adapters\SimpleObjectAdapter.cs" />
     <Compile Include="Exceptions\JsonPatchException.cs" />
