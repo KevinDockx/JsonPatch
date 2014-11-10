@@ -1,9 +1,10 @@
-JsonPatch
-=========
+JSON Patch for .NET (Web API / clients)
+=======================================
 
-JSON Patch (JsonPatchDocument) RFC 6902 implementation for .NET
+JSON Patch (JsonPatchDocument) RFC 6902 implementation for .NET to easily allow & apply partial REST-ful service (through Web API) updates from any client (portable class library).
 
-NuGet package: 
+
+NuGet package: https://www.nuget.org/packages/Marvin.JsonPatch
 
 JSON Patch (https://tools.ietf.org/html/rfc6902) defines a JSON document structure for expressing a sequence of operations to apply to a JavaScript Object Notation (JSON) document; it is suitable for use with the HTTP PATCH method. The "application/json-patch+json" media type is used to identify such patch documents.
 
@@ -13,12 +14,12 @@ That's what this package is all about. Web API supports the HttpPatch method, bu
 
 It consists of two parts:
 - on the client (consumer of the API): the JsonPatchDocument / JsonPatchDocument<T> class to build what's essentially a change set to be applied to your object on your API side.
-- at (Web) API level: an Apply method to apply those changes to your objects.
+- at (Web) API level: an ApplyTo method to apply those changes to your objects.
 
 This combination should make partial update support for your RESTful API a breeze.
 
 Here's how to use it:
-- Build a patch document on the client.  You can use all operations as described in the IETF document: Add, Remove, Replace, Copy, Move & Test.
+- Build a patch document on the client.  You can use the operations as described in the IETF document: Add, Remove, Replace, Copy, Move.  Test support is planned.
 
 ```csharp
 JsonPatchDocument<DTO.Expense> patchDoc = new JsonPatchDocument<DTO.Expense>();
@@ -39,7 +40,7 @@ var request = new HttpRequestMessage(method, "api/expenses/" + id)
 client.SendAsync(request);
 ```
 
-- On your API, in the patch method (accept document as parameter & use Apply method)
+- On your API, in the patch method (accept document as parameter & use ApplyTo method)
 
 ```csharp
 [Route("api/expenses/{id}")]
@@ -57,9 +58,10 @@ public IHttpActionResult Patch(int id, [FromBody]JsonPatchDocument<DTO.Expense> 
 ```
 
 
-If you want to provide your own adapter (responsible for applying the operations to your objects), inherit IObjectAdapter, implement the interface and pass in an instance of that in the Apply method.
+If you want to provide your own adapter (responsible for applying the operations to your objects), create a new class that implements the IObjectAdapter interface, and pass in an instance of that class in the ApplyTo method.
 
 A few more examples of how you can create a JsonPatchDocument:
+
 ```csharp
 JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
 
@@ -91,7 +93,7 @@ patchDoc.Move<int>(o => o.IntegerList, 0, o => o.IntegerList, 1);
 
 
 
-As the package is distributed as a Portable Class library, you can use it from ASP .NET, Windows Phone, Windows Store apps, ...
+As the package is distributed as a Portable Class library, you can use it from (ASP) .NET (4+), Windows Phone (8.1), Windows Store apps (8+), ...
 
 Please consider this an alpha version.  Not everything has been implemented (eg: ExpandoObject support), but the package is made with extensibility in mind.  
 
