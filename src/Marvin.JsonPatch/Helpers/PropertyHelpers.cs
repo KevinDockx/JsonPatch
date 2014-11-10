@@ -7,7 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
@@ -75,10 +77,21 @@ namespace Marvin.JsonPatch.Helpers
                     targetObject = propertyInfoToGet.GetValue(targetObject, null);
                 }
 
-                PropertyInfo propertyToCheck = targetObject.GetType().GetProperty(splitPath.Last(),
-                    BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                // for dynamic objects
+                if (targetObject is IDynamicMetaObjectProvider)
+                {
+                    IDynamicMetaObjectProvider target = targetObject as IDynamicMetaObjectProvider;
+                    var propList = target.GetMetaObject(Expression.Constant(target)).GetDynamicMemberNames();
+                    return propList.Contains(splitPath.Last()); 
+                }
+                else
+                {
+                    PropertyInfo propertyToCheck = targetObject.GetType().GetProperty(splitPath.Last(),
+                        BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
-                return propertyToCheck != null;
+                    return propertyToCheck != null;
+                }
+          
             }
             catch (Exception)
             {

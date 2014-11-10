@@ -603,28 +603,6 @@ namespace Marvin.JsonPatch.Adapters
             Remove(operation.path, objectToApplyTo, operation);
             Add(operation.path, operation.value, objectToApplyTo, operation);
 
-            //// does property at path exist?
-            //if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
-            //{
-            //    throw new JsonPatchException<T>(operation,
-            //        string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
-            //        objectToApplyTo);
-            //}
-
-            //// get the type of the property, and check if the value can be casted to that type.
-            //PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.path);
-
-            //if (!(PropertyHelpers.CheckIfValueCanBeCast(pathProperty.PropertyType, operation.value)))
-            //{
-            //    throw new JsonPatchException<T>(operation,
-            //      string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
-            //      operation.path),
-            //      objectToApplyTo);
-            //}
-
-            //// set the new value
-            //PropertyHelpers.SetValue(pathProperty, objectToApplyTo, operation.value);
-
         }
 
 
@@ -729,48 +707,6 @@ namespace Marvin.JsonPatch.Adapters
 
             Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
 
-            //// note: this get executed at the API side.  However, there's nothing that guarantees that
-            //// the object we're working on on the client is the exact same as the one at the server
-            //// (eg: same namespace & classname, different class implementation) - therefore, we execute all checks.
-
-
-            //// find the property in "from" on T
-
-            //if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.from)))
-            //{
-            //    throw new JsonPatchException<T>(operation,
-            //        string.Format("Patch failed: property at location from: {0} does not exist", operation.from),
-            //        objectToApplyTo);
-            //}
-
-            //// find the property in "path" on T - as we're working on a typed object, this MUST exist;
-            //// for untyped operations, a copy operation will add the field dynamically if needed.
-
-            //if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, operation.path)))
-            //{
-            //    throw new JsonPatchException<T>(operation,
-            //        string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
-            //        objectToApplyTo);
-            //}
-
-            //// are both properties of the same type?
-
-            //PropertyInfo fromProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.from);
-            //PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, operation.path);
-
-            //if (!(fromProperty.PropertyType == pathProperty.PropertyType))
-            //{
-            //    throw new JsonPatchException<T>(operation,
-            //        string.Format("Path failed: property at path {0} has a different type than property at from {1}",
-            //        operation.path,
-            //        operation.from),
-            //        objectToApplyTo);
-            //}
-
-            //// if it exists, and it's of the same type as the "from" property, 
-            //// copy over the value of "from" to "path"
-
-            //PropertyHelpers.CopyValue(objectToApplyTo, fromProperty, pathProperty);
         }
 
     }
