@@ -6,6 +6,7 @@
 // Enjoy :-)
 
 using Marvin.JsonPatch.Adapters;
+using Marvin.JsonPatch.Converters;
 using Marvin.JsonPatch.Helpers;
 using Marvin.JsonPatch.Operations;
 using Newtonsoft.Json;
@@ -24,10 +25,11 @@ using System.Text;
 namespace Marvin.JsonPatch
 {
 
+  //  [JsonConverter(typeof(TypedJsonPatchDocumentConverter))]
     public class JsonPatchDocument<T> where T:class
     {
 
-        public List<Operation<T>> Operations { get; set; }
+         public List<Operation<T>> Operations { get; set; }
  
         public JsonPatchDocument()
         {

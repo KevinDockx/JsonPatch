@@ -1,5 +1,6 @@
 ﻿using Marvin.JsonPatch.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -240,20 +241,64 @@ namespace Marvin.JsonPatch.Test
         {
             var doc = new SimpleDTO()
             {
-                StringProperty = "A"
+                StringProperty = "A",
+                DecimalValue = 10
             };
 
             // create patch
             JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
             patchDoc.Replace<string>(o => o.StringProperty, "B");
+          //  patchDoc.Replace<decimal>(o => o.DecimalValue, 12);
+            patchDoc.Replace(o => o.DecimalValue, 12);
 
             patchDoc.ApplyTo(doc);
 
             Assert.AreEqual("B", doc.StringProperty);
+            Assert.AreEqual(12, doc.DecimalValue);
+
+ 
 
         }
 
 
+
+
+        [TestMethod]
+        public void SerializationTests()
+        {
+            var doc = new SimpleDTO()
+            {
+                StringProperty = "A",
+                DecimalValue = 10,
+                DoubleValue = 10,
+             FloatValue = 10,
+             IntegerValue = 10
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Replace(o => o.StringProperty, "B");
+            patchDoc.Replace(o => o.DecimalValue, 12);
+            patchDoc.Replace(o => o.DoubleValue, 12);
+            patchDoc.Replace(o => o.FloatValue, 12);
+            patchDoc.Replace(o => o.IntegerValue, 12);
+
+
+
+            // serialize & deserialize 
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var deserizalized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
+
+
+            deserizalized.ApplyTo(doc);
+
+            Assert.AreEqual("B", doc.StringProperty);
+            Assert.AreEqual(12, doc.DecimalValue);
+            Assert.AreEqual(12, doc.DoubleValue);
+            Assert.AreEqual(12, doc.FloatValue);
+            Assert.AreEqual(12, doc.IntegerValue);
+             
+        }
 
         [TestMethod]
         public void ReplaceInList()

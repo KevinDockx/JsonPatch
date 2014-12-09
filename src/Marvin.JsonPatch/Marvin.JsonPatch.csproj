@@ -41,6 +41,7 @@
     <Compile Include="Adapters\ExpandoObjectAdapter.cs" />
     <Compile Include="Adapters\IObjectAdapter.cs" />
     <Compile Include="Adapters\SimpleObjectAdapter.cs" />
+    <Compile Include="Converters\TypedJsonPatchDocumentConverter.cs" />
     <Compile Include="Exceptions\JsonPatchException.cs" />
     <Compile Include="Helpers\ExpressionHelpers.cs" />
     <Compile Include="Helpers\PropertyHelpers.cs" />
@@ -54,13 +55,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

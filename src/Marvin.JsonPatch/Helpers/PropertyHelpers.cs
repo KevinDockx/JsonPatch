@@ -38,7 +38,9 @@ namespace Marvin.JsonPatch.Helpers
                     PropertyInfo propertyToSet = targetObject.GetType().GetProperty(bits.Last(), 
                         BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
-                    propertyToSet.SetValue(targetObject, value, null);
+
+                    PropertyHelpers.SetValue(propertyToSet, targetObject, value);
+                    //      propertyToSet.SetValue(targetObject, value, null);
 
                         return true;
                 		
@@ -50,8 +52,22 @@ namespace Marvin.JsonPatch.Helpers
         }
 
         public static bool SetValue(PropertyInfo propertyToSet, object targetObject, object value)
-        {  
-            propertyToSet.SetValue(targetObject, value, null);
+        {
+            if (value == null)
+            { 
+                // then, set it.
+                propertyToSet.SetValue(targetObject, value, null);
+            }
+            else
+            {
+                var type = propertyToSet.PropertyType;
+                // first, cast the value to the expected property type. 
+                var valueToSet = Convert.ChangeType(value, type);
+                // then, set it.
+                propertyToSet.SetValue(targetObject, valueToSet, null);
+            }
+         
+           
             return true;
         }
 
