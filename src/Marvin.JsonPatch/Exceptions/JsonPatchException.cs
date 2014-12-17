@@ -15,7 +15,7 @@ namespace Marvin.JsonPatch.Exceptions
 {
     public class JsonPatchException : Exception
     {
-        public Operation FailedOperation { get; private set; }
+     //   public Operation FailedOperation { get; private set; }
         public object AffectedObject { get; private set; }
 
         private string _message = "";
@@ -27,23 +27,23 @@ namespace Marvin.JsonPatch.Exceptions
             }
 
         }
-     
+
         public JsonPatchException()
         {
 
         }
 
-        public JsonPatchException(Operation operation)
-        {
-            FailedOperation = operation;
-        }
+        //public JsonPatchException(Operation operation)
+        //{
+        //    FailedOperation = operation;
+        //}
 
-        public JsonPatchException(Operation operation, string message, object affectedObject)
-        {
-            FailedOperation = operation;
-            _message = message;
-            AffectedObject = affectedObject;
-        }
+        //public JsonPatchException(Operation operation, string message, object affectedObject)
+        //{
+        //    FailedOperation = operation;
+        //    _message = message;
+        //    AffectedObject = affectedObject;
+        //}
     }
 
 

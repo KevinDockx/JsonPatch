@@ -17,42 +17,27 @@ namespace Marvin.JsonPatch.Helpers
 {
     internal static class PropertyHelpers
     {
-        public static bool FindAndSetProperty(object targetObject, string propertyPath, object value)
+       
+        public static bool SetValue(PropertyInfo propertyToSet, object targetObject, string pathToProperty, object value)
         {
-            try 
-	        {	        
-
-                    string[] bits = propertyPath.Split('/');
-
-                    // skip the first one if it's empty
-
-                    int startIndex = (string.IsNullOrWhiteSpace(bits[0])  ? 1 : 0);
+            // it is possible the path refers to a nested property.  In that case, we need to 
+            // set on a different target object: the nested object.
 
 
-                    for (int i = startIndex; i < bits.Length - 1; i++)
-                    {
-                        PropertyInfo propertyToGet = targetObject.GetType().GetProperty(bits[i]);
-                        targetObject = propertyToGet.GetValue(targetObject, null);
-                    }
+            string[] splitPath = pathToProperty.Split('/');
 
-                    PropertyInfo propertyToSet = targetObject.GetType().GetProperty(bits.Last(), 
-                        BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            // skip the first one if it's empty
+            int startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
 
+            for (int i = startIndex; i < splitPath.Length - 1; i++)
+            {
+                PropertyInfo propertyInfoToGet = targetObject.GetType().GetProperty(splitPath[i]
+                    , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                targetObject = propertyInfoToGet.GetValue(targetObject, null);
+            }
 
-                    PropertyHelpers.SetValue(propertyToSet, targetObject, value);
-                    //      propertyToSet.SetValue(targetObject, value, null);
+            
 
-                        return true;
-                		
-	        }
-	        catch (Exception)
-	        {
-		        return false;
-	        }
-        }
-
-        public static bool SetValue(PropertyInfo propertyToSet, object targetObject, object value)
-        {
             if (value == null)
             { 
                 // then, set it.
@@ -71,8 +56,24 @@ namespace Marvin.JsonPatch.Helpers
             return true;
         }
 
-        public static object GetValue(PropertyInfo propertyToGet, object targetObject)
+        public static object GetValue(PropertyInfo propertyToGet, object targetObject, string pathToProperty)
         {
+            // it is possible the path refers to a nested property.  In that case, we need to 
+            // get from a different target object: the nested object.
+
+            string[] splitPath = pathToProperty.Split('/');
+
+            // skip the first one if it's empty
+            int startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
+
+            for (int i = startIndex; i < splitPath.Length - 1; i++)
+            {
+                PropertyInfo propertyInfoToGet = targetObject.GetType().GetProperty(splitPath[i]
+                    , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                targetObject = propertyInfoToGet.GetValue(targetObject, null);
+            }
+
+
             return propertyToGet.GetValue(targetObject, null);
         }
 
@@ -89,7 +90,8 @@ namespace Marvin.JsonPatch.Helpers
 
                 for (int i = startIndex; i < splitPath.Length - 1; i++)
                 {
-                    PropertyInfo propertyInfoToGet = targetObject.GetType().GetProperty(splitPath[i]);
+                    PropertyInfo propertyInfoToGet = targetObject.GetType().GetProperty(splitPath[i]
+                        , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                     targetObject = propertyInfoToGet.GetValue(targetObject, null);
                 }
 
@@ -129,7 +131,8 @@ namespace Marvin.JsonPatch.Helpers
 
                 for (int i = startIndex; i < splitPath.Length - 1; i++)
                 {
-                    PropertyInfo propertyToGet = targetObject.GetType().GetProperty(splitPath[i]);
+                    PropertyInfo propertyToGet = targetObject.GetType().GetProperty(splitPath[i]
+                        , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                     targetObject = propertyToGet.GetValue(targetObject, null);
                 }
 

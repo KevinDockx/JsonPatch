@@ -30,108 +30,108 @@ namespace Marvin.JsonPatch
     ///  The "application/json-patch+json" media type is used to identify such
     ///  patch documents."
     /// </summary>
-    public class JsonPatchDocument
-    {
-        public List<Operation> Operations { get; set; }
+    //public class JsonPatchDocument
+    //{
+    //    public List<Operation> Operations { get; set; }
 
 
-        public JsonPatchDocument()
-        {
-            Operations = new List<Operation>();
-        }
+    //    public JsonPatchDocument()
+    //    {
+    //        Operations = new List<Operation>();
+    //    }
 
-        /// <summary>
-        /// Add operation.  Will result in, for example, 
-        /// { "op": "add", "path": "/a/b/c", "value": [ "foo", "bar" ] }
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public JsonPatchDocument Add(string path, object value)
-        {
-            Operations.Add(new Operation("add", path, null, value));
-            return this;
-        }
-
-
-        /// <summary>
-        /// Remove value at target location.  Will result in, for example,
-        /// { "op": "remove", "path": "/a/b/c" }
-        /// </summary>
-        /// <param name="remove"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public JsonPatchDocument Remove(string path)
-        {
-            Operations.Add(new Operation("remove", path, null,null));
-            return this;
-        }
-
-        /// <summary>
-        /// Replace value.  Will result in, for example,
-        /// { "op": "replace", "path": "/a/b/c", "value": 42 }
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public JsonPatchDocument Replace(string path, object value)
-        {
-            Operations.Add(new Operation("replace", path, null, value));
-            return this;
-        }
+    //    /// <summary>
+    //    /// Add operation.  Will result in, for example, 
+    //    /// { "op": "add", "path": "/a/b/c", "value": [ "foo", "bar" ] }
+    //    /// </summary>
+    //    /// <param name="path"></param>
+    //    /// <param name="value"></param>
+    //    /// <returns></returns>
+    //    public JsonPatchDocument Add(string path, object value)
+    //    {
+    //        Operations.Add(new Operation("add", path, null, value));
+    //        return this;
+    //    }
 
 
-        /// <summary>
-        /// Removes value at specified location and add it to the target location.  Will result in, for example:
-        /// { "op": "move", "from": "/a/b/c", "path": "/a/b/d" }
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public JsonPatchDocument Move(string from, string path)
-        {
-            Operations.Add(new Operation("move", path, from, null));
-            return this;
-        }
+    //    /// <summary>
+    //    /// Remove value at target location.  Will result in, for example,
+    //    /// { "op": "remove", "path": "/a/b/c" }
+    //    /// </summary>
+    //    /// <param name="remove"></param>
+    //    /// <param name="path"></param>
+    //    /// <returns></returns>
+    //    public JsonPatchDocument Remove(string path)
+    //    {
+    //        Operations.Add(new Operation("remove", path, null,null));
+    //        return this;
+    //    }
 
-        /// <summary>
-        /// Copy the value at specified location to the target location.  Willr esult in, for example:
-        /// { "op": "copy", "from": "/a/b/c", "path": "/a/b/e" }
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public JsonPatchDocument Copy(string from, string path)
-        {
-            Operations.Add(new Operation("copy", path, from, null));
-            return this;
-        }
-
-
-        ///// <summary>
-        ///// Tests that a value at the target location is equal to a specified value.  
-        ///// Currently not implemented!
-        ///// </summary>
-        ///// <param name="path"></param>
-        ///// <param name="value"></param>
-        ///// <returns></returns>
-        //public JsonPatchDocument Test(string path, object value)
-        //{
-        //    throw new NotImplementedException();
-        //}
+    //    /// <summary>
+    //    /// Replace value.  Will result in, for example,
+    //    /// { "op": "replace", "path": "/a/b/c", "value": 42 }
+    //    /// </summary>
+    //    /// <param name="path"></param>
+    //    /// <param name="value"></param>
+    //    /// <returns></returns>
+    //    public JsonPatchDocument Replace(string path, object value)
+    //    {
+    //        Operations.Add(new Operation("replace", path, null, value));
+    //        return this;
+    //    }
 
 
+    //    /// <summary>
+    //    /// Removes value at specified location and add it to the target location.  Will result in, for example:
+    //    /// { "op": "move", "from": "/a/b/c", "path": "/a/b/d" }
+    //    /// </summary>
+    //    /// <param name="from"></param>
+    //    /// <param name="path"></param>
+    //    /// <returns></returns>
+    //    public JsonPatchDocument Move(string from, string path)
+    //    {
+    //        Operations.Add(new Operation("move", path, from, null));
+    //        return this;
+    //    }
 
-        public void ApplyTo<T>(T objectToApplyTo, IDynamicObjectAdapter<T> adapter) where T: class
-        {
+    //    /// <summary>
+    //    /// Copy the value at specified location to the target location.  Willr esult in, for example:
+    //    /// { "op": "copy", "from": "/a/b/c", "path": "/a/b/e" }
+    //    /// </summary>
+    //    /// <param name="from"></param>
+    //    /// <param name="path"></param>
+    //    /// <returns></returns>
+    //    public JsonPatchDocument Copy(string from, string path)
+    //    {
+    //        Operations.Add(new Operation("copy", path, from, null));
+    //        return this;
+    //    }
 
-            // apply each operation in order
-            foreach (var op in Operations)
-            {
-                op.Apply<T>(objectToApplyTo, adapter);
-            }
 
-        }
+    //    ///// <summary>
+    //    ///// Tests that a value at the target location is equal to a specified value.  
+    //    ///// Currently not implemented!
+    //    ///// </summary>
+    //    ///// <param name="path"></param>
+    //    ///// <param name="value"></param>
+    //    ///// <returns></returns>
+    //    //public JsonPatchDocument Test(string path, object value)
+    //    //{
+    //    //    throw new NotImplementedException();
+    //    //}
 
-    }
+
+
+    //    public void ApplyTo<T>(T objectToApplyTo, IDynamicObjectAdapter<T> adapter) where T: class
+    //    {
+
+    //        // apply each operation in order
+    //        foreach (var op in Operations)
+    //        {
+    //            op.Apply<T>(objectToApplyTo, adapter);
+    //        }
+
+    //    }
+
+    //}
 }

@@ -165,7 +165,7 @@ namespace Marvin.JsonPatch.Adapters
 
 
                     // get value (it can be cast, we just checked that)
-                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo) as IList;
+                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathToProperty) as IList;
 
                     if (appendList)
                     {
@@ -205,8 +205,8 @@ namespace Marvin.JsonPatch.Adapters
                       objectToApplyTo);
                 }
 
-                // set the new value
-                PropertyHelpers.SetValue(pathProperty, objectToApplyTo, value);
+                // set the new value.  Include the path, as it might be a property on a nested property
+                PropertyHelpers.SetValue(pathProperty, objectToApplyTo, actualPathToProperty, value);
             }
         }
 
@@ -277,7 +277,7 @@ namespace Marvin.JsonPatch.Adapters
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
 
                     // get value (it can be cast, we just checked that)
-                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo) as IList;
+                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty) as IList;
 
                     if (array.Count <= positionAsInteger)
                     {
@@ -304,7 +304,7 @@ namespace Marvin.JsonPatch.Adapters
 
                 // set the new value
 
-                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo);
+                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty);
 
             }
 
@@ -382,7 +382,7 @@ namespace Marvin.JsonPatch.Adapters
 
             PropertyInfo pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualPathToProperty);
 
-
+        
             if (removeFromList || positionAsInteger > -1)
             {
 
@@ -395,8 +395,9 @@ namespace Marvin.JsonPatch.Adapters
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
 
+                    // TODO: nested!
                     // get value (it can be cast, we just checked that)
-                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo) as IList;
+                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathToProperty) as IList;
 
                     if (removeFromList)
                     {
@@ -431,7 +432,7 @@ namespace Marvin.JsonPatch.Adapters
 
                 // setting the value to "null" will use the default value in case of value types, and
                 // null in case of reference types
-                PropertyHelpers.SetValue(pathProperty, objectToApplyTo, null);
+                PropertyHelpers.SetValue(pathProperty, objectToApplyTo, actualPathToProperty, null);
             }
 
         }
@@ -533,7 +534,7 @@ namespace Marvin.JsonPatch.Adapters
                     typeOfFinalPropertyAtPathLocation = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
 
                     // get value (it can be cast, we just checked that)
-                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo) as IList;
+                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathProperty) as IList;
 
                     if (array.Count <= positionInPathAsInteger)
                     {
@@ -557,7 +558,7 @@ namespace Marvin.JsonPatch.Adapters
             else
             {
                 // no list, just get the value
-                valueAtPathLocation = PropertyHelpers.GetValue(pathProperty, objectToApplyTo);
+                valueAtPathLocation = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathProperty);
                 typeOfFinalPropertyAtPathLocation = pathProperty.PropertyType;
             }
 
@@ -672,7 +673,7 @@ namespace Marvin.JsonPatch.Adapters
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
 
                     // get value (it can be cast, we just checked that)
-                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo) as IList;
+                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty) as IList;
 
                     if (array.Count <= positionAsInteger)
                     {
@@ -699,7 +700,7 @@ namespace Marvin.JsonPatch.Adapters
 
                 // set the new value
 
-                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo);
+                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty);
 
             }
 

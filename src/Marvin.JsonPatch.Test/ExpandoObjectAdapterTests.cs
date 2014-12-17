@@ -13,21 +13,21 @@ namespace Marvin.JsonPatch.Test
     public class ExpandoObjectAdapterTests
     {
 
-        [TestMethod]
-        public void Remove()
-        {
-            dynamic doc = new ExpandoObject();
-            doc.StringProperty = "A";
+        //[TestMethod]
+        //public void Remove()
+        //{
+        //    dynamic doc = new ExpandoObject();
+        //    doc.StringProperty = "A";
           
-            // create patch
-            JsonPatchDocument patchDoc = new JsonPatchDocument();
-            patchDoc.Remove("StringProperty");
+        //    // create patch
+        //    JsonPatchDocument patchDoc = new JsonPatchDocument();
+        //    patchDoc.Remove("StringProperty");
 
-            patchDoc.ApplyTo(doc, new ExpandoObjectAdapter());
+        //    patchDoc.ApplyTo(doc, new ExpandoObjectAdapter());
 
-            Assert.AreEqual(null, doc.StringProperty);
+        //    Assert.AreEqual(null, doc.StringProperty);
 
-        }
+        //}
 
     }
 }

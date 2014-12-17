@@ -56,9 +56,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ExpandoObjectAdapterTests.cs" />
+    <Compile Include="NestedDTO.cs" />
+    <Compile Include="NestedObjectTests.cs" />
     <Compile Include="OperationTests.cs" />
     <Compile Include="SimpleDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleDTOWithNestedDTO.cs" />
     <Compile Include="SimpleObjectAdapterTests.cs" />
   </ItemGroup>
   <ItemGroup>
