@@ -1,4 +1,5 @@
-﻿using Marvin.JsonPatch.Exceptions;
+﻿using Marvin.JsonPatch.Converters;
+using Marvin.JsonPatch.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
@@ -260,6 +261,63 @@ namespace Marvin.JsonPatch.Test
 
         }
 
+        [TestMethod]
+        public void SerializationMustNotIncudeEnvelope()
+        {
+            var doc = new SimpleDTO()
+            {
+                StringProperty = "A",
+                DecimalValue = 10,
+                DoubleValue = 10,
+                FloatValue = 10,
+                IntegerValue = 10
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Replace(o => o.StringProperty, "B");
+            patchDoc.Replace(o => o.DecimalValue, 12);
+            patchDoc.Replace(o => o.DoubleValue, 12);
+            patchDoc.Replace(o => o.FloatValue, 12);
+            patchDoc.Replace(o => o.IntegerValue, 12);
+                       
+            var serialized = JsonConvert.SerializeObject(patchDoc); 
+
+            Assert.AreEqual(false, serialized.Contains("operations"));
+            Assert.AreEqual(false, serialized.Contains("Operations"));
+     
+
+        }
+
+  
+
+        [TestMethod]
+        public void DeserializationMustWorkWithoutEnvelope()
+        {
+            var doc = new SimpleDTO()
+            {
+                StringProperty = "A",
+                DecimalValue = 10,
+                DoubleValue = 10,
+                FloatValue = 10,
+                IntegerValue = 10
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Replace(o => o.StringProperty, "B");
+            patchDoc.Replace(o => o.DecimalValue, 12);
+            patchDoc.Replace(o => o.DoubleValue, 12);
+            patchDoc.Replace(o => o.FloatValue, 12);
+            patchDoc.Replace(o => o.IntegerValue, 12);
+
+            // default: no envelope
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
+
+            Assert.IsInstanceOfType(deserialized, typeof(JsonPatchDocument<SimpleDTO>));
+     
+        }
 
 
 

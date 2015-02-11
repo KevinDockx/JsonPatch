@@ -45,6 +45,7 @@
     <Compile Include="Exceptions\JsonPatchException.cs" />
     <Compile Include="Helpers\ExpressionHelpers.cs" />
     <Compile Include="Helpers\PropertyHelpers.cs" />
+    <Compile Include="IJsonPatchDocument.cs" />
     <Compile Include="JsonPatchDocument.cs" />
     <Compile Include="Operations\Operation.cs" />
     <Compile Include="Operations\OperationBase.cs" />

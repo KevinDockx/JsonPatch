@@ -25,15 +25,27 @@ using System.Text;
 namespace Marvin.JsonPatch
 {
 
-  //  [JsonConverter(typeof(TypedJsonPatchDocumentConverter))]
-    public class JsonPatchDocument<T> where T:class
+
+
+
+    [JsonConverter(typeof(TypedJsonPatchDocumentConverter))]
+    public class JsonPatchDocument<T>: IJsonPatchDocument where T:class 
     {
 
-         public List<Operation<T>> Operations { get; set; }
+         public List<Operation<T>> Operations { get; private set; }
  
+
         public JsonPatchDocument()
         {
             Operations = new List<Operation<T>>();
+        }
+
+
+        // Create from list of operations  
+        public JsonPatchDocument(List<Operation<T>> operations)
+        {
+            Operations = operations;
+         
         }
 
         /// <summary>
@@ -401,5 +413,27 @@ namespace Marvin.JsonPatch
         }
 
 
+
+        public List<Operation> GetOperations()
+        {
+            List<Operation> allOps = new List<Operation>();
+            
+            if (Operations != null)
+            {
+                foreach (var op in Operations)
+	            {
+                    Operation test = new Operation();
+
+                    test.op = op.op;
+                    test.value = op.value;
+                    test.path = op.path;
+                    test.from = op.from;
+
+                    allOps.Add(test);
+	            }            
+            }
+
+            return allOps;
+        }
     }
 }

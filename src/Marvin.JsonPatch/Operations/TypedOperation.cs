@@ -20,13 +20,10 @@ namespace Marvin.JsonPatch.Operations
 
 
 
-    public class Operation<T> : OperationBase where T : class  
+    public class Operation<T> : Operation where T : class
     {
 
-        [JsonProperty("value")]
-        public object value { get; set; }
-
-
+  
         public Operation()
         {
 
@@ -35,13 +32,13 @@ namespace Marvin.JsonPatch.Operations
         public Operation(string op, string path, string from, object value)
             : base(op, path, from)
         {
-             this.value = value;
+            this.value = value;
         }
 
         public Operation(string op, string path, string from)
             : base(op, path, from)
         {
-         
+
         }
 
 
