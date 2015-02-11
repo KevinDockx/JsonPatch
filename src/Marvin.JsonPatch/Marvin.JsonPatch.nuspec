@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Kevin Dockx (Marvin)</authors>
+    <owners>Kevin Dockx (Marvin)</owners>
+    <projectUrl>https://github.com/KevinDockx/JsonPatch</projectUrl>
+      <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>JSON Patch (RFC 6902) support for .NET to easily allow and apply partial REST-ful service (through Web API) updates from any client (portable class library)</description>
+    <copyright>Copyright 2014</copyright>
+    <tags>Web API WebAPI HttpPatch Json JsonPatch Partial Update ASP .NET</tags>
+  </metadata>
+</package>

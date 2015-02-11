@@ -74,7 +74,7 @@ namespace Marvin.JsonPatch.Converters
             {
                 var jsonPatchDoc = (IJsonPatchDocument)value;
                 var lst = jsonPatchDoc.GetOperations();
-
+                 
                 // write out the operations, no envelope
                 serializer.Serialize(writer, lst);
 
