@@ -320,6 +320,22 @@ namespace Marvin.JsonPatch.Test
         }
 
 
+        [TestMethod]
+        public void DeserializationMustFailWithEnvelope()
+        {
+          
+            try
+            {
+                string serialized = "{\"Operations\": [{ \"op\": \"replace\", \"path\": \"/title\", \"value\": \"New Title\"}]}";
+                var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(JsonPatchException));
+            }
+        }
+
+
 
         [TestMethod]
         public void SerializationTests()
