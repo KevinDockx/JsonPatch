@@ -94,15 +94,15 @@ To create a JsonPatchDocument directly in JSON:
 
 ```
 {
-    "Operations": [
+    [
         { "op": "add", "path": "/foo", "value": "bar"},
         { "op": "replace", "path": "/baz", "value": "boo" }
     ]
 }
 ```
-Issue has been created to remove the "Operations" requirement from the envelope (https://github.com/KevinDockx/JsonPatch/issues/1)
 
 As the package is distributed as a Portable Class library, you can use it from (ASP) .NET (4+), Windows Phone (8.1), Windows Store apps (8+), ...
+
 
 Please consider this an alpha version.  Not everything has been implemented (eg: ExpandoObject support), but the package is made with extensibility in mind.  
 
