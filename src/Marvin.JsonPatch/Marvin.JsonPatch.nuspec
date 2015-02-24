@@ -14,9 +14,9 @@ One of the things this can be used for is partial updates for REST-ful API's, or
 
 That's what this package is all about. Web API supports the HttpPatch method, but there's currently no implementation of the JsonPatchDocument in .NET, making it hard to pass in a set of changes that have to be applied - especially if you're working cross-platform and standardization of your API is essential.
 
-Have a look at the project site for the current status of this package.</description>
+Have a look at the project site for the current status of this package and to learn how to get started.</description>
     <summary>JSON Patch (RFC 6902) support for .NET to easily allow and apply partial REST-ful service (through Web API) updates from any client (portable class library)</summary>
-    <copyright>Copyright 2014</copyright>
+    <copyright>Copyright 2014, 2015</copyright>
     <tags>Web API WebAPI HttpPatch Json JsonPatch Partial Update ASP .NET</tags>
   </metadata>
 </package>

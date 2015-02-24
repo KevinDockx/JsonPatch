@@ -15,7 +15,7 @@ namespace Marvin.JsonPatch.Exceptions
 {
     public class JsonPatchException : Exception
     {
-        public Exception InnerException { get; internal set; }
+        public new Exception InnerException { get; internal set; }
 
         public object AffectedObject { get; private set; }
 
@@ -43,37 +43,4 @@ namespace Marvin.JsonPatch.Exceptions
     }
 
 
-    public class JsonPatchException<T> : JsonPatchException where T : class
-    {
-        public new Operation<T> FailedOperation { get; private set; }
-        public new T AffectedObject { get; private set; }
-
-        private string _message = "";
-        public override string Message
-        {
-            get
-            {
-                return _message;
-            }
-
-        }
-
-        public JsonPatchException()
-        {
-
-        }
-
-        public JsonPatchException(Operation<T> operation, string message, T affectedObject)
-        {
-            FailedOperation = operation;
-            _message = message;
-            AffectedObject = affectedObject; 
-        }
-
-        public JsonPatchException(Operation<T> operation, string message, T affectedObject, Exception innerException)
-            : this (operation, message, affectedObject)
-        {
-            InnerException = innerException;
-        }
-    }
 }

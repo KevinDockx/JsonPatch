@@ -43,6 +43,7 @@
     <Compile Include="Adapters\SimpleObjectAdapter.cs" />
     <Compile Include="Converters\TypedJsonPatchDocumentConverter.cs" />
     <Compile Include="Exceptions\JsonPatchException.cs" />
+    <Compile Include="Exceptions\TypedJsonPatchException.cs" />
     <Compile Include="Helpers\ExpressionHelpers.cs" />
     <Compile Include="Helpers\PropertyHelpers.cs" />
     <Compile Include="IJsonPatchDocument.cs" />

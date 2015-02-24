@@ -31,7 +31,7 @@ namespace Marvin.JsonPatch.Helpers
 
             for (int i = startIndex; i < splitPath.Length - 1; i++)
             {
-                PropertyInfo propertyInfoToGet = targetObject.GetType().GetProperty(splitPath[i]
+                PropertyInfo propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
                     , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                 targetObject = propertyInfoToGet.GetValue(targetObject, null);
             }
@@ -68,7 +68,7 @@ namespace Marvin.JsonPatch.Helpers
 
             for (int i = startIndex; i < splitPath.Length - 1; i++)
             {
-                PropertyInfo propertyInfoToGet = targetObject.GetType().GetProperty(splitPath[i]
+                PropertyInfo propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
                     , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                 targetObject = propertyInfoToGet.GetValue(targetObject, null);
             }
@@ -90,7 +90,7 @@ namespace Marvin.JsonPatch.Helpers
 
                 for (int i = startIndex; i < splitPath.Length - 1; i++)
                 {
-                    PropertyInfo propertyInfoToGet = targetObject.GetType().GetProperty(splitPath[i]
+                    PropertyInfo propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
                         , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                     targetObject = propertyInfoToGet.GetValue(targetObject, null);
                 }
@@ -131,7 +131,7 @@ namespace Marvin.JsonPatch.Helpers
 
                 for (int i = startIndex; i < splitPath.Length - 1; i++)
                 {
-                    PropertyInfo propertyToGet = targetObject.GetType().GetProperty(splitPath[i]
+                    PropertyInfo propertyToGet = GetPropertyInfo(targetObject, splitPath[i]
                         , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
                     targetObject = propertyToGet.GetValue(targetObject, null);
                 }
@@ -192,6 +192,12 @@ namespace Marvin.JsonPatch.Helpers
 
         }
 
+
+        private static PropertyInfo GetPropertyInfo(object targetObject, string propertyName,
+        BindingFlags bindingFlags)
+        {
+            return targetObject.GetType().GetProperty(propertyName, bindingFlags);
+        }
  
     }
 }

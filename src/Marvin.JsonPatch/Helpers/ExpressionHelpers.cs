@@ -18,9 +18,6 @@ namespace Marvin.JsonPatch.Helpers
 {
     internal static class ExpressionHelpers
     {
-      
-
-
 
         public static string GetPath<T, TProp>(Expression<Func<T, TProp>> expr) where T : class
         {
