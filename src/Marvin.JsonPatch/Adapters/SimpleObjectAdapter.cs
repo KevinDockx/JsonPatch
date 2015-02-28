@@ -124,8 +124,13 @@ namespace Marvin.JsonPatch.Adapters
                 }
             }
 
+
+            var pathProperty = PropertyHelpers
+                .FindProperty(objectToApplyTo, actualPathToProperty);
+
+
             // does property at path exist?
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualPathToProperty)))
+            if (pathProperty == null)
             {
                 throw new JsonPatchException<T>(operationToReport,
                     string.Format("Patch failed: property at location path: {0} does not exist", path),
@@ -133,14 +138,10 @@ namespace Marvin.JsonPatch.Adapters
             }
 
             // it exists.  If it' an array, add to that array.  If it's not, we replace.
-
-            // get the property path
-            var pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualPathToProperty);
-
+        
             // is the path an array (but not a string (= char[]))?  In this case,
             // the path must end with "/position" or "/-", which we already determined before.
-
-
+            
             if (appendList || positionAsInteger > -1)
             {
 
@@ -249,18 +250,19 @@ namespace Marvin.JsonPatch.Adapters
                     operation.from.IndexOf('/' + positionAsInteger.ToString()));
             }
 
+            var fromProperty = PropertyHelpers
+                .FindProperty(objectToApplyTo, actualFromProperty);
+
 
             // does property at from exist?
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualFromProperty)))
+            if (fromProperty == null)
             {
                 throw new JsonPatchException<T>(operation,
                     string.Format("Patch failed: property at location from: {0} does not exist", operation.from),
                     objectToApplyTo);
             }
 
-            // get the property path
-            var fromProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualFromProperty);
-
+           
             // is the path an array (but not a string (= char[]))?  In this case,
             // the path must end with "/position" or "/-", which we already determined before.
 
@@ -365,10 +367,12 @@ namespace Marvin.JsonPatch.Adapters
                         path.IndexOf('/' + positionAsInteger.ToString()));
                 }
             }
-
-
+            
+            var pathProperty = PropertyHelpers
+                .FindProperty(objectToApplyTo, actualPathToProperty);
+            
             // does the target location exist?
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualPathToProperty)))
+            if (pathProperty == null)
             {
                 throw new JsonPatchException<T>(operationToReport,
                     string.Format("Patch failed: property at location path: {0} does not exist", path),
@@ -378,9 +382,7 @@ namespace Marvin.JsonPatch.Adapters
             // get the property, and remove it - in this case, for DTO's, that means setting
             // it to null or its default value; in case of an array, remove at provided index
             // or at the end.
-
-            var pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualPathToProperty);
-
+            
 
             if (removeFromList || positionAsInteger > -1)
             {
@@ -505,9 +507,11 @@ namespace Marvin.JsonPatch.Adapters
                     operation.path.IndexOf('/' + positionInPathAsInteger.ToString()));
             }
 
+            var pathProperty = PropertyHelpers
+                .FindProperty(objectToApplyTo, actualPathProperty);
 
             // does property at path exist?
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualPathProperty)))
+            if (pathProperty == null)
             {
                 throw new JsonPatchException<T>(operation,
                     string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
@@ -515,7 +519,7 @@ namespace Marvin.JsonPatch.Adapters
             }
 
             // get the property path
-            var pathProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualPathProperty);
+         
             Type typeOfFinalPropertyAtPathLocation;
 
             // is the path an array (but not a string (= char[]))?  In this case,
@@ -646,16 +650,18 @@ namespace Marvin.JsonPatch.Adapters
             }
 
 
+            PropertyInfo fromProperty = PropertyHelpers
+                .FindProperty(objectToApplyTo, actualFromProperty);
+
             // does property at from exist?
-            if (!(PropertyHelpers.CheckIfPropertyExists(objectToApplyTo, actualFromProperty)))
+            if (fromProperty == null)
             {
                 throw new JsonPatchException<T>(operation,
                     string.Format("Patch failed: property at location from: {0} does not exist", operation.from),
                     objectToApplyTo);
             }
 
-            // get the property path
-            PropertyInfo fromProperty = PropertyHelpers.FindProperty(objectToApplyTo, actualFromProperty);
+            // get the property path          
 
             // is the path an array (but not a string (= char[]))?  In this case,
             // the path must end with "/position" or "/-", which we already determined before.
