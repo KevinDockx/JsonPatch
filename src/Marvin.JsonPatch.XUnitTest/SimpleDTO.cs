@@ -14,5 +14,7 @@ namespace Marvin.JsonPatch.XUnitTest
         public double DoubleValue { get; set; }
 
         public float FloatValue { get; set; }
+
+        public Guid GuidValue { get; set; }
     }
 }

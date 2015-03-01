@@ -154,8 +154,9 @@ namespace Marvin.JsonPatch.Adapters
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
 
-                    // check if the value can be cast to that type
-                    if (!(PropertyHelpers.CheckIfValueCanBeCast(genericTypeOfArray, value)))
+                    var conversionResult = PropertyHelpers.ConvertToActualType(genericTypeOfArray, value);
+
+                    if (!conversionResult.CanBeConverted)
                     {
                         throw new JsonPatchException<T>(operationToReport,
                           string.Format("Patch failed: provided value is invalid for array property type at location path: {0}",
@@ -163,19 +164,18 @@ namespace Marvin.JsonPatch.Adapters
                           objectToApplyTo);
                     }
 
-
                     // get value (it can be cast, we just checked that)
                     var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathToProperty) as IList;
 
                     if (appendList)
                     {
-                        array.Add(value);
+                        array.Add(conversionResult.ConvertedInstance);
                     }
                     else
                     {
                         if (positionAsInteger < array.Count)
                         {
-                            array.Insert(positionAsInteger, value);
+                            array.Insert(positionAsInteger, conversionResult.ConvertedInstance);
                         }
                         else
                         {
@@ -185,6 +185,7 @@ namespace Marvin.JsonPatch.Adapters
                        objectToApplyTo);
                         }
                     }
+                     
 
                 }
                 else
@@ -197,16 +198,22 @@ namespace Marvin.JsonPatch.Adapters
             }
             else
             {
-                if (!(PropertyHelpers.CheckIfValueCanBeCast(pathProperty.PropertyType, value)))
+                var conversionResultTuple = PropertyHelpers.ConvertToActualType(pathProperty.PropertyType, value);
+
+                // conversion successful
+                if (conversionResultTuple.CanBeConverted)
+                {
+                    PropertyHelpers.SetValue(pathProperty, objectToApplyTo, actualPathToProperty,
+                        conversionResultTuple.ConvertedInstance);
+                }
+                else
                 {
                     throw new JsonPatchException<T>(operationToReport,
-                      string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
-                      path),
-                      objectToApplyTo);
+                    string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
+                    path),
+                    objectToApplyTo);
                 }
-
-                // set the new value.  Include the path, as it might be a property on a nested property
-                PropertyHelpers.SetValue(pathProperty, objectToApplyTo, actualPathToProperty, value);
+                 
             }
         }
 
@@ -567,16 +574,22 @@ namespace Marvin.JsonPatch.Adapters
 
 
 
-            if (!(PropertyHelpers.CheckIfValueCanBeCast(typeOfFinalPropertyAtPathLocation, operation.value)))
+            var conversionResultTuple = PropertyHelpers.ConvertToActualType(typeOfFinalPropertyAtPathLocation, operation.value);
+
+            // conversion successful
+            if (conversionResultTuple.CanBeConverted)
+            {
+                // COMPARE - TODO
+            }
+            else
             {
                 throw new JsonPatchException<T>(operation,
-                  string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
-                  operation.path),
-                  objectToApplyTo);
+                string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
+                operation.path),
+                objectToApplyTo);
             }
 
-
-            // COMPARE - TODO
+             
 
         }
 

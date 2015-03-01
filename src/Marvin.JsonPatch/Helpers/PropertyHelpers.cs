@@ -5,6 +5,7 @@
 //
 // Enjoy :-)
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -18,42 +19,42 @@ namespace Marvin.JsonPatch.Helpers
     internal static class PropertyHelpers
     {
 
-        public static bool SetValue(PropertyInfo propertyToSet, object targetObject, string pathToProperty, object value)
-        {
-            // it is possible the path refers to a nested property.  In that case, we need to 
-            // set on a different target object: the nested object.
+        //public static bool SetValue(PropertyInfo propertyToSet, object targetObject, string pathToProperty, object value)
+        //{
+        //    // it is possible the path refers to a nested property.  In that case, we need to 
+        //    // set on a different target object: the nested object.
 
 
-            var splitPath = pathToProperty.Split('/');
+        //    var splitPath = pathToProperty.Split('/');
 
-            // skip the first one if it's empty
-            var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
+        //    // skip the first one if it's empty
+        //    var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
 
-            for (int i = startIndex; i < splitPath.Length - 1; i++)
-            {
-                var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
-                    , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                targetObject = propertyInfoToGet.GetValue(targetObject, null);
-            }
-
-
-            if (value == null)
-            {
-                // then, set it.
-                propertyToSet.SetValue(targetObject, value, null);
-            }
-            else
-            {
-                var type = propertyToSet.PropertyType;
-                // first, cast the value to the expected property type. 
-                var valueToSet = Convert.ChangeType(value, type);
-                // then, set it.
-                propertyToSet.SetValue(targetObject, valueToSet, null);
-            }
+        //    for (int i = startIndex; i < splitPath.Length - 1; i++)
+        //    {
+        //        var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
+        //            , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+        //        targetObject = propertyInfoToGet.GetValue(targetObject, null);
+        //    }
 
 
-            return true;
-        }
+        //    if (value == null)
+        //    {
+        //        // then, set it.
+        //        propertyToSet.SetValue(targetObject, value, null);
+        //    }
+        //    else
+        //    {
+        //        var type = propertyToSet.PropertyType;
+        //        // first, cast the value to the expected property type. 
+        //        var valueToSet = Convert.ChangeType(value, type);
+        //        // then, set it.
+        //        propertyToSet.SetValue(targetObject, valueToSet, null);
+        //    }
+
+
+        //    return true;
+        //}
 
         public static object GetValue(PropertyInfo propertyToGet, object targetObject, string pathToProperty)
         {
@@ -77,8 +78,31 @@ namespace Marvin.JsonPatch.Helpers
         }
 
 
-     
 
+
+        public static bool SetValue(PropertyInfo propertyToSet, object targetObject, string pathToProperty, object value)
+        {
+            // it is possible the path refers to a nested property.  In that case, we need to 
+            // set on a different target object: the nested object.
+
+
+            var splitPath = pathToProperty.Split('/');
+
+            // skip the first one if it's empty
+            var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
+
+            for (int i = startIndex; i < splitPath.Length - 1; i++)
+            {
+                var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
+                    , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                targetObject = propertyInfoToGet.GetValue(targetObject, null);
+            }
+
+
+            propertyToSet.SetValue(targetObject, value, null);
+ 
+            return true;
+        }
 
 
         public static PropertyInfo FindProperty(object targetObject, string propertyPath)
@@ -114,16 +138,16 @@ namespace Marvin.JsonPatch.Helpers
         } 
 
 
-        internal static bool CheckIfValueCanBeCast(Type propertyType, object value)
+        internal static ConversionResult ConvertToActualType(Type propertyType, object value)
         {
             try
             {
-                Convert.ChangeType(value, propertyType);
-                return true;
+                var o = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value), propertyType);
+                return new ConversionResult(true, o);                 
             }
             catch (Exception)
             {
-                return false;
+                return new ConversionResult(false, null);
             }
         }
 
@@ -158,7 +182,7 @@ namespace Marvin.JsonPatch.Helpers
             return -1;
 
         }
-
+        
 
         private static PropertyInfo GetPropertyInfo(object targetObject, string propertyName,
         BindingFlags bindingFlags)
