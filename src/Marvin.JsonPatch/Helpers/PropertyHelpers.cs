@@ -191,44 +191,6 @@ namespace Marvin.JsonPatch.Helpers
         }
 
 
-        //public static bool CheckIfPropertyExists(object targetObject, string propertyPath)
-        //{
-        //    try
-        //    {
-
-        //        var splitPath = propertyPath.Split('/');
-
-        //        // skip the first one if it's empty
-        //        var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
-
-        //        for (int i = startIndex; i < splitPath.Length - 1; i++)
-        //        {
-        //            var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
-        //                , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-        //            targetObject = propertyInfoToGet.GetValue(targetObject, null);
-        //        }
-
-        //        // for dynamic objects
-        //        if (targetObject is IDynamicMetaObjectProvider)
-        //        {
-        //            var target = targetObject as IDynamicMetaObjectProvider;
-        //            var propList = target.GetMetaObject(Expression.Constant(target)).GetDynamicMemberNames();
-        //            return propList.Contains(splitPath.Last());
-        //        }
-        //        else
-        //        {
-        //            var propertyToCheck = targetObject.GetType().GetProperty(splitPath.Last(),
-        //                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
-        //            return propertyToCheck != null;
-        //        }
-
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return false;
-        //    }
-        //}
 
     }
 }
