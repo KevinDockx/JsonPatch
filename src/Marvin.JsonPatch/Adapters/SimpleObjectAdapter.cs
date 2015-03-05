@@ -173,7 +173,9 @@ namespace Marvin.JsonPatch.Adapters
                     }
                     else
                     {
-                        if (positionAsInteger < array.Count)
+                        // specified index must not be greater than the amount of items in the
+                        // array
+                        if (positionAsInteger <= array.Count)
                         {
                             array.Insert(positionAsInteger, conversionResult.ConvertedInstance);
                         }
@@ -420,7 +422,7 @@ namespace Marvin.JsonPatch.Adapters
                         else
                         {
                             throw new JsonPatchException<T>(operationToReport,
-                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
+                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position doesn't exist in array",
                        path),
                        objectToApplyTo);
                         }
