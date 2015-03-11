@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Marvin.JsonPatch
 {
-    public interface IJsonPatchDocument
+    internal interface IJsonPatchDocument
     {
         List<Operation> GetOperations();
     }
