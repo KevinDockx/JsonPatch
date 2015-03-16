@@ -17,6 +17,8 @@ namespace Marvin.JsonPatch.Exceptions
     {
         public new Exception InnerException { get; internal set; }
 
+        public int StatusCode { get; internal set; }
+
         public object AffectedObject { get; private set; }
 
         private string _message = "";
@@ -39,7 +41,14 @@ namespace Marvin.JsonPatch.Exceptions
             _message = message;
             InnerException = innerException;
         }
-     
+
+
+        public JsonPatchException(string message, Exception innerException, int statusCode)
+            : this(message, innerException)
+        {
+            StatusCode = statusCode;
+        }
+
     }
 
 

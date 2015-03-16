@@ -34,8 +34,15 @@ namespace Marvin.JsonPatch.Exceptions
             AffectedObject = affectedObject;
         }
 
-        public JsonPatchException(Operation<T> operation, string message, T affectedObject, Exception innerException)
+        public JsonPatchException(Operation<T> operation, string message, T affectedObject, int statusCode)
             : this(operation, message, affectedObject)
+        {
+            StatusCode = statusCode;
+        }
+
+        public JsonPatchException(Operation<T> operation, string message, T affectedObject,
+            int statusCode, Exception innerException)
+            : this(operation, message, affectedObject, statusCode)
         {
             InnerException = innerException;
         }
