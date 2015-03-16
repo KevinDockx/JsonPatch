@@ -7,7 +7,7 @@ using System.Text;
 namespace Marvin.JsonPatch.Exceptions
 {
 
-    public class JsonPatchException<T> : JsonPatchException where T : class
+    public class JsonPatchException<T> : JsonPatchExceptionBase where T : class
     {
         public Operation<T> FailedOperation { get; private set; }
         public new T AffectedObject { get; private set; }

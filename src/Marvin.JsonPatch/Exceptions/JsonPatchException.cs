@@ -1,25 +1,16 @@
-﻿// Kevin Dockx
-//
-// Any comments, input: @KevinDockx
-// Any issues, requests: https://github.com/KevinDockx/JsonPatch
-//
-// Enjoy :-)
-
-using Marvin.JsonPatch.Operations;
+﻿using Marvin.JsonPatch.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Marvin.JsonPatch.Exceptions
 {
-    public class JsonPatchException : Exception
+    public class JsonPatchException: JsonPatchExceptionBase 
     {
-        public new Exception InnerException { get; internal set; }
-
-        public int StatusCode { get; internal set; }
-
-        public object AffectedObject { get; private set; }
+        public Operation  FailedOperation { get; private set; }
+        public new object AffectedObject { get; private set; }
 
         private string _message = "";
         public override string Message
@@ -36,20 +27,24 @@ namespace Marvin.JsonPatch.Exceptions
 
         }
 
-        public JsonPatchException(string message, Exception innerException)
+        public JsonPatchException(Operation operation, string message, object affectedObject)
         {
+            FailedOperation = operation;
             _message = message;
-            InnerException = innerException;
+            AffectedObject = affectedObject;
         }
 
-
-        public JsonPatchException(string message, Exception innerException, int statusCode)
-            : this(message, innerException)
+        public JsonPatchException(Operation operation, string message, object affectedObject, int statusCode)
+            : this(operation, message, affectedObject)
         {
             StatusCode = statusCode;
         }
 
+        public JsonPatchException(Operation operation, string message, object affectedObject,
+            int statusCode, Exception innerException)
+            : this(operation, message, affectedObject, statusCode)
+        {
+            InnerException = innerException;
+        }
     }
-
-
 }

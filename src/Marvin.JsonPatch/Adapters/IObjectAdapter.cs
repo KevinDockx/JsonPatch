@@ -20,15 +20,5 @@ namespace Marvin.JsonPatch.Adapters
         void Test(Marvin.JsonPatch.Operations.Operation<T> operation, T objectToApplyTo);
     }
 
-    // TO BE IMPLEMENTED
-    //public interface IDynamicObjectAdapter<T> 
-    //    where T : class
-    //{
-    //    void Add(Marvin.JsonPatch.Operations.Operation operation, T objectToApplyTo);
-    //    void Copy(Marvin.JsonPatch.Operations.Operation operation, T objectToApplyTo);
-    //    void Move(Marvin.JsonPatch.Operations.Operation operation, T objectToApplyTo);
-    //    void Remove(Marvin.JsonPatch.Operations.Operation operation, T objectToApplyTo);
-    //    void Replace(Marvin.JsonPatch.Operations.Operation operation, T objectToApplyTo);
-    //    void Test(Marvin.JsonPatch.Operations.Operation operation, T objectToApplyTo);
-    //}
+   
 }

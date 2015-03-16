@@ -76,8 +76,16 @@ namespace Marvin.JsonPatch
             return this;
         }
 
+
+        public JsonPatchDocument<T> Add<TProp>(string path, TProp value, int position)
+        {
+            Operations.Add(new Operation<T>("add", path.ToLower() + "/" + position, null, value));
+            return this;
+        }
+
+
          /// <summary>
-         /// At value at end of list
+         /// Add value at end of list
          /// </summary>
         /// <typeparam name="TProp">value type</typeparam>
         /// <param name="path">path</param>

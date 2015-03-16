@@ -48,6 +48,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DynamicObjectAdapterTests.cs" />
     <Compile Include="ErrorHandlingTests.cs" />
     <Compile Include="NestedDTO.cs" />
     <Compile Include="NestedObjectTests.cs" />
@@ -60,6 +61,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Marvin.JsonPatch.Dynamic\Marvin.JsonPatch.Dynamic.csproj">
+      <Project>{e176bdcd-bce2-4bf9-9bb7-631c8244dbca}</Project>
+      <Name>Marvin.JsonPatch.Dynamic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Marvin.JsonPatch\Marvin.JsonPatch.csproj">
       <Project>{82226e0c-a7b3-4bb7-8df5-7d53ec66b47a}</Project>
       <Name>Marvin.JsonPatch</Name>
