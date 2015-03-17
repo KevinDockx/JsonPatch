@@ -8,7 +8,7 @@ namespace Marvin.JsonPatch.Adapters
     
     public interface IDynamicObjectAdapter
     {
-        void Add(Marvin.JsonPatch.Operations.DynamicOperation operation, dynamic objectToApplyTo);
+        void Add(Marvin.JsonPatch.Operations.Operation operation, dynamic objectToApplyTo);
         //void Copy(Marvin.JsonPatch.Operations.Operation operation, dynamic objectToApplyTo);
         //void Move(Marvin.JsonPatch.Operations.Operation operation, dynamic objectToApplyTo);
         //void Remove(Marvin.JsonPatch.Operations.Operation operation, dynamic objectToApplyTo);

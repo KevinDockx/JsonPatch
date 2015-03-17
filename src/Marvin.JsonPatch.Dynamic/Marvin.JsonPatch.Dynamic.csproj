@@ -43,8 +43,9 @@
   <ItemGroup>
     <Compile Include="Adapters\DynamicObjectAdapter.cs" />
     <Compile Include="Adapters\IDynamicObjectAdapter.cs" />
+    <Compile Include="Exceptions\JsonPatchException.cs" />
     <Compile Include="JsonPatchDocument.cs" />
-    <Compile Include="Operations\DynamicOperation.cs" />
+    <Compile Include="Operations\Operation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

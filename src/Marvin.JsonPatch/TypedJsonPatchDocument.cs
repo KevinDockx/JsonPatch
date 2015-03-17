@@ -405,7 +405,7 @@ namespace Marvin.JsonPatch
 
         public void ApplyTo(T objectToApplyTo)
         {
-            ApplyTo(objectToApplyTo, new SimpleObjectAdapter<T>());
+            ApplyTo(objectToApplyTo, new ObjectAdapter<T>());
         }
 
 
@@ -423,15 +423,15 @@ namespace Marvin.JsonPatch
 
 
 
-        public List<Operation> GetOperations()
+        public List<OperationBase> GetOperations()
         {
-            var allOps = new List<Operation>();
+            var allOps = new List<OperationBase>();
 
             if (Operations != null)
             {
                 foreach (var op in Operations)
                 {
-                    var untypedOp = new Operation();
+                    var untypedOp = new OperationBase();
 
                     untypedOp.op = op.op;
                     untypedOp.value = op.value;

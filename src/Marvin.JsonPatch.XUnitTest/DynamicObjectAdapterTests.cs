@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Marvin.JsonPatch.Dynamic;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,22 +16,23 @@ namespace Marvin.JsonPatch.XUnitTest
         [Fact]
         public void AddToListAtEndWithSerialization()
         {
-            var doc = new
+            dynamic doc = new
             {
-                IntegerList = new List<int>() { 1, 2, 3 }
+                Test = 1
             };
 
             // create patch
-            JsonPatchDocument<dynamic> patchDoc = new JsonPatchDocument<dynamic>();
-            patchDoc.Add<int>("IntegerList", 4, 1);
+            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            patchDoc.Add<int>("NewInt", 1);
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
-            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<dynamic>>(serialized);
+            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
 
 
             deserialized.ApplyTo(doc);
 
-            Assert.Equal(new List<int>() { 1, 2, 3, 4 }, doc.IntegerList);
+            Assert.Equal(1, doc.NewInt);
+            Assert.Equal(1, doc.Test);
 
 
         }

@@ -15,9 +15,9 @@ namespace Marvin.JsonPatch.Adapters
     {
 
          
-        public void Add(DynamicOperation operation, dynamic objectToApplyTo)
+        public void Add(Operation operation, dynamic objectToApplyTo)
         {
-            Add(operation.path, operation.value, objectToApplyTo, operation);
+           Add(operation.path, operation.value, objectToApplyTo, operation);
         }
 
 
@@ -25,19 +25,27 @@ namespace Marvin.JsonPatch.Adapters
         /// Add is used by various operations (eg: add, copy, ...), yet through different operations;
         /// This method allows code reuse yet reporting the correct operation on error
         /// </summary>
-        private void Add(string path, object value, dynamic objectToApplyTo, DynamicOperation operationToReport)
+        private void Add(string path, object value, dynamic objectToApplyTo, Operation operationToReport)
         {
-            // add, in this implementation, does not just "add" properties - that's
-            // technically impossible;  It can however be used to add items to arrays,
-            // or to replace values.
-
+           
             // first up: if the path ends in a numeric value, we're inserting in a list and
             // that value represents the position; if the path ends in "-", we're appending
             //// to the list.
+            //http://stackoverflow.com/questions/2594527/how-do-i-iterate-over-the-properties-of-an-anonymous-object-in-c?lq=1
+            //http://blog.jorgef.net/2011/06/converting-any-object-to-dynamic.html
+            //http://stackoverflow.com/questions/10241776/cast-expandoobject-to-anonymous-type
 
-            //var appendList = false;
-            //var positionAsInteger = -1;
-            //var actualPathToProperty = path;
+            // object to apply to can be an anonymous type, expando, dynamicob, ... we cannot manipulate
+            // all of those (anon = read only, for example).  So: instead of manipulating the object, we create a new one.
+
+
+            var appendList = false;
+            var positionAsInteger = -1;
+            var actualPathToProperty = path;
+
+            var propertyDictionary = (IDictionary<String, Object>)(objectToApplyTo);
+            propertyDictionary.Add(path, value);
+             
 
             //if (path.EndsWith("/-"))
             //{
@@ -54,10 +62,10 @@ namespace Marvin.JsonPatch.Adapters
             //            path.IndexOf('/' + positionAsInteger.ToString()));
             //    }
             //}
-            
+
             //var pathProperty = PropertyHelpers
             //    .FindProperty(objectToApplyTo, actualPathToProperty);
-            
+
             //// does property at path exist?
             //if (pathProperty == null)
             //{

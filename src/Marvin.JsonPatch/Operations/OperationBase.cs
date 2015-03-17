@@ -23,7 +23,8 @@ namespace Marvin.JsonPatch.Operations
                 return (OperationType)Enum.Parse(typeof(OperationType), op, true);
             }
         }
-        
+        [JsonProperty("value")]
+        public object value { get; set; }
 
         [JsonProperty("path")]
         public string path { get; set; }
@@ -48,12 +49,28 @@ namespace Marvin.JsonPatch.Operations
         }
 
      
+         public OperationBase(string op, string path, string from, object value)
+             : this(op, path, from)
+         {
+             this.value = value;
+         }
+ 
 
         public bool ShouldSerializefrom()
         {
             return (OperationType == Operations.OperationType.Move
                 || OperationType == OperationType.Copy);
         }
+
+
+
+        public bool ShouldSerializevalue()
+        {
+            return (OperationType == Operations.OperationType.Add
+                || OperationType == OperationType.Replace
+                || OperationType == OperationType.Test);
+        }
+
     }
 
 

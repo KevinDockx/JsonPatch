@@ -20,7 +20,7 @@ namespace Marvin.JsonPatch.Operations
 
 
 
-    public class Operation<T> : Operation where T : class
+    public class Operation<T> : OperationBase where T : class
     {
 
   
@@ -72,13 +72,6 @@ namespace Marvin.JsonPatch.Operations
 
 
 
-
-        public bool ShouldSerializevalue()
-        {
-            return (OperationType == Operations.OperationType.Add
-                || OperationType == OperationType.Replace
-                || OperationType == OperationType.Test);
-        }
 
 
     }

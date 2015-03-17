@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Marvin.JsonPatch.Exceptions
 {
-    public class JsonPatchException: JsonPatchExceptionBase 
+
+    public class JsonPatchException<T> : JsonPatchExceptionBase where T : class
     {
-        public Operation  FailedOperation { get; private set; }
-        public new object AffectedObject { get; private set; }
+        public Operation<T> FailedOperation { get; private set; }
+        public new T AffectedObject { get; private set; }
 
         private string _message = "";
         public override string Message
@@ -27,20 +27,20 @@ namespace Marvin.JsonPatch.Exceptions
 
         }
 
-        public JsonPatchException(Operation operation, string message, object affectedObject)
+        public JsonPatchException(Operation<T> operation, string message, T affectedObject)
         {
             FailedOperation = operation;
             _message = message;
             AffectedObject = affectedObject;
         }
 
-        public JsonPatchException(Operation operation, string message, object affectedObject, int statusCode)
+        public JsonPatchException(Operation<T> operation, string message, T affectedObject, int statusCode)
             : this(operation, message, affectedObject)
         {
             StatusCode = statusCode;
         }
 
-        public JsonPatchException(Operation operation, string message, object affectedObject,
+        public JsonPatchException(Operation<T> operation, string message, T affectedObject,
             int statusCode, Exception innerException)
             : this(operation, message, affectedObject, statusCode)
         {
