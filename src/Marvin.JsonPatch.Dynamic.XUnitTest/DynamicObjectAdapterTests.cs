@@ -7,16 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.Dynamic.XUnitTest
 {
     public class DynamicObjectAdapterTests
     {
 
 
         [Fact]
-        public void AddToListAtEndWithSerialization()
+        public void AddNewProperty()
         {
-            dynamic doc = new
+
+            dynamic obj = new
             {
                 Test = 1
             };
@@ -29,10 +30,10 @@ namespace Marvin.JsonPatch.XUnitTest
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument>(serialized);
 
 
-            deserialized.ApplyTo(doc);
+            var newObject = deserialized.CreateFrom(obj);
 
-            Assert.Equal(1, doc.NewInt);
-            Assert.Equal(1, doc.Test);
+            Assert.Equal(1, newObject.newint);
+            Assert.Equal(1, newObject.Test);
 
 
         }

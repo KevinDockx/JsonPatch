@@ -1,5 +1,6 @@
 ﻿using Marvin.JsonPatch.Adapters;
 using Marvin.JsonPatch.Operations;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -35,21 +36,35 @@ namespace Marvin.JsonPatch.Dynamic
         }
 
 
-        public void ApplyTo(dynamic objectToApplyTo)
+        /// <summary>
+        /// Apply the patch document, and return a new ExpandoObject (dynamic) with the change applied.
+        /// </summary>
+        /// <param name="objectToCreateNewObjectFrom">The object to start from</param>
+        public dynamic CreateFrom(dynamic objectToCreateNewObjectFrom)
         {
-            ApplyTo(objectToApplyTo, new DynamicObjectAdapter());
+            return CreateFrom(objectToCreateNewObjectFrom, new DynamicObjectAdapter());
         }
 
-
-        public void ApplyTo(dynamic objectToApplyTo, IDynamicObjectAdapter adapter)
+        /// <summary>
+        /// Apply the patch document, passing in a custom IObjectAdapter<typeparamref name=">"/>, 
+        /// and return a new ExpandoObject (dynamic) with the change applied.
+        /// </summary>
+        /// <param name="objectToCreateNewObjectFrom">The object to start from</param>
+        /// <param name="adapter">The IObjectAdapter instance to use</param>
+        /// <returns></returns>
+        public dynamic CreateFrom(dynamic objectToCreateNewObjectFrom, IDynamicObjectAdapter adapter)
         {
+
+            dynamic clonedObject = JsonConvert.DeserializeObject<ExpandoObject>
+                (JsonConvert.SerializeObject(objectToCreateNewObjectFrom));
+
             dynamic expandoObjectToApplyTo = new ExpandoObject();
             var propertyDictionary = (IDictionary<String, Object>)(expandoObjectToApplyTo);
-           
+
             foreach (PropertyInfo propertyInfo in
-                objectToApplyTo.GetType().GetProperties())
+                objectToCreateNewObjectFrom.GetType().GetProperties())
             {
-                propertyDictionary[propertyInfo.Name] = propertyInfo.GetValue(objectToApplyTo, null);
+                propertyDictionary[propertyInfo.Name] = propertyInfo.GetValue(objectToCreateNewObjectFrom, null);
             }
 
             // apply each operation in order
@@ -58,8 +73,12 @@ namespace Marvin.JsonPatch.Dynamic
                 op.Apply(expandoObjectToApplyTo, adapter);
             }
 
-            objectToApplyTo = expandoObjectToApplyTo;
+            return expandoObjectToApplyTo;
+
         }
+         
+
+         
 
     }
 }

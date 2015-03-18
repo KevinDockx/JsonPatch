@@ -402,16 +402,24 @@ namespace Marvin.JsonPatch
         //    return this;
         //}
 
-
+        /// <summary>
+        /// Apply the patch document.  This method will change the passed-in object.
+        /// </summary>
+        /// <param name="objectToApplyTo">The object to apply the JsonPatchDocument to</param>
         public void ApplyTo(T objectToApplyTo)
         {
             ApplyTo(objectToApplyTo, new ObjectAdapter<T>());
         }
 
 
+        /// <summary>
+        /// Apply the patch document, passing in a custom IObjectAdapter<typeparamref name=">"/>. 
+        /// This method will change the passed-in object.
+        /// </summary>
+        /// <param name="objectToApplyTo">The object to apply the JsonPatchDocument to</param>
+        /// <param name="adapter">The IObjectAdapter instance to use</param>
         public void ApplyTo(T objectToApplyTo, IObjectAdapter<T> adapter)
         {
-
             // apply each operation in order
             foreach (var op in Operations)
             {
@@ -420,7 +428,36 @@ namespace Marvin.JsonPatch
 
         }
 
+        /// <summary>
+        /// Apply the patch document, and return a new object instance with the change applied.
+        /// </summary>
+        /// <param name="objectToCreateNewObjectFrom">The object to start from</param>
+        public T CreateFrom(T objectToCreateNewObjectFrom) 
+        {
+            return CreateFrom(objectToCreateNewObjectFrom, new ObjectAdapter<T>());
+        }
+    
+        /// <summary>
+        /// Apply the patch document, passing in a custom IObjectAdapter<typeparamref name=">"/>, 
+        /// and return a new object instance with the change applied.
+        /// </summary>
+        /// <param name="objectToCreateNewObjectFrom">The object to start from</param>
+        /// <param name="adapter">The IObjectAdapter instance to use</param>
+        /// <returns></returns>
+        public T CreateFrom(T objectToCreateNewObjectFrom, IObjectAdapter<T> adapter) 
+        {
+            // create a clone of the current object, using Json.NET
+         
+            T clonedObject = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(objectToCreateNewObjectFrom));
+                        
+            // apply each operation in order
+            foreach (var op in Operations)
+            {
+                op.Apply(clonedObject, adapter);
+            }
 
+            return clonedObject;
+        }
 
 
         public List<OperationBase> GetOperations()
