@@ -121,7 +121,7 @@ namespace Marvin.JsonPatch.Adapters
                 if (positionAsInteger > -1)
                 {
                     actualPathToProperty = path.Substring(0,
-                        path.IndexOf('/' + positionAsInteger.ToString()));
+                        path.LastIndexOf('/' + positionAsInteger.ToString()));
                 }
             }
 
@@ -414,6 +414,15 @@ namespace Marvin.JsonPatch.Adapters
 
                     if (removeFromList)
                     {
+                        if (array.Count > 0)
+                        {
+                            // if the array is empty, we should throw an error
+                            throw new JsonPatchException<T>(operationToReport,
+                              string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
+                              path),
+                              objectToApplyTo, 422);
+                        }
+
                         array.RemoveAt(array.Count - 1);
                     }
                     else

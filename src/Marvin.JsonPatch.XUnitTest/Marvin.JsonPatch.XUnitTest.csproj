@@ -48,7 +48,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ErrorHandlingTests.cs" />
     <Compile Include="NestedDTO.cs" />
     <Compile Include="NestedObjectTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

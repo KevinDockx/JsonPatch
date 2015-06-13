@@ -81,9 +81,25 @@ namespace Marvin.JsonPatch.Helpers
 
                 for (int i = startIndex; i < splitPath.Length - 1; i++)
                 {
-                    var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
+                    // if this part of the path is numeric, we're looking for a position
+                    // in an array.
+
+                    long numericPath = -1;
+                    if (long.TryParse(splitPath[i], out numericPath))
+                    {
+                        // TODO TODO
+                        // now, get the generic type of the enumerable
+                        var genericTypeOfArray = GetEnumerableType(targetObject.GetType());
+                        GetValue()
+                        var conversionResult = ConvertToActualType(genericTypeOfArray, value);
+
+                    }
+                    else
+                    {
+                        var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
                         , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                    targetObject = propertyInfoToGet.GetValue(targetObject, null);
+                         targetObject = propertyInfoToGet.GetValue(targetObject, null);
+                    } 
                 }
 
 
