@@ -13,7 +13,7 @@ using System.Text;
 
 namespace Marvin.JsonPatch.Operations
 {
-    public class OperationBase
+    public class Operation
     {
         [JsonIgnore]
         public OperationType OperationType
@@ -36,12 +36,12 @@ namespace Marvin.JsonPatch.Operations
         public string from { get; set; }
 
 
-        public OperationBase()
+        public Operation()
         {
 
         }
 
-        public OperationBase(string op, string path, string from)
+        public Operation(string op, string path, string from)
         {
             this.op = op;
             this.path = path;
@@ -49,7 +49,7 @@ namespace Marvin.JsonPatch.Operations
         }
 
      
-         public OperationBase(string op, string path, string from, object value)
+         public Operation(string op, string path, string from, object value)
              : this(op, path, from)
          {
              this.value = value;

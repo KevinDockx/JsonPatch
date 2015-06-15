@@ -626,7 +626,7 @@ namespace Marvin.JsonPatch.XUnitTest
         {
                 string serialized = "{\"Operations\": [{ \"op\": \"replace\", \"path\": \"/title\", \"value\": \"New Title\"}]}";
            
-                Assert.Throws<JsonPatchExceptionBase>(() =>
+                Assert.Throws<JsonPatchException>(() =>
                 {
                     var deserialized
                         = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);

@@ -13,13 +13,13 @@ using System.Text;
 
 namespace Marvin.JsonPatch.Exceptions
 {
-    public class JsonPatchExceptionBase : Exception
+    public abstract class JsonPatchExceptionBase : Exception
     {
         public new Exception InnerException { get; internal set; }
 
         public int StatusCode { get; internal set; }
 
-        public object AffectedObject { get; private set; }
+        public object AffectedObject { get; internal set; }
 
         private string _message = "";
         public override string Message
@@ -35,6 +35,12 @@ namespace Marvin.JsonPatch.Exceptions
         {
 
         }
+
+        public JsonPatchExceptionBase(string message, object affectedObject)
+        {
+            _message = message;
+            AffectedObject = affectedObject;
+         }
 
         public JsonPatchExceptionBase(string message, Exception innerException)
         {

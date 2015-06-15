@@ -63,7 +63,7 @@ namespace Marvin.JsonPatch.Converters
             }
             catch (Exception ex)
             {
-                throw new JsonPatchExceptionBase("The JsonPatchDocument was malformed and could not be parsed.", ex, 400);
+                throw new JsonPatchException("The JsonPatchDocument was malformed and could not be parsed.", ex, 400);
             }
 
         }

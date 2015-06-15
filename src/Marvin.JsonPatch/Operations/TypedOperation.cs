@@ -20,9 +20,8 @@ namespace Marvin.JsonPatch.Operations
 
 
 
-    public class Operation<T> : OperationBase where T : class
-    {
-
+    public class Operation<T> : Operation where T : class
+    { 
   
         public Operation()
         {

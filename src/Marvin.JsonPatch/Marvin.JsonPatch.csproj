@@ -41,13 +41,13 @@
     <Compile Include="Adapters\IObjectAdapter.cs" />
     <Compile Include="Adapters\ObjectAdapter.cs" />
     <Compile Include="Converters\TypedJsonPatchDocumentConverter.cs" />
-    <Compile Include="Exceptions\JsonPatchExceptionBase.cs" />
     <Compile Include="Exceptions\JsonPatchException.cs" />
+    <Compile Include="Exceptions\JsonPatchExceptionBase.cs" />
+    <Compile Include="Exceptions\TypedJsonPatchException.cs" />
     <Compile Include="Helpers\ConversionResult.cs" />
     <Compile Include="Helpers\ExpressionHelpers.cs" />
     <Compile Include="Helpers\PropertyHelpers.cs" />
     <Compile Include="IJsonPatchDocument.cs" />
-    <Compile Include="Operations\Operation.cs" />
     <Compile Include="Operations\OperationBase.cs" />
     <Compile Include="Operations\OperationType.cs" />
     <Compile Include="Operations\TypedOperation.cs" />

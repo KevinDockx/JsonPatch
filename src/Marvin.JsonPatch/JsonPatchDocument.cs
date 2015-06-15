@@ -24,9 +24,7 @@ using System.Text;
 
 namespace Marvin.JsonPatch
 {
-
-
-
+     
 
     [JsonConverter(typeof(TypedJsonPatchDocumentConverter))]
     public class JsonPatchDocument<T>: IJsonPatchDocument where T:class 
@@ -385,22 +383,7 @@ namespace Marvin.JsonPatch
               , ExpressionHelpers.GetPath<T, TProp>(from).ToLower()));
             return this;
         }
-
-
-
-
-        ///// <summary>
-        ///// Tests that a value at the target location is equal to a specified value.  
-        ///// </summary>
-        ///// <param name="path"></param>
-        ///// <param name="value"></param>
-        ///// <returns></returns>
-        //public JsonPatchDocument<T> Test<TProp>(Expression<Func<T, TProp>> path, TProp value)
-        //{
-        //    Operations.Add(new Operation<T>("test", ExpressionHelpers.GetPath<T, TProp>(path).ToLower()
-        //      , null, value));
-        //    return this;
-        //}
+         
 
         /// <summary>
         /// Apply the patch document.  This method will change the passed-in object.
@@ -463,15 +446,15 @@ namespace Marvin.JsonPatch
         // - original operations should not
         //   be editable through this.
         // - untyped ops are used when serializing
-        public List<OperationBase> GetOperations()
+        public List<Operation> GetOperations()
         {
-            var allOps = new List<OperationBase>();
+            var allOps = new List<Operation>();
 
             if (Operations != null)
             {
                 foreach (var op in Operations)
                 {
-                    var untypedOp = new OperationBase();
+                    var untypedOp = new Operation();
 
                     untypedOp.op = op.op;
                     untypedOp.value = op.value;
