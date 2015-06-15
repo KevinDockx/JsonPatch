@@ -1,10 +1,13 @@
 JSON Patch for .NET (Web API / clients)
 =======================================
 
-JSON Patch (JsonPatchDocument) RFC 6902 implementation for .NET to easily allow & apply partial REST-ful service (through Web API) updates from any client (portable class library).  This component is currently under development - check the issues to see what's still to be implemented.
-
+JSON Patch (JsonPatchDocument) RFC 6902 implementation for .NET to easily allow & apply partial REST-ful service (through Web API) updates from any client (portable class library).  
 
 NuGet package: https://www.nuget.org/packages/Marvin.JsonPatch
+
+This component supports staticly typed objects.  Dynamically typed objects are supported as well: have a look at Marvin.JsonPatch.Dynamic (https://github.com/KevinDockx/JsonPatch.Dynamic). 
+
+Important: if you're using ASP .NET 5 (currently in beta), you don't need this component - I've been working with Microsoft on integrating this into ASP .NET 5.  Have a look at http://blog.kevindockx.com/post/Partial-Updates-for-Your-RESTful-API-with-JsonPatch-in-the-new-ASP-NET-5.aspx for more information.  
 
 JSON Patch (https://tools.ietf.org/html/rfc6902) defines a JSON document structure for expressing a sequence of operations to apply to a JavaScript Object Notation (JSON) document; it is suitable for use with the HTTP PATCH method. The "application/json-patch+json" media type is used to identify such patch documents.
 
@@ -101,9 +104,7 @@ To create a JsonPatchDocument directly in JSON:
 }
 ```
 
-As the package is distributed as a Portable Class library, you can use it from (ASP) .NET (4+), Windows Phone (8.1), Windows Store apps (8+), ...
+As the package is distributed as a Portable Class library, you can use it from (ASP) .NET (4+), Windows Phone (8.1), Windows Store apps (8+), Xamarin, ...
 
-
-Please consider this an alpha version.  Not everything has been implemented (eg: ExpandoObject support), but the package is made with extensibility in mind.  
 
 Any and all comments, issues, ... are welcome. :-)
