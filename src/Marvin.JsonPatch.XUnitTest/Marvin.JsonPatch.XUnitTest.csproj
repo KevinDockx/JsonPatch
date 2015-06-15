@@ -49,11 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NestedDTO.cs" />
-    <Compile Include="NestedObjectTests.cs" />
+    <Compile Include="ObjectAdapterTestsOnNested.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleDTO.cs" />
     <Compile Include="SimpleDTOWithNestedDTO.cs" />
-    <Compile Include="SimpleObjectAdapterTests.cs" />
+    <Compile Include="ObjectAdapterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

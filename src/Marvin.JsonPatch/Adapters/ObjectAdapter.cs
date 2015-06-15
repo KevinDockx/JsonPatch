@@ -414,7 +414,7 @@ namespace Marvin.JsonPatch.Adapters
 
                     if (removeFromList)
                     {
-                        if (array.Count > 0)
+                        if (array.Count == 0)
                         {
                             // if the array is empty, we should throw an error
                             throw new JsonPatchException<T>(operationToReport,

@@ -459,7 +459,10 @@ namespace Marvin.JsonPatch
             return clonedObject;
         }
 
-
+        // return a copy, and ensure it's untyped
+        // - original operations should not
+        //   be editable through this.
+        // - untyped ops are used when serializing
         public List<OperationBase> GetOperations()
         {
             var allOps = new List<OperationBase>();

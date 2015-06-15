@@ -7,6 +7,7 @@
 
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -23,27 +24,57 @@ namespace Marvin.JsonPatch.Helpers
         public static object GetValue(PropertyInfo propertyToGet, object targetObject, string pathToProperty)
         {
             // it is possible the path refers to a nested property.  In that case, we need to 
-            // get from a different target object: the nested object.
+            // get from a different target object: the nested object. 
 
             var splitPath = pathToProperty.Split('/');
 
             // skip the first one if it's empty
             var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
 
+
             for (int i = startIndex; i < splitPath.Length - 1; i++)
             {
-                var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
+                // if the current part of the path is numeric, this means we're trying
+                // to get the propertyInfo of a specific object in an array.  To allow
+                // for this, the previous value (targetObject) must be an IEnumerable, and
+                // the position must exist.
+
+                int numericValue = -1;
+                if (int.TryParse(splitPath[i], out numericValue))
+                {
+                    var element = GetElementAtFromObject(targetObject, numericValue);
+                    if (element != null)
+                    {
+                        targetObject = element;
+                    }
+                    else
+                    {
+                        // will result in JsonPatchException in calling class, as expected
+                        return null;
+                    }
+
+                }
+                else
+                {
+                    var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
                     , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                targetObject = propertyInfoToGet.GetValue(targetObject, null);
+                    targetObject = propertyInfoToGet.GetValue(targetObject, null);
+                }
             }
+
+
+            //for (int i = startIndex; i < splitPath.Length - 1; i++)
+            //{
+            //    var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
+            //        , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+            //    targetObject = propertyInfoToGet.GetValue(targetObject, null);
+            //}
 
 
             return propertyToGet.GetValue(targetObject, null);
         }
-
-
-
-
+         
         public static bool SetValue(PropertyInfo propertyToSet, object targetObject, string pathToProperty, object value)
         {
             // it is possible the path refers to a nested property.  In that case, we need to 
@@ -51,16 +82,48 @@ namespace Marvin.JsonPatch.Helpers
 
 
             var splitPath = pathToProperty.Split('/');
-
+             
             // skip the first one if it's empty
             var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
 
             for (int i = startIndex; i < splitPath.Length - 1; i++)
             {
-                var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
+                // if the current part of the path is numeric, this means we're trying
+                // to get the propertyInfo of a specific object in an array.  To allow
+                // for this, the previous value (targetObject) must be an IEnumerable, and
+                // the position must exist.
+
+                int numericValue = -1;
+                if (int.TryParse(splitPath[i], out numericValue))
+                {
+                    var element = GetElementAtFromObject(targetObject, numericValue);
+                    if (element != null)
+                    {
+                        targetObject = element;
+                    }
+                    else
+                    {
+                        // will result in JsonPatchException in calling class, as expected
+                        return false;
+                    }
+
+                }
+                else
+                {
+                    var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
                     , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                targetObject = propertyInfoToGet.GetValue(targetObject, null);
+                    targetObject = propertyInfoToGet.GetValue(targetObject, null);
+                }
             }
+
+
+            //for (int i = startIndex; i < splitPath.Length - 1; i++)
+            //{
+            //    var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
+            //        , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+            //    targetObject = propertyInfoToGet.GetValue(targetObject, null);
+            //}
 
 
             propertyToSet.SetValue(targetObject, value, null);
@@ -81,17 +144,24 @@ namespace Marvin.JsonPatch.Helpers
 
                 for (int i = startIndex; i < splitPath.Length - 1; i++)
                 {
-                    // if this part of the path is numeric, we're looking for a position
-                    // in an array.
+                    // if the current part of the path is numeric, this means we're trying
+                    // to get the propertyInfo of a specific object in an array.  To allow
+                    // for this, the previous value (targetObject) must be an IEnumerable, and
+                    // the position must exist.
 
-                    long numericPath = -1;
-                    if (long.TryParse(splitPath[i], out numericPath))
+                    int numericValue = -1;
+                    if (int.TryParse(splitPath[i], out numericValue))
                     {
-                        // TODO TODO
-                        // now, get the generic type of the enumerable
-                        var genericTypeOfArray = GetEnumerableType(targetObject.GetType());
-                        GetValue()
-                        var conversionResult = ConvertToActualType(genericTypeOfArray, value);
+                        var element = GetElementAtFromObject(targetObject, numericValue);
+                        if (element != null)
+                        {
+                            targetObject = element;
+                        }
+                        else
+                        {
+                            // will result in JsonPatchException in calling class, as expected
+                            return null;
+                        }
 
                     }
                     else
@@ -117,6 +187,27 @@ namespace Marvin.JsonPatch.Helpers
             }
         }
 
+        private static object GetElementAtFromObject(object targetObject, int numericValue)
+        {
+
+            if (numericValue > -1)
+            {
+                // Check if the targetobject is an IEnumerable,
+                // and if the position is valid.
+                if (targetObject is IEnumerable)
+                {
+                    var indexable = ((IEnumerable)targetObject).Cast<object>();
+
+                    if (indexable.Count() >= numericValue)
+                    {
+                        return indexable.ElementAt(numericValue);
+                    }
+                    else { return null; }
+                }
+                else { return null; ; }
+            }
+            else { return null; }
+        }
 
         internal static ConversionResult ConvertToActualType(Type propertyType, object value)
         {

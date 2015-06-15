@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Marvin.JsonPatch.XUnitTest
 {
-    public class NestedObjectTests
+    public class ObjectAdapterTestsOnNested
     {
 
         [Fact]
