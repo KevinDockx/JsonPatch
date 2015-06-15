@@ -65,7 +65,7 @@ namespace Marvin.JsonPatch.Converters
             {
                 throw new JsonPatchException("The JsonPatchDocument was malformed and could not be parsed.", ex, 400);
             }
-
+             
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
