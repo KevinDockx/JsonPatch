@@ -19,7 +19,7 @@ using System.Text;
 
 namespace Marvin.JsonPatch.Adapters
 {
-    public class ObjectAdapter<T> : IObjectAdapter<T> where T : class
+    internal class ObjectAdapter<T> : IObjectAdapter<T> where T : class
     {
 
 
