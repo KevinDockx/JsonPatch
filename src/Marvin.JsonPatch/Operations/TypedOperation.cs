@@ -42,7 +42,7 @@ namespace Marvin.JsonPatch.Operations
 
 
 
-        public void Apply(T objectToApplyTo, IObjectAdapter<T> adapter)
+        internal void Apply(T objectToApplyTo, IObjectAdapter<T> adapter)
         {
             switch (OperationType)
             {
