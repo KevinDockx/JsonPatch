@@ -409,43 +409,9 @@ namespace Marvin.JsonPatch
                 op.Apply(objectToApplyTo, adapter);
             }
 
-        }
+        } 
 
-        /// <summary>
-        /// Apply the patch document, and return a new object instance with the change applied.
-        /// </summary>
-        /// <param name="objectToCreateNewObjectFrom">The object to start from</param>
-        public T CreateFrom(T objectToCreateNewObjectFrom) 
-        {
-            return CreateFrom(objectToCreateNewObjectFrom, new ObjectAdapter<T>());
-        }
-    
-        /// <summary>
-        /// Apply the patch document, passing in a custom IObjectAdapter<typeparamref name=">"/>, 
-        /// and return a new object instance with the change applied.
-        /// </summary>
-        /// <param name="objectToCreateNewObjectFrom">The object to start from</param>
-        /// <param name="adapter">The IObjectAdapter instance to use</param>
-        /// <returns></returns>
-        public T CreateFrom(T objectToCreateNewObjectFrom, IObjectAdapter<T> adapter) 
-        {
-            // create a clone of the current object, using Json.NET
-         
-            T clonedObject = JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(objectToCreateNewObjectFrom));
-                        
-            // apply each operation in order
-            foreach (var op in Operations)
-            {
-                op.Apply(clonedObject, adapter);
-            }
-
-            return clonedObject;
-        }
-
-        // return a copy, and ensure it's untyped
-        // - original operations should not
-        //   be editable through this.
-        // - untyped ops are used when serializing
+ 
         public List<Operation> GetOperations()
         {
             var allOps = new List<Operation>();
