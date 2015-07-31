@@ -19,7 +19,7 @@ using System.Text;
 
 namespace Marvin.JsonPatch.Adapters
 {
-    internal class ObjectAdapter<T> : IObjectAdapter<T> where T : class
+    public class ObjectAdapter<T> : IObjectAdapter<T> where T : class
     {
 
 
@@ -133,9 +133,12 @@ namespace Marvin.JsonPatch.Adapters
             // does property at path exist?
             if (pathProperty == null)
             {
-                throw new JsonPatchException<T>(operationToReport,
-                    string.Format("Patch failed: property at location path: {0} does not exist", path),
-                    objectToApplyTo, 422);
+                throw new JsonPatchException(
+                                new JsonPatchError(
+                                    objectToApplyTo,
+                                    operationToReport,
+                                    string.Format("Patch failed: property at location path: {0} does not exist", path))
+                                , 422);
             }
 
             // it exists.  If it' an array, add to that array.  If it's not, we replace.
@@ -159,10 +162,12 @@ namespace Marvin.JsonPatch.Adapters
 
                     if (!conversionResult.CanBeConverted)
                     {
-                        throw new JsonPatchException<T>(operationToReport,
-                          string.Format("Patch failed: provided value is invalid for array property type at location path: {0}",
-                          path),
-                          objectToApplyTo, 422);
+                        throw new JsonPatchException(
+                                new JsonPatchError(
+                                    objectToApplyTo,
+                                    operationToReport,
+                                    string.Format("Patch failed: provided value is invalid for array property type at location path: {0}", path))
+                                , 422);
                     }
 
                     // get value (it can be cast, we just checked that)
@@ -183,22 +188,27 @@ namespace Marvin.JsonPatch.Adapters
                         }
                         else
                         {
-                            throw new JsonPatchException<T>(operationToReport,
-                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
-                       path),
-                       objectToApplyTo, 422);
+                            throw new JsonPatchException(
+                                new JsonPatchError(
+                                    objectToApplyTo,
+                                    operationToReport,
+                                    string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size", path))
+                                , 422);
                         }
                     }
-                     
+
 
 
                 }
                 else
                 {
-                    throw new JsonPatchException<T>(operationToReport,
-                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: expected array",
-                       path),
-                       objectToApplyTo, 422);
+                    throw new JsonPatchException(
+                           new JsonPatchError(
+                               objectToApplyTo,
+                               operationToReport,
+                               string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: expected array", path))
+                            , 422);
+
                 }
             }
             else
@@ -213,10 +223,13 @@ namespace Marvin.JsonPatch.Adapters
                 }
                 else
                 {
-                    throw new JsonPatchException<T>(operationToReport,
-                    string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
-                    path),
-                    objectToApplyTo, 422);
+                    throw new JsonPatchException(
+                            new JsonPatchError(
+                                objectToApplyTo,
+                                operationToReport,
+                                 string.Format("Patch failed: provided value is invalid for property type at location path: {0}", path))
+                             , 422);
+
                 }
 
             }
@@ -269,9 +282,12 @@ namespace Marvin.JsonPatch.Adapters
             // does property at from exist?
             if (fromProperty == null)
             {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Patch failed: property at location from: {0} does not exist", operation.from),
-                    objectToApplyTo, 422);
+                throw new JsonPatchException(
+                          new JsonPatchError(
+                              objectToApplyTo,
+                              operation,
+                              string.Format("Patch failed: property at location from: {0} does not exist", operation.from))
+                           , 422);
             }
 
 
@@ -294,10 +310,12 @@ namespace Marvin.JsonPatch.Adapters
 
                     if (array.Count <= positionAsInteger)
                     {
-                        throw new JsonPatchException<T>(operation,
-                       string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: invalid position",
-                         operation.from),
-                         objectToApplyTo, 422);
+                        throw new JsonPatchException(
+                          new JsonPatchError(
+                              objectToApplyTo,
+                              operation,
+                              string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: invalid position", operation.from))
+                           , 422);
                     }
 
                     valueAtFromLocation = array[positionAsInteger];
@@ -305,29 +323,25 @@ namespace Marvin.JsonPatch.Adapters
                 }
                 else
                 {
-                    throw new JsonPatchException<T>(operation,
-                       string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: expected array",
-                       operation.from),
-                       objectToApplyTo, 422);
+                    throw new JsonPatchException(
+                          new JsonPatchError(
+                              objectToApplyTo,
+                              operation,
+                              string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: expected array", operation.from))
+                           , 422);
                 }
             }
             else
             {
                 // no list, just get the value
-
-                // set the new value
-
                 valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty);
-
             }
 
 
             // remove that value
-
             Remove(operation.from, objectToApplyTo, operation);
 
             // add that value to the path location
-
             Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
 
         }
@@ -386,16 +400,17 @@ namespace Marvin.JsonPatch.Adapters
             // does the target location exist?
             if (pathProperty == null)
             {
-                throw new JsonPatchException<T>(operationToReport,
-                    string.Format("Patch failed: property at location path: {0} does not exist", path),
-                    objectToApplyTo, 422);
+                throw new JsonPatchException(
+                      new JsonPatchError(
+                          objectToApplyTo,
+                          operationToReport,
+                         string.Format("Patch failed: property at location path: {0} does not exist", path))
+                       , 422);
             }
 
             // get the property, and remove it - in this case, for DTO's, that means setting
             // it to null or its default value; in case of an array, remove at provided index
             // or at the end.
-
-
             if (removeFromList || positionAsInteger > -1)
             {
 
@@ -417,10 +432,12 @@ namespace Marvin.JsonPatch.Adapters
                         if (array.Count == 0)
                         {
                             // if the array is empty, we should throw an error
-                            throw new JsonPatchException<T>(operationToReport,
-                              string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
-                              path),
-                              objectToApplyTo, 422);
+                            throw new JsonPatchException(
+                             new JsonPatchError(
+                                 objectToApplyTo,
+                                 operationToReport,
+                                string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size", path))
+                              , 422);
                         }
 
                         array.RemoveAt(array.Count - 1);
@@ -433,20 +450,27 @@ namespace Marvin.JsonPatch.Adapters
                         }
                         else
                         {
-                            throw new JsonPatchException<T>(operationToReport,
-                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
-                       path),
-                       objectToApplyTo, 422);
+                            throw new JsonPatchException(
+                            new JsonPatchError(
+                                objectToApplyTo,
+                                operationToReport,
+                                 string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
+                                path))
+                             , 422);
+
                         }
                     }
 
                 }
                 else
                 {
-                    throw new JsonPatchException<T>(operationToReport,
-                       string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: expected array",
-                       path),
-                       objectToApplyTo, 422);
+                    throw new JsonPatchException(
+                           new JsonPatchError(
+                               objectToApplyTo,
+                               operationToReport,
+                               string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: expected array",
+                       path))
+                            , 422);
                 }
             }
             else
@@ -513,98 +537,7 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Test(Operation<T> operation, T objectToApplyTo)
         {
-            // get value at path location
-
-            object valueAtPathLocation = null;
-            var positionInPathAsInteger = -1;
-            var actualPathProperty = operation.path;
-
-
-            positionInPathAsInteger = PropertyHelpers.GetNumericEnd(operation.path);
-
-            if (positionInPathAsInteger > -1)
-            {
-                actualPathProperty = operation.path.Substring(0,
-                    operation.path.IndexOf('/' + positionInPathAsInteger.ToString()));
-            }
-
-            var pathProperty = PropertyHelpers
-                .FindProperty(objectToApplyTo, actualPathProperty);
-
-            // does property at path exist?
-            if (pathProperty == null)
-            {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Patch failed: property at location path: {0} does not exist", operation.path),
-                    objectToApplyTo, 422);
-            }
-
-            // get the property path
-
-            Type typeOfFinalPropertyAtPathLocation;
-
-            // is the path an array (but not a string (= char[]))?  In this case,
-            // the path must end with "/position" or "/-", which we already determined before.
-
-            if (positionInPathAsInteger > -1)
-            {
-
-                var isNonStringArray = !(pathProperty.PropertyType == typeof(string))
-                    && typeof(IList).IsAssignableFrom(pathProperty.PropertyType);
-
-                if (isNonStringArray)
-                {
-                    // now, get the generic type of the enumerable
-                    typeOfFinalPropertyAtPathLocation = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
-
-                    // get value (it can be cast, we just checked that)
-                    var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathProperty) as IList;
-
-                    if (array.Count <= positionInPathAsInteger)
-                    {
-                        throw new JsonPatchException<T>(operation,
-                       string.Format("Patch failed: provided from path is invalid for array property type at location path: {0}: invalid position",
-                         operation.path),
-                         objectToApplyTo, 422);
-                    }
-
-                    valueAtPathLocation = array[positionInPathAsInteger];
-
-                }
-                else
-                {
-                    throw new JsonPatchException<T>(operation,
-                       string.Format("Patch failed: provided from path is invalid for array property type at location path: {0}: expected array",
-                       operation.path),
-                       objectToApplyTo, 422);
-                }
-            }
-            else
-            {
-                // no list, just get the value
-                valueAtPathLocation = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathProperty);
-                typeOfFinalPropertyAtPathLocation = pathProperty.PropertyType;
-            }
-
-
-
-            var conversionResultTuple = PropertyHelpers.ConvertToActualType(typeOfFinalPropertyAtPathLocation, operation.value);
-
-            // conversion successful
-            if (conversionResultTuple.CanBeConverted)
-            {
-                // COMPARE - TODO
-            }
-            else
-            {
-                throw new JsonPatchException<T>(operation,
-                string.Format("Patch failed: provided value is invalid for property type at location path: {0}",
-                operation.path),
-                objectToApplyTo, 422);
-            }
-
-
-
+            throw new NotImplementedException("Test is not implemented");
         }
 
 
@@ -683,9 +616,12 @@ namespace Marvin.JsonPatch.Adapters
             // does property at from exist?
             if (fromProperty == null)
             {
-                throw new JsonPatchException<T>(operation,
-                    string.Format("Patch failed: property at location from: {0} does not exist", operation.from),
-                    objectToApplyTo, 422);
+                throw new JsonPatchException(
+                         new JsonPatchError(
+                             objectToApplyTo,
+                             operation,
+                            string.Format("Patch failed: property at location from: {0} does not exist", operation.from))
+                          , 422);
             }
 
             // get the property path          
@@ -709,39 +645,38 @@ namespace Marvin.JsonPatch.Adapters
 
                     if (array.Count <= positionAsInteger)
                     {
-                        throw new JsonPatchException<T>(operation,
-                       string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: invalid position",
-                         operation.from),
-                         objectToApplyTo, 422);
+                        throw new JsonPatchException(
+                        new JsonPatchError(
+                            objectToApplyTo,
+                            operation,
+                             string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: invalid position",
+                         operation.from))
+                         , 422);
                     }
 
                     valueAtFromLocation = array[positionAsInteger];
-
                 }
                 else
                 {
-                    throw new JsonPatchException<T>(operation,
-                       string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: expected array",
-                       operation.from),
-                       objectToApplyTo, 422);
+                    throw new JsonPatchException(
+                    new JsonPatchError(
+                        objectToApplyTo,
+                        operation,
+                        string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: expected array",
+                   operation.from))
+                     , 422);
+
                 }
             }
             else
             {
                 // no list, just get the value
-
-                // set the new value
-
                 valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty);
-
             }
 
             // add operation to target location with that value.
-
             Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
-
         }
-
-
     }
+
 }

@@ -29,6 +29,8 @@ namespace Marvin.JsonPatch.XUnitTest
 
             patchDoc.ApplyTo(doc);
 
+            var s = new Operations.Operation();
+
             Assert.Equal("B", doc.StringProperty);
           
         }
@@ -109,7 +111,7 @@ namespace Marvin.JsonPatch.XUnitTest
             JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
             patchDoc.Add<int>(o => o.IntegerList, 4, 4);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() => { patchDoc.ApplyTo(doc); });
+            Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
         }
 
 
@@ -135,7 +137,7 @@ namespace Marvin.JsonPatch.XUnitTest
 
             
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() => { deserialized.ApplyTo(doc); });
+            Assert.Throws<JsonPatchException>(() => { deserialized.ApplyTo(doc); });
         }
 
 
@@ -245,7 +247,7 @@ namespace Marvin.JsonPatch.XUnitTest
             JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
             patchDoc.Add<int>(o => o.IntegerList, 4, -1);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() => { patchDoc.ApplyTo(doc); });
+            Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
 
         }
 
@@ -265,7 +267,7 @@ namespace Marvin.JsonPatch.XUnitTest
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() => { deserialized.ApplyTo(doc); });
+            Assert.Throws<JsonPatchException>(() => { deserialized.ApplyTo(doc); });
 
         }
 
@@ -409,7 +411,7 @@ namespace Marvin.JsonPatch.XUnitTest
             patchDoc.Remove<int>(o => o.IntegerList, 3);
 
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() => { patchDoc.ApplyTo(doc); });
+            Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
 
         }
 
@@ -429,7 +431,7 @@ namespace Marvin.JsonPatch.XUnitTest
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() => { deserialized.ApplyTo(doc); });
+            Assert.Throws<JsonPatchException>(() => { deserialized.ApplyTo(doc); });
 
         }
 
@@ -447,7 +449,7 @@ namespace Marvin.JsonPatch.XUnitTest
             JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
             patchDoc.Remove<int>(o => o.IntegerList,-1);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() => { patchDoc.ApplyTo(doc); });
+            Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
 
         }
 
@@ -467,7 +469,7 @@ namespace Marvin.JsonPatch.XUnitTest
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() => { deserialized.ApplyTo(doc); });
+            Assert.Throws<JsonPatchException>(() => { deserialized.ApplyTo(doc); });
 
         }
 
@@ -964,7 +966,7 @@ namespace Marvin.JsonPatch.XUnitTest
             JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
             patchDoc.Replace<int>(o => o.IntegerList, 5, 3);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() =>
+            Assert.Throws<JsonPatchException>(() =>
             {
                 patchDoc.ApplyTo(doc);
             });
@@ -986,7 +988,7 @@ namespace Marvin.JsonPatch.XUnitTest
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() =>
+            Assert.Throws<JsonPatchException>(() =>
             {
                 deserialized.ApplyTo(doc);
             });
@@ -1008,7 +1010,7 @@ namespace Marvin.JsonPatch.XUnitTest
             JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
             patchDoc.Replace<int>(o => o.IntegerList, 5, -1);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() =>
+            Assert.Throws<JsonPatchException>(() =>
             {
                 patchDoc.ApplyTo(doc);
             });
@@ -1033,7 +1035,7 @@ namespace Marvin.JsonPatch.XUnitTest
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
 
-            Assert.Throws<JsonPatchException<SimpleDTO>>(() =>
+            Assert.Throws<JsonPatchException>(() =>
             {
                 deserialized.ApplyTo(doc);
             });

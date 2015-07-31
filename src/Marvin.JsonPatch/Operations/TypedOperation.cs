@@ -38,8 +38,7 @@ namespace Marvin.JsonPatch.Operations
             : base(op, path, from)
         {
 
-        }
-
+        } 
 
 
         internal void Apply(T objectToApplyTo, IObjectAdapter<T> adapter)
@@ -62,8 +61,7 @@ namespace Marvin.JsonPatch.Operations
                     adapter.Copy(this, objectToApplyTo);
                     break;
                 case OperationType.Test:
-                    adapter.Test(this, objectToApplyTo);
-                    break;
+                    throw new NotImplementedException("Test is currently not implemented.");   
                 default:
                     break;
             }
