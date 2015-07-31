@@ -21,12 +21,13 @@ namespace Marvin.JsonPatch.Helpers
             // it is possible the path refers to a nested property.  In that case, we need to 
             // get from a different target object: the nested object. 
 
-            var splitPath = pathToProperty.Split('/');
-
-            // skip the first one if it's empty
-            var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
-            
-            for (int i = startIndex; i < splitPath.Length - 1; i++)
+            // split the propertypath, and if necessary, remove the first 
+            // empty item (that's the case when it starts with a "/")
+            var splitPath = pathToProperty.Split(
+                new char[] { '/' },
+                StringSplitOptions.RemoveEmptyEntries).ToList(); 
+             
+            for (int i = 0; i < splitPath.Count - 1; i++)
             {
                 // if the current part of the path is numeric, this means we're trying
                 // to get the propertyInfo of a specific object in an array.  To allow
@@ -61,12 +62,14 @@ namespace Marvin.JsonPatch.Helpers
         {
             // it is possible the path refers to a nested property.  In that case, we need to 
             // set on a different target object: the nested object.
-            var splitPath = pathToProperty.Split('/');
+         
+            // split the propertypath, and if necessary, remove the first 
+            // empty item (that's the case when it starts with a "/")
+            var splitPath = pathToProperty.Split(
+                new char[] { '/' },
+                StringSplitOptions.RemoveEmptyEntries).ToList();  
 
-            // skip the first one if it's empty
-            var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
-
-            for (int i = startIndex; i < splitPath.Length - 1; i++)
+            for (int i = 0; i < splitPath.Count - 1; i++)
             {
                 // if the current part of the path is numeric, this means we're trying
                 // to get the propertyInfo of a specific object in an array.  To allow
@@ -99,16 +102,17 @@ namespace Marvin.JsonPatch.Helpers
             return true;
         }
         
-        public static PropertyInfo FindProperty(object targetObject, string propertyPath)
+        public static PropertyInfo FindProperty(object targetObject, string pathToProperty)
         {
             try
             {
-                var splitPath = propertyPath.Split('/');
+                // split the propertypath, and if necessary, remove the first 
+                // empty item (that's the case when it starts with a "/")
+                var splitPath = pathToProperty.Split(
+                    new char[] { '/' },
+                    StringSplitOptions.RemoveEmptyEntries).ToList(); 
 
-                // skip the first one if it's empty
-                var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
-
-                for (int i = startIndex; i < splitPath.Length - 1; i++)
+                for (int i = 0; i < splitPath.Count - 1; i++)
                 {
                     // if the current part of the path is numeric, this means we're trying
                     // to get the propertyInfo of a specific object in an array.  To allow
