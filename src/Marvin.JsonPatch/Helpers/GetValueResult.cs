@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// Any comments, input: @KevinDockx
+// Any issues, requests: https://github.com/KevinDockx/JsonPatch
+//
+// Enjoy :-)
 using System.Reflection;
-using System.Text;
 
 namespace Marvin.JsonPatch.Helpers
 {
-
     internal class GetValueResult
     {
         public bool CanGet { get; private set; }

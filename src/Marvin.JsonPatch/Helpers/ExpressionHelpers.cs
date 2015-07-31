@@ -1,24 +1,16 @@
-﻿// Kevin Dockx
-//
-// Any comments, input: @KevinDockx
+﻿// Any comments, input: @KevinDockx
 // Any issues, requests: https://github.com/KevinDockx/JsonPatch
 //
 // Enjoy :-)
 
-
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 
 namespace Marvin.JsonPatch.Helpers
 {
     internal static class ExpressionHelpers
     {
-
         public static string GetPath<T, TProp>(Expression<Func<T, TProp>> expr) where T : class
         {
             return "/" + GetPath(expr.Body, true);
@@ -42,7 +34,6 @@ namespace Marvin.JsonPatch.Helpers
                         return binaryExpression.Right.ToString();
                     }
 
-
                 case ExpressionType.Call:
                     var methodCallExpression = (MethodCallExpression)expr;
 
@@ -58,11 +49,9 @@ namespace Marvin.JsonPatch.Helpers
                     }
 
                 case ExpressionType.Convert:
-
                     return GetPath(((UnaryExpression)expr).Operand, false);
 
                 case ExpressionType.MemberAccess:
-
                     var memberExpression = expr as MemberExpression;
 
                     if (ContinueWithSubPath(memberExpression.Expression.NodeType, false))
@@ -84,7 +73,6 @@ namespace Marvin.JsonPatch.Helpers
             }
         }
 
-
         private static bool ContinueWithSubPath(ExpressionType expressionType, bool firstTime)
         {
             if (firstTime)
@@ -102,9 +90,7 @@ namespace Marvin.JsonPatch.Helpers
                     || expressionType == ExpressionType.Convert
                     || expressionType == ExpressionType.MemberAccess);
             }
-
         }
-
 
         private static string GetIndexerInvocation(Expression expression)
         {
@@ -117,6 +103,5 @@ namespace Marvin.JsonPatch.Helpers
 
             return Convert.ToString(func(null), CultureInfo.InvariantCulture);
         }
-
     }
 }

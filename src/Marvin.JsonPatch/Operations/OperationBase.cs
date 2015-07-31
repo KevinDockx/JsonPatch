@@ -1,15 +1,10 @@
-﻿// Kevin Dockx
-//
-// Any comments, input: @KevinDockx
+﻿// Any comments, input: @KevinDockx
 // Any issues, requests: https://github.com/KevinDockx/JsonPatch
 //
 // Enjoy :-)
 
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Marvin.JsonPatch.Operations
 {
@@ -34,11 +29,9 @@ namespace Marvin.JsonPatch.Operations
 
         [JsonProperty("from")]
         public string from { get; set; }
-
-
+        
         public Operation()
         {
-
         }
 
         public Operation(string op, string path, string from)
@@ -47,32 +40,24 @@ namespace Marvin.JsonPatch.Operations
             this.path = path;
             this.from = from;
         }
-
      
          public Operation(string op, string path, string from, object value)
              : this(op, path, from)
          {
              this.value = value;
-         }
- 
+         } 
 
         public bool ShouldSerializefrom()
         {
             return (OperationType == Operations.OperationType.Move
                 || OperationType == OperationType.Copy);
         }
-
-
-
+        
         public bool ShouldSerializevalue()
         {
             return (OperationType == Operations.OperationType.Add
                 || OperationType == OperationType.Replace
                 || OperationType == OperationType.Test);
         }
-
     }
-
-
-
 }

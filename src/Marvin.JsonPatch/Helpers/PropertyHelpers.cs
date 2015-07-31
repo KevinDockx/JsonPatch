@@ -1,6 +1,4 @@
-﻿// Kevin Dockx
-//
-// Any comments, input: @KevinDockx
+﻿// Any comments, input: @KevinDockx
 // Any issues, requests: https://github.com/KevinDockx/JsonPatch
 //
 // Enjoy :-)
@@ -11,18 +9,13 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace Marvin.JsonPatch.Helpers
 {
     internal static class PropertyHelpers
     {
-
-
         public static object GetValue(PropertyInfo propertyToGet, object targetObject, string pathToProperty)
         {
             // it is possible the path refers to a nested property.  In that case, we need to 
@@ -32,8 +25,7 @@ namespace Marvin.JsonPatch.Helpers
 
             // skip the first one if it's empty
             var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
-
-
+            
             for (int i = startIndex; i < splitPath.Length - 1; i++)
             {
                 // if the current part of the path is numeric, this means we're trying
@@ -54,7 +46,6 @@ namespace Marvin.JsonPatch.Helpers
                         // will result in JsonPatchException in calling class, as expected
                         return null;
                     }
-
                 }
                 else
                 {
@@ -63,17 +54,6 @@ namespace Marvin.JsonPatch.Helpers
                     targetObject = propertyInfoToGet.GetValue(targetObject, null);
                 }
             }
-
-
-            //for (int i = startIndex; i < splitPath.Length - 1; i++)
-            //{
-            //    var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
-            //        , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
-            //    targetObject = propertyInfoToGet.GetValue(targetObject, null);
-            //}
-
-
             return propertyToGet.GetValue(targetObject, null);
         }
 
@@ -81,8 +61,6 @@ namespace Marvin.JsonPatch.Helpers
         {
             // it is possible the path refers to a nested property.  In that case, we need to 
             // set on a different target object: the nested object.
-
-
             var splitPath = pathToProperty.Split('/');
 
             // skip the first one if it's empty
@@ -108,7 +86,6 @@ namespace Marvin.JsonPatch.Helpers
                         // will result in JsonPatchException in calling class, as expected
                         return false;
                     }
-
                 }
                 else
                 {
@@ -121,8 +98,7 @@ namespace Marvin.JsonPatch.Helpers
             propertyToSet.SetValue(targetObject, value, null);
             return true;
         }
-
-
+        
         public static PropertyInfo FindProperty(object targetObject, string propertyPath)
         {
             try
@@ -152,7 +128,6 @@ namespace Marvin.JsonPatch.Helpers
                             // will result in JsonPatchException in calling class, as expected
                             return null;
                         }
-
                     }
                     else
                     {
@@ -162,13 +137,10 @@ namespace Marvin.JsonPatch.Helpers
                     }
                 }
 
-
                 var propertyToFind = targetObject.GetType().GetProperty(splitPath.Last(),
                         BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
                 return propertyToFind;
-
-
             }
             catch (Exception)
             {
@@ -179,7 +151,6 @@ namespace Marvin.JsonPatch.Helpers
 
         private static object GetElementAtFromObject(object targetObject, int numericValue)
         {
-
             if (numericValue > -1)
             {
                 // Check if the targetobject is an IEnumerable,
@@ -211,14 +182,12 @@ namespace Marvin.JsonPatch.Helpers
                 return new ConversionResult(false, null);
             }
         }
-
-
+        
         internal static Type GetEnumerableType(Type type)
         {
             if (type == null) throw new ArgumentNullException();
             foreach (Type interfaceType in type.GetInterfaces())
             {
-
                 if (interfaceType.IsGenericType &&
                 interfaceType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
@@ -227,8 +196,7 @@ namespace Marvin.JsonPatch.Helpers
             }
             return null;
         }
-
-
+        
         internal static int GetNumericEnd(string path)
         {
             var possibleIndex = path.Substring(path.LastIndexOf("/") + 1);
@@ -238,18 +206,14 @@ namespace Marvin.JsonPatch.Helpers
             {
                 return castedIndex;
             }
-
             return -1;
-
         }
-
-
+        
         private static PropertyInfo GetPropertyInfo(object targetObject, string propertyName,
         BindingFlags bindingFlags)
         {
             return targetObject.GetType().GetProperty(propertyName, bindingFlags);
         }
-
 
         internal static ActualPropertyPathResult GetActualPropertyPath(
             string propertyPath,
@@ -262,8 +226,7 @@ namespace Marvin.JsonPatch.Helpers
                 return new ActualPropertyPathResult(-1, propertyPath.Substring(0, propertyPath.Length - 2), true);
             }
             else
-            {
-
+            {                
                 var possibleIndex = propertyPath.Substring(propertyPath.LastIndexOf("/") + 1);
                 int castedIndex = -1;
                 if (int.TryParse(possibleIndex, out castedIndex))
@@ -290,10 +253,8 @@ namespace Marvin.JsonPatch.Helpers
                               message), 422);
                     }
                 }
-
                 return new ActualPropertyPathResult(-1, propertyPath, false);
             }
         }
-
     }
 }

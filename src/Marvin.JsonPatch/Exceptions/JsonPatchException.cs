@@ -1,19 +1,13 @@
-﻿// Kevin Dockx
-//
-// Any comments, input: @KevinDockx
+﻿// Any comments, input: @KevinDockx
 // Any issues, requests: https://github.com/KevinDockx/JsonPatch
 //
 // Enjoy :-)
 
 using Marvin.JsonPatch.Operations;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Marvin.JsonPatch.Exceptions
 {
-
     public class JsonPatchException : Exception
     {
         public Operation FailedOperation { get; private set; }
@@ -23,7 +17,6 @@ namespace Marvin.JsonPatch.Exceptions
 
         public JsonPatchException()
         {
-
         }
 
         public JsonPatchException(JsonPatchError jsonPatchError, Exception innerException, int suggestedStatusCode)
@@ -42,7 +35,6 @@ namespace Marvin.JsonPatch.Exceptions
         public JsonPatchException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
     }
 }

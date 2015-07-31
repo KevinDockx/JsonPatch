@@ -1,6 +1,4 @@
-﻿// Kevin Dockx
-//
-// Any comments, input: @KevinDockx
+﻿// Any comments, input: @KevinDockx
 // Any issues, requests: https://github.com/KevinDockx/JsonPatch
 //
 // Enjoy :-)
@@ -12,10 +10,7 @@ using Marvin.JsonPatch.Operations;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-
 
 // Implementation details: the purpose of this type of patch document is to ensure we can do type-checking
 // when producing a JsonPatchDocument.  However, we cannot send this "typed" over the wire, as that would require
@@ -23,21 +18,16 @@ using System.Text;
 // not according to RFC 6902, and would thus break cross-platform compatibility. 
 
 namespace Marvin.JsonPatch
-{
-     
-
+{  
     [JsonConverter(typeof(TypedJsonPatchDocumentConverter))]
     public class JsonPatchDocument<T>: IJsonPatchDocument where T:class 
     {
-
          public List<Operation<T>> Operations { get; private set; }
  
-
         public JsonPatchDocument()
         {
             Operations = new List<Operation<T>>();
         }
-
 
         // Create from list of operations  
         public JsonPatchDocument(List<Operation<T>> operations)
@@ -74,14 +64,6 @@ namespace Marvin.JsonPatch
             return this;
         }
 
-
-        //public JsonPatchDocument<T> Add<TProp>(string path, TProp value, int position)
-        //{
-        //    Operations.Add(new Operation<T>("add", path.ToLower() + "/" + position, null, value));
-        //    return this;
-        //}
-
-
          /// <summary>
          /// Add value at end of list
          /// </summary>
@@ -94,7 +76,6 @@ namespace Marvin.JsonPatch
             Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/-", null, value));
             return this;
         }
-
 
         /// <summary>
         /// Remove value at target location.  Will result in, for example,
@@ -147,7 +128,6 @@ namespace Marvin.JsonPatch
             return this;
         }
 
-
         /// <summary>
         /// Replace value in a list at given position
         /// </summary>
@@ -173,9 +153,6 @@ namespace Marvin.JsonPatch
             return this;
         }
 
-       
-
-
         /// <summary>
         /// Removes value at specified location and add it to the target location.  Will result in, for example:
         /// { "op": "move", "from": "/a/b/c", "path": "/a/b/d" }
@@ -189,9 +166,7 @@ namespace Marvin.JsonPatch
                 , ExpressionHelpers.GetPath<T, TProp>(from).ToLower()));
             return this;
         }
-
-
-
+        
         /// <summary>
         /// Move from a position in a list to a new location
         /// </summary>
@@ -206,8 +181,6 @@ namespace Marvin.JsonPatch
               , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
             return this;
         }
-
-
 
         /// <summary>
         /// Move from a property to a location in a list
@@ -226,7 +199,6 @@ namespace Marvin.JsonPatch
             return this;
         }
 
-
         /// <summary>
         /// Move from a position in a list to another location in a list
         /// </summary>
@@ -243,7 +215,6 @@ namespace Marvin.JsonPatch
               , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
             return this;
         }
-
 
         /// <summary>
         /// Move from a position in a list to the end of another list
@@ -262,8 +233,6 @@ namespace Marvin.JsonPatch
             return this;
         }
 
-
-
         /// <summary>
         /// Move to the end of a list
         /// </summary>
@@ -279,9 +248,6 @@ namespace Marvin.JsonPatch
             return this;
         }
 
-
-
-
         /// <summary>
         /// Copy the value at specified location to the target location.  Willr esult in, for example:
         /// { "op": "copy", "from": "/a/b/c", "path": "/a/b/e" }
@@ -295,7 +261,6 @@ namespace Marvin.JsonPatch
               , ExpressionHelpers.GetPath<T, TProp>(from).ToLower()));
             return this;
         }
-
 
         /// <summary>
         /// Copy from a position in a list to a new location
@@ -311,8 +276,6 @@ namespace Marvin.JsonPatch
               , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
             return this;
         }
-
-
 
         /// <summary>
         /// Copy from a property to a location in a list
@@ -331,7 +294,6 @@ namespace Marvin.JsonPatch
             return this;
         }
 
-
         /// <summary>
         /// Copy from a position in a list to a new location in a list
         /// </summary>
@@ -348,7 +310,6 @@ namespace Marvin.JsonPatch
               , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLower() + "/" + positionFrom));
             return this;
         }
-
 
         /// <summary>
         /// Copy from a position in a list to the end of another list
@@ -367,8 +328,6 @@ namespace Marvin.JsonPatch
             return this;
         }
 
-
-
         /// <summary>
         /// Copy to the end of a list
         /// </summary>
@@ -382,8 +341,7 @@ namespace Marvin.JsonPatch
             Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLower() + "/-"
               , ExpressionHelpers.GetPath<T, TProp>(from).ToLower()));
             return this;
-        }
-         
+        }         
 
         /// <summary>
         /// Apply the patch document.  This method will change the passed-in object.
@@ -393,7 +351,6 @@ namespace Marvin.JsonPatch
         {
             ApplyTo(objectToApplyTo, new ObjectAdapter<T>());
         }
-
 
         /// <summary>
         /// Apply the patch document, passing in a custom IObjectAdapter<typeparamref name=">"/>. 
@@ -408,9 +365,7 @@ namespace Marvin.JsonPatch
             {
                 op.Apply(objectToApplyTo, adapter);
             }
-
         } 
-
  
         public List<Operation> GetOperations()
         {
@@ -430,7 +385,6 @@ namespace Marvin.JsonPatch
                     allOps.Add(untypedOp);
                 }
             }
-
             return allOps;
         }
     }

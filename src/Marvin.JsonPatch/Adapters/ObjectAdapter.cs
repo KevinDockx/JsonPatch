@@ -1,6 +1,4 @@
-﻿// Kevin Dockx
-//
-// Any comments, input: @KevinDockx
+﻿// Any comments, input: @KevinDockx
 // Any issues, requests: https://github.com/KevinDockx/JsonPatch
 //
 // Enjoy :-)
@@ -10,10 +8,7 @@ using Marvin.JsonPatch.Helpers;
 using Marvin.JsonPatch.Operations;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Marvin.JsonPatch.Adapters
 {
@@ -132,7 +127,6 @@ namespace Marvin.JsonPatch.Adapters
 
             if (appendList || positionAsInteger > -1)
             {
-
                 var isNonStringArray = !(pathProperty.PropertyType == typeof(string))
                     && typeof(IList).IsAssignableFrom(pathProperty.PropertyType);
 
@@ -156,8 +150,7 @@ namespace Marvin.JsonPatch.Adapters
 
                     // get value (it can be cast, we just checked that)
                     var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathToProperty) as IList;
-
-
+                    
                     if (appendList)
                     {
                         array.Add(conversionResult.ConvertedInstance);
@@ -180,9 +173,6 @@ namespace Marvin.JsonPatch.Adapters
                                 , 422);
                         }
                     }
-
-
-
                 }
                 else
                 {
@@ -192,7 +182,6 @@ namespace Marvin.JsonPatch.Adapters
                                operationToReport,
                                string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: expected array", path))
                             , 422);
-
                 }
             }
             else
@@ -213,9 +202,7 @@ namespace Marvin.JsonPatch.Adapters
                                 operationToReport,
                                  string.Format("Patch failed: provided value is invalid for property type at location path: {0}", path))
                              , 422);
-
                 }
-
             }
         }
 
@@ -260,7 +247,6 @@ namespace Marvin.JsonPatch.Adapters
             var fromProperty = PropertyHelpers
                 .FindProperty(objectToApplyTo, actualPathToFromProperty);
 
-
             // does property at from exist?
             if (fromProperty == null)
             {
@@ -272,13 +258,11 @@ namespace Marvin.JsonPatch.Adapters
                            , 422);
             }
 
-
             // is the path an array (but not a string (= char[]))?  In this case,
             // the path must end with "/position" or "/-", which we already determined before.
 
             if (positionAsInteger > -1)
             {
-
                 var isNonStringArray = !(fromProperty.PropertyType == typeof(string))
                     && typeof(IList).IsAssignableFrom(fromProperty.PropertyType);
 
@@ -301,7 +285,6 @@ namespace Marvin.JsonPatch.Adapters
                     }
 
                     valueAtFromLocation = array[positionAsInteger];
-
                 }
                 else
                 {
@@ -319,13 +302,11 @@ namespace Marvin.JsonPatch.Adapters
                 valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualPathToFromProperty);
             }
 
-
             // remove that value
             Remove(operation.from, objectToApplyTo, operation);
 
             // add that value to the path location
             Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
-
         }
 
 
@@ -355,7 +336,6 @@ namespace Marvin.JsonPatch.Adapters
         /// </summary>
         private void Remove(string path, T objectToApplyTo, Operation<T> operationToReport)
         {
-
             // get path result
             var pathResult = PropertyHelpers.GetActualPropertyPath(
                 path,
@@ -386,7 +366,6 @@ namespace Marvin.JsonPatch.Adapters
             // or at the end.
             if (removeFromList || positionAsInteger > -1)
             {
-
                 var isNonStringArray = !(pathProperty.PropertyType == typeof(string))
                     && typeof(IList).IsAssignableFrom(pathProperty.PropertyType);
 
@@ -396,7 +375,6 @@ namespace Marvin.JsonPatch.Adapters
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
 
-                    // TODO: nested!
                     // get value (it can be cast, we just checked that)
                     var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathToProperty) as IList;
 
@@ -412,7 +390,6 @@ namespace Marvin.JsonPatch.Adapters
                                 string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size", path))
                               , 422);
                         }
-
                         array.RemoveAt(array.Count - 1);
                     }
                     else
@@ -430,10 +407,8 @@ namespace Marvin.JsonPatch.Adapters
                                  string.Format("Patch failed: provided path is invalid for array property type at location path: {0}: position larger than array size",
                                 path))
                              , 422);
-
                         }
                     }
-
                 }
                 else
                 {
@@ -448,15 +423,11 @@ namespace Marvin.JsonPatch.Adapters
             }
             else
             {
-
                 // setting the value to "null" will use the default value in case of value types, and
                 // null in case of reference types
                 PropertyHelpers.SetValue(pathProperty, objectToApplyTo, actualPathToProperty, null);
             }
-
         }
-
-
 
 
         /// <summary>
@@ -632,7 +603,6 @@ namespace Marvin.JsonPatch.Adapters
                         string.Format("Patch failed: provided from path is invalid for array property type at location from: {0}: expected array",
                    operation.from))
                      , 422);
-
                 }
             }
             else
@@ -645,5 +615,4 @@ namespace Marvin.JsonPatch.Adapters
             Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
         }
     }
-
 }

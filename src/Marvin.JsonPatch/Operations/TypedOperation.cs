@@ -1,31 +1,17 @@
-﻿// Kevin Dockx
-//
-// Any comments, input: @KevinDockx
+﻿// Any comments, input: @KevinDockx
 // Any issues, requests: https://github.com/KevinDockx/JsonPatch
 //
 // Enjoy :-)
 
 using Marvin.JsonPatch.Adapters;
-using Marvin.JsonPatch.Exceptions;
-using Marvin.JsonPatch.Helpers;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace Marvin.JsonPatch.Operations
 {
-
-
-
     public class Operation<T> : Operation where T : class
-    { 
-  
+    {   
         public Operation()
         {
-
         }
 
         public Operation(string op, string path, string from, object value)
@@ -37,9 +23,7 @@ namespace Marvin.JsonPatch.Operations
         public Operation(string op, string path, string from)
             : base(op, path, from)
         {
-
         } 
-
 
         internal void Apply(T objectToApplyTo, IObjectAdapter<T> adapter)
         {
@@ -66,10 +50,5 @@ namespace Marvin.JsonPatch.Operations
                     break;
             }
         }
-
-
-
-
-
     }
 }

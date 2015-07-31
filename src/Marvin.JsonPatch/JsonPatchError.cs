@@ -1,8 +1,8 @@
-﻿using Marvin.JsonPatch.Operations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿// Any comments, input: @KevinDockx
+// Any issues, requests: https://github.com/KevinDockx/JsonPatch
+//
+// Enjoy :-)
+using Marvin.JsonPatch.Operations;
 
 namespace Marvin.JsonPatch
 {

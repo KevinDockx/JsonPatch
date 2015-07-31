@@ -1,4 +1,8 @@
-﻿using System.Reflection;
+﻿// Any comments, input: @KevinDockx
+// Any issues, requests: https://github.com/KevinDockx/JsonPatch
+//
+// Enjoy :-)
+using System.Reflection;
 
 namespace Marvin.JsonPatch.Helpers
 {
