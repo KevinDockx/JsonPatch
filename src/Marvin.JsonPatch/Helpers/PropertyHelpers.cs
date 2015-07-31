@@ -5,6 +5,8 @@
 //
 // Enjoy :-)
 
+using Marvin.JsonPatch.Exceptions;
+using Marvin.JsonPatch.Operations;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -74,7 +76,7 @@ namespace Marvin.JsonPatch.Helpers
 
             return propertyToGet.GetValue(targetObject, null);
         }
-         
+
         public static bool SetValue(PropertyInfo propertyToSet, object targetObject, string pathToProperty, object value)
         {
             // it is possible the path refers to a nested property.  In that case, we need to 
@@ -82,7 +84,7 @@ namespace Marvin.JsonPatch.Helpers
 
 
             var splitPath = pathToProperty.Split('/');
-             
+
             // skip the first one if it's empty
             var startIndex = (string.IsNullOrWhiteSpace(splitPath[0]) ? 1 : 0);
 
@@ -116,18 +118,7 @@ namespace Marvin.JsonPatch.Helpers
                 }
             }
 
-
-            //for (int i = startIndex; i < splitPath.Length - 1; i++)
-            //{
-            //    var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
-            //        , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
-            //    targetObject = propertyInfoToGet.GetValue(targetObject, null);
-            //}
-
-
             propertyToSet.SetValue(targetObject, value, null);
-
             return true;
         }
 
@@ -136,7 +127,6 @@ namespace Marvin.JsonPatch.Helpers
         {
             try
             {
-
                 var splitPath = propertyPath.Split('/');
 
                 // skip the first one if it's empty
@@ -168,8 +158,8 @@ namespace Marvin.JsonPatch.Helpers
                     {
                         var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
                         , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                         targetObject = propertyInfoToGet.GetValue(targetObject, null);
-                    } 
+                        targetObject = propertyInfoToGet.GetValue(targetObject, null);
+                    }
                 }
 
 
@@ -239,7 +229,6 @@ namespace Marvin.JsonPatch.Helpers
         }
 
 
-
         internal static int GetNumericEnd(string path)
         {
             var possibleIndex = path.Substring(path.LastIndexOf("/") + 1);
@@ -260,5 +249,51 @@ namespace Marvin.JsonPatch.Helpers
         {
             return targetObject.GetType().GetProperty(propertyName, bindingFlags);
         }
+
+
+        internal static ActualPropertyPathResult GetActualPropertyPath(
+            string propertyPath,
+            object objectToApplyTo,
+            Operation operationToReport,
+            bool forPath)
+        {
+            if (propertyPath.EndsWith("/-"))
+            {
+                return new ActualPropertyPathResult(-1, propertyPath.Substring(0, propertyPath.Length - 2), true);
+            }
+            else
+            {
+
+                var possibleIndex = propertyPath.Substring(propertyPath.LastIndexOf("/") + 1);
+                int castedIndex = -1;
+                if (int.TryParse(possibleIndex, out castedIndex))
+                {
+                    // has numeric end.  
+                    if (castedIndex > -1)
+                    {
+                        var pathToProperty = propertyPath.Substring(
+                           0,
+                           propertyPath.LastIndexOf('/' + castedIndex.ToString()));
+
+                        return new ActualPropertyPathResult(castedIndex, pathToProperty, false);
+                    }
+                    else
+                    {
+                        string message = forPath ?
+                             string.Format("Patch failed: provided path is invalid, position too small: {0}", propertyPath)
+                             : string.Format("Patch failed: provided from is invalid, position too small: {0}", propertyPath);
+
+                        // negative position - invalid path
+                        throw new JsonPatchException(
+                             new JsonPatchError(objectToApplyTo,
+                                 operationToReport,
+                              message), 422);
+                    }
+                }
+
+                return new ActualPropertyPathResult(-1, propertyPath, false);
+            }
+        }
+
     }
 }

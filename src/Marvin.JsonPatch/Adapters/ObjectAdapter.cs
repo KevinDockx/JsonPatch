@@ -5,8 +5,6 @@
 //
 // Enjoy :-)
 
-
-
 using Marvin.JsonPatch.Exceptions;
 using Marvin.JsonPatch.Helpers;
 using Marvin.JsonPatch.Operations;
@@ -21,8 +19,6 @@ namespace Marvin.JsonPatch.Adapters
 {
     public class ObjectAdapter<T> : IObjectAdapter<T> where T : class
     {
-
-
         /// <summary>
         /// The "add" operation performs one of the following functions,
         /// depending upon what the target location references:
@@ -85,9 +81,7 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Add(Operation<T> operation, T objectToApplyTo)
         {
-
             Add(operation.path, operation.value, objectToApplyTo, operation);
-
         }
 
 
@@ -105,27 +99,17 @@ namespace Marvin.JsonPatch.Adapters
             // that value represents the position; if the path ends in "-", we're appending
             // to the list.
 
-            var appendList = false;
-            var positionAsInteger = -1;
-            var actualPathToProperty = path;
+            // get path result
+            var pathResult = PropertyHelpers.GetActualPropertyPath(
+                path,
+                objectToApplyTo,
+                operationToReport, 
+                true);
 
-            if (path.EndsWith("/-"))
-            {
-                appendList = true;
-                actualPathToProperty = path.Substring(0, path.Length - 2);
-            }
-            else
-            {
-                positionAsInteger = PropertyHelpers.GetNumericEnd(path);
-
-                if (positionAsInteger > -1)
-                {
-                    actualPathToProperty = path.Substring(0,
-                        path.LastIndexOf('/' + positionAsInteger.ToString()));
-                }
-            }
-
-
+            var appendList = pathResult.ExecuteAtEnd;
+            var positionAsInteger = pathResult.NumericEnd;
+            var actualPathToProperty = pathResult.PathToProperty;
+ 
             var pathProperty = PropertyHelpers
                 .FindProperty(objectToApplyTo, actualPathToProperty);
 
@@ -260,23 +244,21 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Move(Operation<T> operation, T objectToApplyTo)
         {
+            // get path result
+            var pathResult = PropertyHelpers.GetActualPropertyPath(
+                operation.from,
+                objectToApplyTo,
+                operation, 
+                false);
+ 
+            var positionAsInteger = pathResult.NumericEnd;
+            var actualPathToFromProperty = pathResult.PathToProperty; 
 
             // get value at from location
-            object valueAtFromLocation = null;
-            var positionAsInteger = -1;
-            var actualFromProperty = operation.from;
-
-
-            positionAsInteger = PropertyHelpers.GetNumericEnd(operation.from);
-
-            if (positionAsInteger > -1)
-            {
-                actualFromProperty = operation.from.Substring(0,
-                    operation.from.IndexOf('/' + positionAsInteger.ToString()));
-            }
+            object valueAtFromLocation = null; 
 
             var fromProperty = PropertyHelpers
-                .FindProperty(objectToApplyTo, actualFromProperty);
+                .FindProperty(objectToApplyTo, actualPathToFromProperty);
 
 
             // does property at from exist?
@@ -306,7 +288,7 @@ namespace Marvin.JsonPatch.Adapters
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
 
                     // get value (it can be cast, we just checked that)
-                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty) as IList;
+                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualPathToFromProperty) as IList;
 
                     if (array.Count <= positionAsInteger)
                     {
@@ -334,7 +316,7 @@ namespace Marvin.JsonPatch.Adapters
             else
             {
                 // no list, just get the value
-                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty);
+                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualPathToFromProperty);
             }
 
 
@@ -374,26 +356,17 @@ namespace Marvin.JsonPatch.Adapters
         private void Remove(string path, T objectToApplyTo, Operation<T> operationToReport)
         {
 
-            var removeFromList = false;
-            var positionAsInteger = -1;
-            var actualPathToProperty = path;
+            // get path result
+            var pathResult = PropertyHelpers.GetActualPropertyPath(
+                path,
+                objectToApplyTo,
+                operationToReport,
+                false);
 
-            if (path.EndsWith("/-"))
-            {
-                removeFromList = true;
-                actualPathToProperty = path.Substring(0, path.Length - 2);
-            }
-            else
-            {
-                positionAsInteger = PropertyHelpers.GetNumericEnd(path);
-
-                if (positionAsInteger > -1)
-                {
-                    actualPathToProperty = path.Substring(0,
-                        path.IndexOf('/' + positionAsInteger.ToString()));
-                }
-            }
-
+            var removeFromList = pathResult.ExecuteAtEnd;
+            var positionAsInteger = pathResult.NumericEnd;
+            var actualPathToProperty = pathResult.PathToProperty;
+  
             var pathProperty = PropertyHelpers
                 .FindProperty(objectToApplyTo, actualPathToProperty);
 
@@ -563,10 +536,8 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Replace(Operation<T> operation, T objectToApplyTo)
         {
-
             Remove(operation.path, objectToApplyTo, operation);
             Add(operation.path, operation.value, objectToApplyTo, operation);
-
         }
 
 
@@ -594,24 +565,20 @@ namespace Marvin.JsonPatch.Adapters
         /// <param name="objectApplyTo">Object to apply the operation to</param>
         public void Copy(Operation<T> operation, T objectToApplyTo)
         {
-
-            // get value at from location
             object valueAtFromLocation = null;
-            var positionAsInteger = -1;
-            var actualFromProperty = operation.from;
 
-
-            positionAsInteger = PropertyHelpers.GetNumericEnd(operation.from);
-
-            if (positionAsInteger > -1)
-            {
-                actualFromProperty = operation.from.Substring(0,
-                    operation.from.IndexOf('/' + positionAsInteger.ToString()));
-            }
-
-
+            // get path result
+            var pathResult = PropertyHelpers.GetActualPropertyPath(
+                operation.from,
+                objectToApplyTo,
+                operation,
+                true);
+        
+            var positionAsInteger = pathResult.NumericEnd;
+            var actualPathToFromProperty = pathResult.PathToProperty;
+             
             PropertyInfo fromProperty = PropertyHelpers
-                .FindProperty(objectToApplyTo, actualFromProperty);
+                .FindProperty(objectToApplyTo, actualPathToFromProperty);
 
             // does property at from exist?
             if (fromProperty == null)
@@ -641,7 +608,7 @@ namespace Marvin.JsonPatch.Adapters
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
 
                     // get value (it can be cast, we just checked that)
-                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty) as IList;
+                    var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualPathToFromProperty) as IList;
 
                     if (array.Count <= positionAsInteger)
                     {
@@ -671,7 +638,7 @@ namespace Marvin.JsonPatch.Adapters
             else
             {
                 // no list, just get the value
-                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualFromProperty);
+                valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualPathToFromProperty);
             }
 
             // add operation to target location with that value.
