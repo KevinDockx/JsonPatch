@@ -9,6 +9,6 @@ namespace Marvin.JsonPatch
 {
     public interface IJsonPatchDocument
     {
-        List<Operation> GetOperations();
+        IList<Operation> GetOperations();
     }
 }

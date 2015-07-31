@@ -52,7 +52,7 @@
     <Compile Include="Operations\OperationType.cs" />
     <Compile Include="Operations\TypedOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="JsonPatchDocument.cs" />
+    <Compile Include="JsonPatchDocumentOfT.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

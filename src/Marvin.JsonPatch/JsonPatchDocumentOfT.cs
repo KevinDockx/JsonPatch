@@ -365,9 +365,9 @@ namespace Marvin.JsonPatch
             {
                 op.Apply(objectToApplyTo, adapter);
             }
-        } 
- 
-        public List<Operation> GetOperations()
+        }
+
+        IList<Operation> IJsonPatchDocument.GetOperations()
         {
             var allOps = new List<Operation>();
 
@@ -385,7 +385,29 @@ namespace Marvin.JsonPatch
                     allOps.Add(untypedOp);
                 }
             }
+
             return allOps;
         }
+
+        //public List<Operation> GetOperations()
+        //{
+        //    var allOps = new List<Operation>();
+
+        //    if (Operations != null)
+        //    {
+        //        foreach (var op in Operations)
+        //        {
+        //            var untypedOp = new Operation();
+
+        //            untypedOp.op = op.op;
+        //            untypedOp.value = op.value;
+        //            untypedOp.path = op.path;
+        //            untypedOp.from = op.from;
+
+        //            allOps.Add(untypedOp);
+        //        }
+        //    }
+        //    return allOps;
+        //}
     }
 }
