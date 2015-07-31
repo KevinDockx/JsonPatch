@@ -148,6 +148,17 @@ namespace Marvin.JsonPatch.Adapters
                                 , 422);
                     }
 
+                    if (!pathProperty.CanRead)
+                    {
+                        // cannot get the property
+                        throw new JsonPatchException(
+                              new JsonPatchError(
+                               objectToApplyTo,
+                               operationToReport,
+                               string.Format("Patch failed: cannot get property value at location from: {0}.  Possible cause: the property doesn't have an accessible getter.", path)),
+                              422);
+                    }
+
                     // get value (it can be cast, we just checked that)
                     var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathToProperty) as IList;
                     
@@ -191,6 +202,17 @@ namespace Marvin.JsonPatch.Adapters
                 // conversion successful
                 if (conversionResultTuple.CanBeConverted)
                 {
+                    if (!pathProperty.CanWrite)
+                    {
+                        // cannot set the property
+                        throw new JsonPatchException(
+                              new JsonPatchError(
+                               objectToApplyTo,
+                               operationToReport,
+                               string.Format("Patch failed: cannot set property value at path {0}.  Possible cause: the property doesn't have an accessible setter.", path)), 
+                              422); 
+                    }
+
                     PropertyHelpers.SetValue(pathProperty, objectToApplyTo, actualPathToProperty,
                         conversionResultTuple.ConvertedInstance);
                 }
@@ -271,6 +293,17 @@ namespace Marvin.JsonPatch.Adapters
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
 
+                    if (!fromProperty.CanRead)
+                    {
+                        // cannot get the property
+                        throw new JsonPatchException(
+                              new JsonPatchError(
+                               objectToApplyTo,
+                               operation,
+                               string.Format("Patch failed: cannot get property value at location from: {0}.  Possible cause: the property doesn't have an accessible getter.", operation.from)),
+                              422);
+                    }
+
                     // get value (it can be cast, we just checked that)
                     var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualPathToFromProperty) as IList;
 
@@ -298,6 +331,17 @@ namespace Marvin.JsonPatch.Adapters
             }
             else
             {
+                if (!fromProperty.CanRead)
+                {
+                    // cannot get the property
+                    throw new JsonPatchException(
+                          new JsonPatchError(
+                           objectToApplyTo,
+                           operation,
+                           string.Format("Patch failed: cannot get property value at location from: {0}.  Possible cause: the property doesn't have an accessible getter.", operation.from)),
+                          422);
+                }
+
                 // no list, just get the value
                 valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualPathToFromProperty);
             }
@@ -375,6 +419,17 @@ namespace Marvin.JsonPatch.Adapters
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
 
+                    if (!pathProperty.CanRead)
+                    {
+                        // cannot get the property
+                        throw new JsonPatchException(
+                              new JsonPatchError(
+                               objectToApplyTo,
+                               operationToReport,
+                               string.Format("Patch failed: cannot get property value at path: {0}.  Possible cause: the property doesn't have an accessible getter.", path)),
+                              422);
+                    }
+
                     // get value (it can be cast, we just checked that)
                     var array = PropertyHelpers.GetValue(pathProperty, objectToApplyTo, actualPathToProperty) as IList;
 
@@ -423,6 +478,17 @@ namespace Marvin.JsonPatch.Adapters
             }
             else
             {
+                if (!pathProperty.CanWrite)
+                {
+                    // cannot set the property
+                    throw new JsonPatchException(
+                          new JsonPatchError(
+                           objectToApplyTo,
+                           operationToReport,
+                           string.Format("Patch failed: cannot set property value at path {0}.  Possible cause: the property doesn't have an accessible setter.", path)),
+                          422);
+                }
+
                 // setting the value to "null" will use the default value in case of value types, and
                 // null in case of reference types
                 PropertyHelpers.SetValue(pathProperty, objectToApplyTo, actualPathToProperty, null);
@@ -578,6 +644,17 @@ namespace Marvin.JsonPatch.Adapters
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
 
+                    if (!fromProperty.CanRead)
+                    {
+                        // cannot get the property
+                        throw new JsonPatchException(
+                              new JsonPatchError(
+                               objectToApplyTo,
+                               operation,
+                               string.Format("Patch failed: cannot get property value at location from: {0}.  Possible cause: the property doesn't have an accessible getter.", operation.from)),
+                              422);
+                    }
+
                     // get value (it can be cast, we just checked that)
                     var array = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualPathToFromProperty) as IList;
 
@@ -607,6 +684,17 @@ namespace Marvin.JsonPatch.Adapters
             }
             else
             {
+                if (!fromProperty.CanRead)
+                {
+                    // cannot get the property
+                    throw new JsonPatchException(
+                          new JsonPatchError(
+                           objectToApplyTo,
+                           operation,
+                           string.Format("Patch failed: cannot get property value at location from: {0}.  Possible cause: the property doesn't have an accessible getter.", operation.from)),
+                          422);
+                }
+
                 // no list, just get the value
                 valueAtFromLocation = PropertyHelpers.GetValue(fromProperty, objectToApplyTo, actualPathToFromProperty);
             }
