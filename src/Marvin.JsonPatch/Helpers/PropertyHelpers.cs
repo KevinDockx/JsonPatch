@@ -201,18 +201,6 @@ namespace Marvin.JsonPatch.Helpers
             return null;
         }
         
-        internal static int GetNumericEnd(string path)
-        {
-            var possibleIndex = path.Substring(path.LastIndexOf("/") + 1);
-            var castedIndex = -1;
-
-            if (int.TryParse(possibleIndex, out castedIndex))
-            {
-                return castedIndex;
-            }
-            return -1;
-        }
-        
         private static PropertyInfo GetPropertyInfo(object targetObject, string propertyName,
         BindingFlags bindingFlags)
         {
