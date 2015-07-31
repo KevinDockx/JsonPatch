@@ -107,8 +107,7 @@ namespace Marvin.JsonPatch.Adapters
  
             var pathProperty = PropertyHelpers
                 .FindProperty(objectToApplyTo, actualPathToProperty);
-
-
+            
             // does property at path exist?
             if (pathProperty == null)
             {
