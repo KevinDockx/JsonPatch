@@ -564,6 +564,25 @@ namespace Marvin.JsonPatch.XUnitTest
 
 
         [Fact]
+        public void SerializationNoEnvelope()
+        {
+            var doc = new SimpleDTO()
+            {
+                StringProperty = "A" 
+            };
+
+            // create patch
+            var patch = "[{ \"op\": \"replace\", \"path\": \"/stringproperty\", \"value\": \"B\" }]";
+             
+            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(patch);
+            deserialized.ApplyTo(doc);
+
+            Assert.Equal("B", doc.StringProperty); 
+        }
+
+
+
+        [Fact]
         public void SerializationMustNotIncudeEnvelope()
         {
             var doc = new SimpleDTO()
