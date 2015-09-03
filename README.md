@@ -96,12 +96,12 @@ patchDoc.Move<int>(o => o.IntegerList, 0, o => o.IntegerList, 1);
 To create a JsonPatchDocument directly in JSON:
 
 ```
-{
+
     [
         { "op": "add", "path": "/foo", "value": "bar"},
         { "op": "replace", "path": "/baz", "value": "boo" }
     ]
-}
+
 ```
 
 As the package is distributed as a Portable Class library, you can use it from (ASP) .NET (4+), Windows Phone (8.1), Windows Store apps (8+), Xamarin, ...
