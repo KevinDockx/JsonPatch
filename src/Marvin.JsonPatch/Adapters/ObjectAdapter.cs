@@ -126,11 +126,8 @@ namespace Marvin.JsonPatch.Adapters
 
             if (appendList || positionAsInteger > -1)
             {
-                var isNonStringArray = !(pathProperty.PropertyType == typeof(string))
-                    && typeof(IList).IsAssignableFrom(pathProperty.PropertyType);
-
                 // what if it's an array but there's no position??
-                if (isNonStringArray)
+                if (pathProperty.PropertyType.IsNonStringList())
                 {
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
@@ -284,10 +281,7 @@ namespace Marvin.JsonPatch.Adapters
 
             if (positionAsInteger > -1)
             {
-                var isNonStringArray = !(fromProperty.PropertyType == typeof(string))
-                    && typeof(IList).IsAssignableFrom(fromProperty.PropertyType);
-
-                if (isNonStringArray)
+                if (fromProperty.PropertyType.IsNonStringList())
                 {
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
@@ -409,11 +403,8 @@ namespace Marvin.JsonPatch.Adapters
             // or at the end.
             if (removeFromList || positionAsInteger > -1)
             {
-                var isNonStringArray = !(pathProperty.PropertyType == typeof(string))
-                    && typeof(IList).IsAssignableFrom(pathProperty.PropertyType);
-
                 // what if it's an array but there's no position??
-                if (isNonStringArray)
+                if (pathProperty.PropertyType.IsNonStringList())
                 {
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
@@ -634,11 +625,7 @@ namespace Marvin.JsonPatch.Adapters
 
             if (positionAsInteger > -1)
             {
-
-                var isNonStringArray = !(fromProperty.PropertyType == typeof(string))
-                    && typeof(IList).IsAssignableFrom(fromProperty.PropertyType);
-
-                if (isNonStringArray)
+                if (fromProperty.PropertyType.IsNonStringList())
                 {
                     // now, get the generic type of the enumerable
                     var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
