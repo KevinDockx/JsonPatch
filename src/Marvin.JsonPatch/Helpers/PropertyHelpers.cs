@@ -248,5 +248,30 @@ namespace Marvin.JsonPatch.Helpers
                 return new ActualPropertyPathResult(-1, propertyPath, false);
             }
         }
+
+        internal static bool IsNonStringList(this Type propertyType)
+        {
+            var isNonString = propertyType != typeof(string);
+            var isList = typeof(IList).IsAssignableFrom(propertyType);
+            var isGenericList = propertyType.ImplementsGeneric(typeof(IList<>));
+            return isNonString && (isList || isGenericList);
+        }
+
+        internal static bool ImplementsGeneric(this Type propertyType, Type genericInterfaceDefinition)
+        {
+            if (genericInterfaceDefinition == null)
+                throw new ArgumentNullException();
+
+            if (!genericInterfaceDefinition.IsInterface || !genericInterfaceDefinition.IsGenericTypeDefinition)
+                throw new ArgumentNullException();
+
+            if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == genericInterfaceDefinition)
+                return true;
+
+            return propertyType.GetInterfaces()
+                .Where(i => i.IsGenericType)
+                .Select(i => i.GetGenericTypeDefinition())
+                .Contains(genericInterfaceDefinition);
+        }
     }
 }

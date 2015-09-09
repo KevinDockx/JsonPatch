@@ -75,6 +75,23 @@ namespace Marvin.JsonPatch.XUnitTest
             Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.IntegerList);
         }
 
+        [Fact]
+        public void AddToGenericList()
+        {
+            var doc = new SimpleDTO
+            {
+                IntegerGenericList = new List<int> { 1, 2, 3 }
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Add(o => o.IntegerGenericList, 4, 0);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.Equal(new List<int> { 4, 1, 2, 3 }, doc.IntegerGenericList);
+        }
+
 
         [Fact]
         public void AddToListWithSerialization()
@@ -374,6 +391,23 @@ namespace Marvin.JsonPatch.XUnitTest
             patchDoc.ApplyTo(doc);
 
             Assert.Equal(new List<int>() { 1, 2 }, doc.IntegerList);
+        }
+
+        [Fact]
+        public void RemoveFromGenericList()
+        {
+            var doc = new SimpleDTO
+            {
+                IntegerGenericList = new List<int> { 1, 2, 3 }
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Remove(o => o.IntegerGenericList, 2);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.Equal(new List<int> { 1, 2 }, doc.IntegerGenericList);
         }
 
 
@@ -777,6 +811,23 @@ namespace Marvin.JsonPatch.XUnitTest
             patchDoc.ApplyTo(doc);
             
             Assert.Equal(new List<int>() { 5, 2, 3 }, doc.IntegerList);
+        }
+
+        [Fact]
+        public void ReplaceInGenericList()
+        {
+            var doc = new SimpleDTO
+            {
+                IntegerGenericList = new List<int> { 1, 2, 3 }
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Replace(o => o.IntegerGenericList, 5, 0);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.Equal(new List<int> { 5, 2, 3 }, doc.IntegerGenericList);
 
         }
 
@@ -1126,6 +1177,23 @@ namespace Marvin.JsonPatch.XUnitTest
         }
 
         [Fact]
+        public void CopyInGenericList()
+        {
+            var doc = new SimpleDTO
+            {
+                IntegerGenericList = new List<int> { 1, 2, 3 }
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Copy(o => o.IntegerGenericList, 0, o => o.IntegerGenericList, 1);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.Equal(new List<int> { 1, 1, 2, 3 }, doc.IntegerGenericList);
+        }
+
+        [Fact]
         public void CopyInListWithSerialization()
         {
             var doc = new SimpleDTO()
@@ -1372,6 +1440,23 @@ namespace Marvin.JsonPatch.XUnitTest
             patchDoc.ApplyTo(doc);
 
             Assert.Equal(new List<int>() { 2, 1, 3 }, doc.IntegerList);
+        }
+
+        [Fact]
+        public void MoveInGenericList()
+        {
+            var doc = new SimpleDTO
+            {
+                IntegerGenericList = new List<int> { 1, 2, 3 }
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Move(o => o.IntegerGenericList, 0, o => o.IntegerGenericList, 1);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.Equal(new List<int> { 2, 1, 3 }, doc.IntegerGenericList);
         }
 
 
