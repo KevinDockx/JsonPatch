@@ -606,7 +606,7 @@ namespace Marvin.JsonPatch.XUnitTest
             };
 
             // create patch
-            var patch = "[{ \"op\": \"replace\", \"path\": \"/stringproperty\", \"value\": \"B\" }]";
+            var patch = "[{ \"op\": \"replace\", \"path\": \"/StringProperty\", \"value\": \"B\" }]";
              
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(patch);
             deserialized.ApplyTo(doc);

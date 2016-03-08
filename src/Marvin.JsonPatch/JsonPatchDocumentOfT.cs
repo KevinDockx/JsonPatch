@@ -18,22 +18,57 @@ using System.Linq.Expressions;
 // not according to RFC 6902, and would thus break cross-platform compatibility. 
 
 namespace Marvin.JsonPatch
-{  
-    [JsonConverter(typeof(TypedJsonPatchDocumentConverter))]
-    public class JsonPatchDocument<T>: IJsonPatchDocument where T:class 
+{
+    public static class JsonPatchDocument
     {
-         public List<Operation<T>> Operations { get; private set; }
+        private static IJsonPatchPropertyResolver _defaultResolver = new DefaultJsonPatchPropertyResolver();
+        public static IJsonPatchPropertyResolver DefaultResolver
+        {
+            get { return _defaultResolver; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                _defaultResolver = value;
+            }
+        }
+    }
+
+    [JsonConverter(typeof(TypedJsonPatchDocumentConverter))]
+    public class JsonPatchDocument<T>: IJsonPatchDocument where T:class
+    {
+        private static IJsonPatchPropertyResolver _defaultResolver;
+
+        public static IJsonPatchPropertyResolver DefaultResolver
+        {
+            get { return _defaultResolver ?? JsonPatchDocument.DefaultResolver; }
+            set { _defaultResolver = value; }
+        }
+
+        private readonly IJsonPatchPropertyResolver _resolver;
+
+        public List<Operation<T>> Operations { get; private set; }
  
         public JsonPatchDocument()
+            : this(null, null)
         {
-            Operations = new List<Operation<T>>();
         }
 
         // Create from list of operations  
         public JsonPatchDocument(List<Operation<T>> operations)
+            : this(operations, null)
         {
-            Operations = operations;
-         
+        }
+
+        public JsonPatchDocument(IJsonPatchPropertyResolver resolver)
+            : this(null, resolver)
+        {
+        }
+
+        public JsonPatchDocument(List<Operation<T>> operations, IJsonPatchPropertyResolver resolver)
+        {
+            Operations = operations ?? new List<Operation<T>>();
+            _resolver = resolver ?? DefaultResolver;
         }
 
         /// <summary>
@@ -46,7 +81,7 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, TProp>> path, TProp value)
         {
-            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, TProp>(path).ToLowerInvariant(), null, value));
+            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, TProp>(path, _resolver), null, value));
             return this;
         }
 
@@ -60,7 +95,7 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value, int position)
         {
-            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() + "/" + position, null, value));
+            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) + "/" + position, null, value));
             return this;
         }
 
@@ -73,7 +108,7 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value)
         {
-            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() + "/-", null, value));
+            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) + "/-", null, value));
             return this;
         }
 
@@ -86,7 +121,7 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Remove<TProp>(Expression<Func<T, TProp>> path)
         {
-            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, TProp>(path).ToLowerInvariant(), null));
+            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, TProp>(path, _resolver), null));
             return this;
         }
 
@@ -99,7 +134,7 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Remove<TProp>(Expression<Func<T, IList<TProp>>> path, int position)
         {
-            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() + "/" + position, null));
+            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) + "/" + position, null));
             return this;
         }
 
@@ -111,7 +146,7 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Remove<TProp>(Expression<Func<T, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() + "/-", null));
+            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) + "/-", null));
             return this;
         }
 
@@ -124,7 +159,7 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Replace<TProp>(Expression<Func<T, TProp>> path, TProp value)
         {
-            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, TProp>(path).ToLowerInvariant(), null, value));
+            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, TProp>(path, _resolver), null, value));
             return this;
         }
 
@@ -137,7 +172,7 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Replace<TProp>(Expression<Func<T, IList<TProp>>> path,  TProp value, int position)
         {
-            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() + "/" + position, null, value));
+            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) + "/" + position, null, value));
             return this;
         }
 
@@ -149,7 +184,7 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Replace<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value)
         {
-            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() + "/-", null, value));
+            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) + "/-", null, value));
             return this;
         }
 
@@ -162,8 +197,8 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, TProp>> path)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, TProp>(path).ToLowerInvariant()
-                , ExpressionHelpers.GetPath<T, TProp>(from).ToLowerInvariant()));
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, TProp>(path, _resolver)
+                , ExpressionHelpers.GetPath<T, TProp>(from, _resolver)));
             return this;
         }
         
@@ -177,8 +212,8 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom, Expression<Func<T, TProp>> path)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, TProp>(path).ToLowerInvariant()
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLowerInvariant() + "/" + positionFrom));
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, TProp>(path, _resolver)
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, _resolver) + "/" + positionFrom));
             return this;
         }
 
@@ -193,9 +228,9 @@ namespace Marvin.JsonPatch
         public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, TProp>> from,
             Expression<Func<T, IList<TProp>>> path, int positionTo)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant()
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver)
                 + "/" + positionTo
-              , ExpressionHelpers.GetPath<T, TProp>(from).ToLowerInvariant()));
+              , ExpressionHelpers.GetPath<T, TProp>(from, _resolver)));
             return this;
         }
 
@@ -210,9 +245,9 @@ namespace Marvin.JsonPatch
         public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom,
             Expression<Func<T, IList<TProp>>> path, int positionTo)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant()
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver)
                 + "/" + positionTo
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLowerInvariant() + "/" + positionFrom));
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, _resolver) + "/" + positionFrom));
             return this;
         }
 
@@ -227,9 +262,9 @@ namespace Marvin.JsonPatch
         public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom,
             Expression<Func<T, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant()
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver)
                 + "/-"
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLowerInvariant() + "/" + positionFrom));
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, _resolver) + "/" + positionFrom));
             return this;
         }
 
@@ -243,8 +278,8 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() + "/-"
-              , ExpressionHelpers.GetPath<T, TProp>(from).ToLowerInvariant()));
+            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) + "/-"
+              , ExpressionHelpers.GetPath<T, TProp>(from, _resolver)));
             return this;
         }
 
@@ -257,8 +292,8 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, TProp>> path)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, TProp>(path).ToLowerInvariant()
-              , ExpressionHelpers.GetPath<T, TProp>(from).ToLowerInvariant()));
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, TProp>(path, _resolver)
+              , ExpressionHelpers.GetPath<T, TProp>(from, _resolver)));
             return this;
         }
 
@@ -272,8 +307,8 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom, Expression<Func<T, TProp>> path)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, TProp>(path).ToLowerInvariant()
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLowerInvariant() + "/" + positionFrom));
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, TProp>(path, _resolver)
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, _resolver) + "/" + positionFrom));
             return this;
         }
 
@@ -288,9 +323,9 @@ namespace Marvin.JsonPatch
         public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, TProp>> from, 
             Expression<Func<T, IList<TProp>>> path,  int positionTo)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T,IList< TProp>>(path).ToLowerInvariant()
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T,IList< TProp>>(path, _resolver)
                 + "/" + positionTo
-              , ExpressionHelpers.GetPath<T, TProp>(from).ToLowerInvariant()));
+              , ExpressionHelpers.GetPath<T, TProp>(from, _resolver)));
             return this;
         }
 
@@ -305,9 +340,9 @@ namespace Marvin.JsonPatch
         public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom, 
             Expression<Func<T, IList<TProp>>> path, int positionTo)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() 
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) 
                 + "/" + positionTo
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLowerInvariant() + "/" + positionFrom));
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, _resolver) + "/" + positionFrom));
             return this;
         }
 
@@ -322,9 +357,9 @@ namespace Marvin.JsonPatch
         public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom,
             Expression<Func<T, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() 
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) 
                 + "/-"
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from).ToLowerInvariant() + "/" + positionFrom));
+              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, _resolver) + "/" + positionFrom));
             return this;
         }
 
@@ -338,8 +373,8 @@ namespace Marvin.JsonPatch
         /// <returns></returns>
         public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path).ToLowerInvariant() + "/-"
-              , ExpressionHelpers.GetPath<T, TProp>(from).ToLowerInvariant()));
+            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path, _resolver) + "/-"
+              , ExpressionHelpers.GetPath<T, TProp>(from, _resolver)));
             return this;
         }         
 
@@ -363,7 +398,7 @@ namespace Marvin.JsonPatch
             // apply each operation in order
             foreach (var op in Operations)
             {
-                op.Apply(objectToApplyTo, adapter);
+                op.Apply(objectToApplyTo, adapter, _resolver);
             }
         }
 
