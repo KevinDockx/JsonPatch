@@ -18,10 +18,33 @@ using System.Linq.Expressions;
 // not according to RFC 6902, and would thus break cross-platform compatibility. 
 
 namespace Marvin.JsonPatch
-{  
+{
+    public static class JsonPatchDocument
+    {
+        private static IJsonPatchPropertyResolver _defaultResolver = new DefaultJsonPatchPropertyResolver();
+        public static IJsonPatchPropertyResolver DefaultResolver
+        {
+            get { return _defaultResolver; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                _defaultResolver = value;
+            }
+        }
+    }
+
     [JsonConverter(typeof(TypedJsonPatchDocumentConverter))]
     public class JsonPatchDocument<T>: IJsonPatchDocument where T:class
     {
+        private static IJsonPatchPropertyResolver _defaultResolver;
+
+        public static IJsonPatchPropertyResolver DefaultResolver
+        {
+            get { return _defaultResolver ?? JsonPatchDocument.DefaultResolver; }
+            set { _defaultResolver = value; }
+        }
+
         private readonly IJsonPatchPropertyResolver _resolver;
 
         public List<Operation<T>> Operations { get; private set; }
@@ -45,7 +68,7 @@ namespace Marvin.JsonPatch
         public JsonPatchDocument(List<Operation<T>> operations, IJsonPatchPropertyResolver resolver)
         {
             Operations = operations ?? new List<Operation<T>>();
-            _resolver = resolver ?? new DefaultJsonPatchPropertyResolver();
+            _resolver = resolver ?? DefaultResolver;
         }
 
         /// <summary>
