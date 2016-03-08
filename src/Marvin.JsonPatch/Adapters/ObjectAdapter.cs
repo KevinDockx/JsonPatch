@@ -74,9 +74,9 @@ namespace Marvin.JsonPatch.Adapters
         /// </summary>
         /// <param name="operation">The add operation</param>
         /// <param name="objectApplyTo">Object to apply the operation to</param>
-        public void Add(Operation<T> operation, T objectToApplyTo)
+        public void Add(Operation<T> operation, T objectToApplyTo, IJsonPatchPropertyResolver resolver)
         {
-            Add(operation.path, operation.value, objectToApplyTo, operation);
+            Add(operation.path, operation.value, objectToApplyTo, operation, resolver);
         }
 
 
@@ -84,7 +84,7 @@ namespace Marvin.JsonPatch.Adapters
         /// Add is used by various operations (eg: add, copy, ...), yet through different operations;
         /// This method allows code reuse yet reporting the correct operation on error
         /// </summary>
-        private void Add(string path, object value, T objectToApplyTo, Operation<T> operationToReport)
+        private void Add(string path, object value, T objectToApplyTo, Operation<T> operationToReport, IJsonPatchPropertyResolver resolver)
         {
             // add, in this implementation, does not just "add" properties - that's
             // technically impossible;  It can however be used to add items to arrays,
@@ -106,7 +106,7 @@ namespace Marvin.JsonPatch.Adapters
             var actualPathToProperty = pathResult.PathToProperty;
  
             var pathProperty = PropertyHelpers
-                .FindProperty(objectToApplyTo, actualPathToProperty);
+                .FindProperty(objectToApplyTo, actualPathToProperty, resolver);
             
             // does property at path exist?
             if (pathProperty == null)
@@ -247,7 +247,7 @@ namespace Marvin.JsonPatch.Adapters
         /// </summary>
         /// <param name="operation">The move operation</param>
         /// <param name="objectApplyTo">Object to apply the operation to</param>
-        public void Move(Operation<T> operation, T objectToApplyTo)
+        public void Move(Operation<T> operation, T objectToApplyTo, IJsonPatchPropertyResolver resolver)
         {
             // get path result
             var pathResult = PropertyHelpers.GetActualPropertyPath(
@@ -263,7 +263,7 @@ namespace Marvin.JsonPatch.Adapters
             object valueAtFromLocation = null; 
 
             var fromProperty = PropertyHelpers
-                .FindProperty(objectToApplyTo, actualPathToFromProperty);
+                .FindProperty(objectToApplyTo, actualPathToFromProperty, resolver);
 
             // does property at from exist?
             if (fromProperty == null)
@@ -283,9 +283,6 @@ namespace Marvin.JsonPatch.Adapters
             {
                 if (fromProperty.PropertyType.IsNonStringList())
                 {
-                    // now, get the generic type of the enumerable
-                    var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
-
                     if (!fromProperty.CanRead)
                     {
                         // cannot get the property
@@ -340,10 +337,10 @@ namespace Marvin.JsonPatch.Adapters
             }
 
             // remove that value
-            Remove(operation.from, objectToApplyTo, operation);
+            Remove(operation.from, objectToApplyTo, operation, resolver);
 
             // add that value to the path location
-            Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
+            Add(operation.path, valueAtFromLocation, objectToApplyTo, operation, resolver);
         }
 
 
@@ -361,9 +358,9 @@ namespace Marvin.JsonPatch.Adapters
         /// </summary>
         /// <param name="operation">The remove operation</param>
         /// <param name="objectApplyTo">Object to apply the operation to</param>
-        public void Remove(Operation<T> operation, T objectToApplyTo)
+        public void Remove(Operation<T> operation, T objectToApplyTo, IJsonPatchPropertyResolver resolver)
         {
-            Remove(operation.path, objectToApplyTo, operation);
+            Remove(operation.path, objectToApplyTo, operation, resolver);
         }
 
 
@@ -371,7 +368,7 @@ namespace Marvin.JsonPatch.Adapters
         /// Remove is used by various operations (eg: remove, move, ...), yet through different operations;
         /// This method allows code reuse yet reporting the correct operation on error
         /// </summary>
-        private void Remove(string path, T objectToApplyTo, Operation<T> operationToReport)
+        private void Remove(string path, T objectToApplyTo, Operation<T> operationToReport, IJsonPatchPropertyResolver resolver)
         {
             // get path result
             var pathResult = PropertyHelpers.GetActualPropertyPath(
@@ -385,7 +382,7 @@ namespace Marvin.JsonPatch.Adapters
             var actualPathToProperty = pathResult.PathToProperty;
   
             var pathProperty = PropertyHelpers
-                .FindProperty(objectToApplyTo, actualPathToProperty);
+                .FindProperty(objectToApplyTo, actualPathToProperty, resolver);
 
             // does the target location exist?
             if (pathProperty == null)
@@ -406,9 +403,6 @@ namespace Marvin.JsonPatch.Adapters
                 // what if it's an array but there's no position??
                 if (pathProperty.PropertyType.IsNonStringList())
                 {
-                    // now, get the generic type of the enumerable
-                    var genericTypeOfArray = PropertyHelpers.GetEnumerableType(pathProperty.PropertyType);
-
                     if (!pathProperty.CanRead)
                     {
                         // cannot get the property
@@ -535,7 +529,7 @@ namespace Marvin.JsonPatch.Adapters
         /// </summary>
         /// <param name="operation">The test operation</param>
         /// <param name="objectApplyTo">Object to apply the operation to</param>
-        public void Test(Operation<T> operation, T objectToApplyTo)
+        public void Test(Operation<T> operation, T objectToApplyTo, IJsonPatchPropertyResolver resolver)
         {
             throw new NotImplementedException("Test is not implemented");
         }
@@ -561,10 +555,10 @@ namespace Marvin.JsonPatch.Adapters
         /// </summary>
         /// <param name="operation">The replace operation</param>
         /// <param name="objectApplyTo">Object to apply the operation to</param>
-        public void Replace(Operation<T> operation, T objectToApplyTo)
+        public void Replace(Operation<T> operation, T objectToApplyTo, IJsonPatchPropertyResolver resolver)
         {
-            Remove(operation.path, objectToApplyTo, operation);
-            Add(operation.path, operation.value, objectToApplyTo, operation);
+            Remove(operation.path, objectToApplyTo, operation, resolver);
+            Add(operation.path, operation.value, objectToApplyTo, operation, resolver);
         }
 
 
@@ -590,7 +584,7 @@ namespace Marvin.JsonPatch.Adapters
         /// </summary>
         /// <param name="operation">The copy operation</param>
         /// <param name="objectApplyTo">Object to apply the operation to</param>
-        public void Copy(Operation<T> operation, T objectToApplyTo)
+        public void Copy(Operation<T> operation, T objectToApplyTo, IJsonPatchPropertyResolver resolver)
         {
             object valueAtFromLocation = null;
 
@@ -605,7 +599,7 @@ namespace Marvin.JsonPatch.Adapters
             var actualPathToFromProperty = pathResult.PathToProperty;
              
             PropertyInfo fromProperty = PropertyHelpers
-                .FindProperty(objectToApplyTo, actualPathToFromProperty);
+                .FindProperty(objectToApplyTo, actualPathToFromProperty, resolver);
 
             // does property at from exist?
             if (fromProperty == null)
@@ -627,9 +621,6 @@ namespace Marvin.JsonPatch.Adapters
             {
                 if (fromProperty.PropertyType.IsNonStringList())
                 {
-                    // now, get the generic type of the enumerable
-                    var genericTypeOfArray = PropertyHelpers.GetEnumerableType(fromProperty.PropertyType);
-
                     if (!fromProperty.CanRead)
                     {
                         // cannot get the property
@@ -686,7 +677,7 @@ namespace Marvin.JsonPatch.Adapters
             }
 
             // add operation to target location with that value.
-            Add(operation.path, valueAtFromLocation, objectToApplyTo, operation);
+            Add(operation.path, valueAtFromLocation, objectToApplyTo, operation, resolver);
         }
     }
 }

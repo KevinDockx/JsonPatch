@@ -11,13 +11,13 @@ namespace Marvin.JsonPatch.Helpers
 {
     internal static class ExpressionHelpers
     {
-        public static string GetPath<T, TProp>(Expression<Func<T, TProp>> expr) where T : class
+        public static string GetPath<T, TProp>(Expression<Func<T, TProp>> expr, IJsonPatchPropertyResolver resolver) where T : class
         {
-            return "/" + GetPath(expr.Body, true);
+            return "/" + GetPath(expr.Body, true, resolver);
         }
 
 
-        private static string GetPath(Expression expr, bool firstTime)
+        private static string GetPath(Expression expr, bool firstTime, IJsonPatchPropertyResolver resolver)
         {
             switch (expr.NodeType)
             {
@@ -26,7 +26,7 @@ namespace Marvin.JsonPatch.Helpers
 
                     if (ContinueWithSubPath(binaryExpression.Left.NodeType, false))
                     {
-                        var leftFromBinaryExpression = GetPath(binaryExpression.Left, false);
+                        var leftFromBinaryExpression = GetPath(binaryExpression.Left, false, resolver);
                         return leftFromBinaryExpression + "/" + binaryExpression.Right.ToString();
                     }
                     else
@@ -39,7 +39,7 @@ namespace Marvin.JsonPatch.Helpers
 
                     if (ContinueWithSubPath(methodCallExpression.Object.NodeType, false))
                     {
-                        var leftFromMemberCallExpression = GetPath(methodCallExpression.Object, false);
+                        var leftFromMemberCallExpression = GetPath(methodCallExpression.Object, false, resolver);
                         return leftFromMemberCallExpression + "/" +
                             GetIndexerInvocation(methodCallExpression.Arguments[0]);
                     }
@@ -49,19 +49,19 @@ namespace Marvin.JsonPatch.Helpers
                     }
 
                 case ExpressionType.Convert:
-                    return GetPath(((UnaryExpression)expr).Operand, false);
+                    return GetPath(((UnaryExpression)expr).Operand, false, resolver);
 
                 case ExpressionType.MemberAccess:
                     var memberExpression = expr as MemberExpression;
 
                     if (ContinueWithSubPath(memberExpression.Expression.NodeType, false))
                     {
-                        var left = GetPath(memberExpression.Expression, false);
-                        return left + "/" + memberExpression.Member.Name;
+                        var left = GetPath(memberExpression.Expression, false, resolver);
+                        return left + "/" + resolver.GetName(memberExpression.Member);
                     }
                     else
                     {
-                        return memberExpression.Member.Name;
+                        return resolver.GetName(memberExpression.Member);
                     }
 
                 case ExpressionType.Parameter:

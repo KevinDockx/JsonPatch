@@ -25,27 +25,28 @@ namespace Marvin.JsonPatch.Operations
         {
         } 
 
-        internal void Apply(T objectToApplyTo, IObjectAdapter<T> adapter)
+        internal void Apply(T objectToApplyTo, IObjectAdapter<T> adapter, IJsonPatchPropertyResolver resolver)
         {
             switch (OperationType)
             {
                 case OperationType.Add:
-                    adapter.Add(this, objectToApplyTo);
+                    adapter.Add(this, objectToApplyTo, resolver);
                     break;
                 case OperationType.Remove:
-                    adapter.Remove(this, objectToApplyTo);
+                    adapter.Remove(this, objectToApplyTo, resolver);
                     break;
                 case OperationType.Replace:
-                    adapter.Replace(this, objectToApplyTo);
+                    adapter.Replace(this, objectToApplyTo, resolver);
                     break;
                 case OperationType.Move:
-                    adapter.Move(this, objectToApplyTo);
+                    adapter.Move(this, objectToApplyTo, resolver);
                     break;
                 case OperationType.Copy:
-                    adapter.Copy(this, objectToApplyTo);
+                    adapter.Copy(this, objectToApplyTo, resolver);
                     break;
                 case OperationType.Test:
-                    throw new NotImplementedException("Test is currently not implemented.");   
+                    adapter.Test(this, objectToApplyTo, resolver);
+                    break;
                 default:
                     break;
             }

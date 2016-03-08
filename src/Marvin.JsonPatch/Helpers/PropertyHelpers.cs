@@ -102,7 +102,7 @@ namespace Marvin.JsonPatch.Helpers
             return true;
         }
         
-        public static PropertyInfo FindProperty(object targetObject, string pathToProperty)
+        public static PropertyInfo FindProperty(object targetObject, string pathToProperty, IJsonPatchPropertyResolver resolver)
         {
             try
             {
@@ -135,14 +135,12 @@ namespace Marvin.JsonPatch.Helpers
                     }
                     else
                     {
-                        var propertyInfoToGet = GetPropertyInfo(targetObject, splitPath[i]
-                        , BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                        var propertyInfoToGet = (PropertyInfo) resolver.GetMember(targetObject.GetType(), splitPath[i]);
                         targetObject = propertyInfoToGet.GetValue(targetObject, null);
                     }
                 }
 
-                var propertyToFind = targetObject.GetType().GetProperty(splitPath.Last(),
-                        BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                var propertyToFind = (PropertyInfo) resolver.GetMember(targetObject.GetType(), splitPath.Last());
 
                 return propertyToFind;
             }
