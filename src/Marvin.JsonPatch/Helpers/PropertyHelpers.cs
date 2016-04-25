@@ -141,10 +141,13 @@ namespace Marvin.JsonPatch.Helpers
                     }
                 }
 
-                var propertyToFind = targetObject.GetType().GetProperty(splitPath.Last(),
-                        BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                var matches = targetObject
+                                .GetType()
+                                .GetProperties(BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
+                                .Where(p => p.Name.ToLower().Equals(splitPath.Last().ToLower()))
+                                .ToArray(); //If type is derived, this query will get all properties of base types and declaring type.
 
-                return propertyToFind;
+                return matches.FirstOrDefault(p => p.DeclaringType == targetObject.GetType()) ?? matches.FirstOrDefault(); //If multiple properties exist with same name, preferentially returns PropertyInfo of derived type 
             }
             catch (Exception)
             {
