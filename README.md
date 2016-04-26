@@ -7,7 +7,7 @@ NuGet package: https://www.nuget.org/packages/Marvin.JsonPatch
 
 This component supports staticly typed objects.  Dynamically typed objects are supported as well: have a look at Marvin.JsonPatch.Dynamic (https://github.com/KevinDockx/JsonPatch.Dynamic). 
 
-Important: if you're using ASP .NET 5 (currently in beta), you don't need this component - I've been working with Microsoft on integrating this into ASP .NET 5.  Have a look at http://blog.kevindockx.com/post/Partial-Updates-for-Your-RESTful-API-with-JsonPatch-in-the-new-ASP-NET-5.aspx for more information.  
+Important: if you're using ASP.NET Core, you don't need this component - I've been working with Microsoft on integrating this into ASP.NET Core.  Have a look at http://blog.kevindockx.com/post/Partial-Updates-for-Your-RESTful-API-with-JsonPatch-in-the-new-ASP-NET-5.aspx for more information, or have a look at http://benfoster.io/blog/aspnet-core-json-patch-partial-api-updates for a more recent post on this.
 
 JSON Patch (https://tools.ietf.org/html/rfc6902) defines a JSON document structure for expressing a sequence of operations to apply to a JavaScript Object Notation (JSON) document; it is suitable for use with the HTTP PATCH method. The "application/json-patch+json" media type is used to identify such patch documents.
 
