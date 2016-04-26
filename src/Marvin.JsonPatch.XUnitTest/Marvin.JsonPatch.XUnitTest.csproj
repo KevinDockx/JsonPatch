@@ -48,7 +48,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DerivedDTO.cs" />
     <Compile Include="NestedDTO.cs" />
+    <Compile Include="ObjectAdapterTestsOnDerived.cs" />
     <Compile Include="ObjectAdapterTestsOnNested.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleDTO.cs" />
