@@ -115,6 +115,26 @@ namespace Marvin.JsonPatch.XUnitTest
             Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.IntegerList);
         }
 
+        [Fact]
+        public void AddDecimal()
+        {
+            var doc = new SimpleDTO()
+            {
+                DecimalValue = 10
+            };
+
+            // create patch
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Add(d => d.DecimalValue, 12);
+                
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
+        
+            deserialized.ApplyTo(doc);
+
+            Assert.Equal(12, doc.DecimalValue);
+        }
+
 
         [Fact]
         public void AddToListInvalidPositionTooLarge()
@@ -129,13 +149,7 @@ namespace Marvin.JsonPatch.XUnitTest
             patchDoc.Add<int>(o => o.IntegerList, 4, 4);
 
             Assert.Throws<JsonPatchException>(() => { patchDoc.ApplyTo(doc); });
-        }
-
-
-
-
-
-
+        } 
 
         [Fact]
         public void AddToListInvalidPositionTooLargeWithSerialization()
@@ -152,11 +166,8 @@ namespace Marvin.JsonPatch.XUnitTest
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
 
-            
-
             Assert.Throws<JsonPatchException>(() => { deserialized.ApplyTo(doc); });
         }
-
 
         [Fact]
         public void AddToListAtEnd()
@@ -172,12 +183,8 @@ namespace Marvin.JsonPatch.XUnitTest
 
             patchDoc.ApplyTo(doc);
 
-            Assert.Equal(new List<int>() { 1, 2, 3, 4 }, doc.IntegerList);
-
-
+            Assert.Equal(new List<int>() { 1, 2, 3, 4 }, doc.IntegerList);            
         }
-
-
 
         [Fact]
         public void AddToListAtEndWithSerialization()
@@ -193,16 +200,11 @@ namespace Marvin.JsonPatch.XUnitTest
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
-
-
+            
             deserialized.ApplyTo(doc);
 
             Assert.Equal(new List<int>() { 1, 2, 3, 4 }, doc.IntegerList);
-
-
         }
-
-
 
         [Fact]
         public void AddToListAtBeginning()
@@ -219,11 +221,7 @@ namespace Marvin.JsonPatch.XUnitTest
             patchDoc.ApplyTo(doc);
 
             Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.IntegerList);
-
-
         }
-
-
 
         [Fact]
         public void AddToListAtBeginningWithSerialization()
@@ -239,17 +237,11 @@ namespace Marvin.JsonPatch.XUnitTest
 
             var serialized = JsonConvert.SerializeObject(patchDoc);
             var deserialized = JsonConvert.DeserializeObject<JsonPatchDocument<SimpleDTO>>(serialized);
-
-
+            
             deserialized.ApplyTo(doc);
 
-            Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.IntegerList);
-
-
+            Assert.Equal(new List<int>() { 4, 1, 2, 3 }, doc.IntegerList);            
         }
-
-
- 
 
         [Fact]
         public void AddToListInvalidPositionTooSmall()
@@ -347,9 +339,41 @@ namespace Marvin.JsonPatch.XUnitTest
             patchDoc.ApplyTo(doc);
 
             Assert.Equal(null, doc.StringProperty);
-
         }
 
+        [Fact]
+        public void RemoveDecimal()
+        {
+            var doc = new SimpleDTO()
+            {
+                DecimalValue = 10
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Remove(o => o.DecimalValue);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.Equal(0, doc.DecimalValue);
+        }
+
+        [Fact]
+        public void RemoveInteger()
+        {
+            var doc = new SimpleDTO()
+            {
+                IntegerValue = 10
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Remove(o => o.IntegerValue);
+
+            patchDoc.ApplyTo(doc);
+
+            Assert.Equal(0, doc.IntegerValue);
+        }
 
 
 

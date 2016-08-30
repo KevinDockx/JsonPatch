@@ -6,6 +6,7 @@
 using Marvin.JsonPatch.Exceptions;
 using Marvin.JsonPatch.Operations;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -101,7 +102,8 @@ namespace Marvin.JsonPatch.Helpers
             propertyToSet.SetValue(targetObject, value, null);
             return true;
         }
-        
+ 
+
         public static PropertyInfo FindProperty(object targetObject, string pathToProperty)
         {
             try
@@ -276,5 +278,49 @@ namespace Marvin.JsonPatch.Helpers
                 .Select(i => i.GetGenericTypeDefinition())
                 .Contains(genericInterfaceDefinition);
         }
+
+        //internal static bool IsNonStringArray(Type type)
+        //{
+        //    if (GetIListType(type) != null)
+        //    {
+        //        return true;
+        //    }
+
+        //    return (!(type == typeof(string)) && typeof(IList)
+        //        .GetType().IsAssignableFrom(type.GetType()));
+        //}
+
+        //internal static bool IsGenericListType(Type type)
+        //{
+        //    if (type == null)
+        //        throw new ArgumentException("Parameter type cannot be null");
+
+        //    if (type.GetType().IsGenericType &&
+        //            type.GetGenericTypeDefinition() == typeof(IList<>))
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
+
+        //internal static Type GetIListType(Type type)
+        //{
+        //    if (type == null)
+        //        throw new ArgumentException("Parameter type cannot be null");
+
+        //    if (IsGenericListType(type))
+        //    {
+        //        return type.GetGenericArguments()[0];
+        //    }
+
+        //    foreach (Type interfaceType in type.GetType().GetInterfaces())
+        //    {
+        //        if (IsGenericListType(interfaceType))
+        //        {
+        //            return interfaceType.GetGenericArguments()[0];
+        //        }
+        //    }
+        //    return null;
+        //}
     }
 }

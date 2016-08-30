@@ -45,7 +45,11 @@
     <Compile Include="Helpers\ActualPropertyPathResult.cs" />
     <Compile Include="Helpers\ConversionResult.cs" />
     <Compile Include="Helpers\ExpressionHelpers.cs" />
+    <Compile Include="Helpers\GetValueResult.cs" />
+    <Compile Include="Helpers\JsonPatchProperty.cs" />
+    <Compile Include="Helpers\ObjectTreeAnalysisResult.cs" />
     <Compile Include="Helpers\PropertyHelpers.cs" />
+    <Compile Include="Helpers\RemovedPropertyTypeResult.cs" />
     <Compile Include="IJsonPatchDocument.cs" />
     <Compile Include="JsonPatchError.cs" />
     <Compile Include="Operations\OperationBase.cs" />
@@ -55,8 +59,9 @@
     <Compile Include="JsonPatchDocumentOfT.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

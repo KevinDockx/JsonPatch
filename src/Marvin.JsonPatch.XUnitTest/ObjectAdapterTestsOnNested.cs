@@ -611,21 +611,21 @@ namespace Marvin.JsonPatch.XUnitTest
 
         }
 
-
         [Fact]
         public void Replace()
         {
             var doc = new SimpleDTOWithNestedDTO()
-             {
-                 SimpleDTO = new SimpleDTO()
-           {
-               StringProperty = "A",
-               DecimalValue = 10
-           }
-             };
+            {
+                SimpleDTO = new SimpleDTO()
+                {
+                    StringProperty = "A",
+                    DecimalValue = 10
+                }
+            };
 
             // create patch
-            JsonPatchDocument<SimpleDTOWithNestedDTO> patchDoc = new JsonPatchDocument<SimpleDTOWithNestedDTO>();
+            JsonPatchDocument<SimpleDTOWithNestedDTO> patchDoc = 
+                new JsonPatchDocument<SimpleDTOWithNestedDTO>();
             patchDoc.Replace<string>(o => o.SimpleDTO.StringProperty, "B");
             patchDoc.Replace(o => o.SimpleDTO.DecimalValue, 12);
 
@@ -633,9 +633,6 @@ namespace Marvin.JsonPatch.XUnitTest
 
             Assert.Equal("B", doc.SimpleDTO.StringProperty);
             Assert.Equal(12, doc.SimpleDTO.DecimalValue);
-
-
-
         }
 
 
