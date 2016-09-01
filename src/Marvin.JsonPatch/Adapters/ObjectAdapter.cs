@@ -17,9 +17,20 @@ namespace Marvin.JsonPatch.Adapters
     {
         public IContractResolver ContractResolver { get; private set; }
 
+        /// <summary>
+        /// Instantiate a new ObjectAdapter
+        /// </summary>
         public ObjectAdapter()
         {
             ContractResolver = new DefaultContractResolver();
+        }
+
+        /// <summary>
+        /// Instantiate a new ObjectAdapter, passing in a custom IContractResolver
+        /// </summary>
+        public ObjectAdapter(IContractResolver contractResolver)
+        {
+            ContractResolver = contractResolver;
         }
 
         /// <summary>

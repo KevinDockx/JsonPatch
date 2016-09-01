@@ -8,6 +8,7 @@ using Marvin.JsonPatch.Converters;
 using Marvin.JsonPatch.Helpers;
 using Marvin.JsonPatch.Operations;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -23,17 +24,50 @@ namespace Marvin.JsonPatch
     public class JsonPatchDocument<T>: IJsonPatchDocument where T:class 
     {
          public List<Operation<T>> Operations { get; private set; }
- 
+
+        [JsonIgnore]
+        public IContractResolver ContractResolver { get; set; }
+
+        /// <summary>
+        /// Create a new JsonPatchDocument
+        /// </summary>
         public JsonPatchDocument()
         {
             Operations = new List<Operation<T>>();
+            ContractResolver = new DefaultContractResolver();
         }
 
-        // Create from list of operations  
+        /// <summary>
+        /// Create a new JsonPatchDocument, and pass in a custom contract resolver
+        /// to use when applying the document.
+        /// </summary>
+        /// <param name="contractResolver">A custom IContractResolver</param>
+        public JsonPatchDocument(IContractResolver contractResolver)
+        {
+            Operations = new List<Operation<T>>();
+            ContractResolver = contractResolver;
+        }
+        
+        /// <summary>
+        /// Create a new JsonPatchDocument from a list of operations
+        /// </summary>
+        /// <param name="operations">A list of operations</param>
         public JsonPatchDocument(List<Operation<T>> operations)
         {
             Operations = operations;
-         
+            ContractResolver = new DefaultContractResolver();
+        }
+
+        /// <summary>
+        /// Create a new JsonPatchDocument from a list of operations, and pass in a custom contract resolver 
+        /// to use when applying the document.
+        /// </summary>
+        /// <param name="operations">A list of operations</param>
+        /// <param name="contractResolver">A custom IContractResolver</param>
+        public JsonPatchDocument(List<Operation<T>> operations, IContractResolver contractResolver)
+        {
+            Operations = operations;
+            ContractResolver = contractResolver;
         }
 
         /// <summary>
@@ -349,7 +383,7 @@ namespace Marvin.JsonPatch
         /// <param name="objectToApplyTo">The object to apply the JsonPatchDocument to</param>
         public void ApplyTo(T objectToApplyTo)
         {
-            ApplyTo(objectToApplyTo, new ObjectAdapter<T>());
+            ApplyTo(objectToApplyTo, new ObjectAdapter<T>(ContractResolver));
         }
 
         /// <summary>
