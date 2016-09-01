@@ -3,6 +3,7 @@
 //
 // Enjoy :-)
 
+using Newtonsoft.Json;
 using System;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -12,11 +13,10 @@ namespace Marvin.JsonPatch.Helpers
     internal static class ExpressionHelpers
     {
         public static string GetPath<T, TProp>(Expression<Func<T, TProp>> expr) where T : class
-        {
+        {        
             return "/" + GetPath(expr.Body, true);
         }
-
-
+ 
         private static string GetPath(Expression expr, bool firstTime)
         {
             switch (expr.NodeType)
@@ -57,10 +57,39 @@ namespace Marvin.JsonPatch.Helpers
                     if (ContinueWithSubPath(memberExpression.Expression.NodeType, false))
                     {
                         var left = GetPath(memberExpression.Expression, false);
+
+                        // if there's a JsonProperty attribute, we must return the PropertyName
+                        // from the attribute rather than the member name 
+
+                        var jsonPropertyAttribute =
+                            memberExpression.Member.GetCustomAttributes(
+                            typeof(JsonPropertyAttribute), false);
+
+                        if (jsonPropertyAttribute.Length > 0)
+                        {
+                            // get value
+                            var castedAttribrute = jsonPropertyAttribute[0] as JsonPropertyAttribute;
+                            return left + "/" + castedAttribrute.PropertyName;
+                        }
+
                         return left + "/" + memberExpression.Member.Name;
                     }
                     else
                     {
+                        // Same here: if there's a JsonProperty attribute, we must return the PropertyName
+                        // from the attribute rather than the member name 
+
+                        var jsonPropertyAttribute =
+                            memberExpression.Member.GetCustomAttributes(
+                            typeof(JsonPropertyAttribute), false);
+
+                        if (jsonPropertyAttribute.Length > 0)
+                        {
+                            // get value
+                            var castedAttribrute = jsonPropertyAttribute[0] as JsonPropertyAttribute;
+                            return castedAttribrute.PropertyName;
+                        }
+
                         return memberExpression.Member.Name;
                     }
 

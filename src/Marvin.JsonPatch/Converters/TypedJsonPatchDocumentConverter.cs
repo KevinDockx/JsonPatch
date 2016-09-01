@@ -7,6 +7,7 @@ using Marvin.JsonPatch.Exceptions;
 using Marvin.JsonPatch.Operations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -62,13 +63,14 @@ namespace Marvin.JsonPatch.Converters
             }             
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, 
+            JsonSerializer serializer)
         {
             if (value is IJsonPatchDocument)
             {
                 var jsonPatchDoc = (IJsonPatchDocument)value;
                 var lst = jsonPatchDoc.GetOperations();
-                 
+
                 // write out the operations, no envelope
                 serializer.Serialize(writer, lst);
             }

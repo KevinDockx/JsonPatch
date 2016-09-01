@@ -374,7 +374,7 @@ namespace Marvin.JsonPatch
             if (Operations != null)
             {
                 foreach (var op in Operations)
-                {
+                {                    
                     var untypedOp = new Operation();
 
                     untypedOp.op = op.op;
