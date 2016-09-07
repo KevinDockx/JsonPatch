@@ -71,7 +71,7 @@ JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
 // add "4" to a list of integers at position 0
 patchDoc.Add<int>(o => o.IntegerList, 4, 0);
 
-// add "4" to the end of that list
+// add "5" to the end of that list
 patchDoc.Add<int>(o => o.IntegerList, 5);
 
 // remove the current value of StringProperty
