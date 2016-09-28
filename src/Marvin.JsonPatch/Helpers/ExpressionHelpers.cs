@@ -10,8 +10,18 @@ using System.Linq.Expressions;
 
 namespace Marvin.JsonPatch.Helpers
 {
-    internal static class ExpressionHelpers
+    /// <summary>
+    /// Expression helpers. These can be used when implementing custom ObjectAdapters.
+    /// </summary>
+    public static class ExpressionHelpers
     {
+        /// <summary>
+        /// Returns the path from a given expression.  Takes JsonProperty into account.
+        /// </summary>
+        /// <typeparam name="T">Class type</typeparam>
+        /// <typeparam name="TProp">Property type on class</typeparam>
+        /// <param name="expr">Expression the path must be returned from</param>
+        /// <returns>Property path</returns>
         public static string GetPath<T, TProp>(Expression<Func<T, TProp>> expr) where T : class
         {        
             return "/" + GetPath(expr.Body, true);
