@@ -1626,7 +1626,6 @@ namespace Marvin.JsonPatch.XUnitTest
             Assert.Equal(new List<int>() { 5, 1, 2, 3 }, doc.IntegerList);
         }
          
-
         [Fact]
         public void MoveToEndOfList()
         {
@@ -1644,9 +1643,7 @@ namespace Marvin.JsonPatch.XUnitTest
 
             Assert.Equal(0, doc.IntegerValue);
             Assert.Equal(new List<int>() { 1, 2, 3, 5 }, doc.IntegerList);
-
         }
-
 
         [Fact]
         public void MoveToEndOfListWithSerialization()
@@ -1668,8 +1665,48 @@ namespace Marvin.JsonPatch.XUnitTest
 
             Assert.Equal(0, doc.IntegerValue);
             Assert.Equal(new List<int>() { 1, 2, 3, 5 }, doc.IntegerList);
+        }
 
-        } 
+        [Fact]
+        public void AddOperation_AddsItem_WhenAddingToCustomList()
+        {
+            var doc = new DtoWithDerivedListProperty()
+            {
+                DerivedList = new DerivedList() { "a" },
+            };
 
+            // create patch
+            var patchDoc = new JsonPatchDocument<DtoWithDerivedListProperty>();
+            patchDoc.Add<string>(o => o.DerivedList, "b");
+ 
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var deserialized = JsonConvert
+                .DeserializeObject<JsonPatchDocument<DtoWithDerivedListProperty>>(serialized);
+
+            deserialized.ApplyTo(doc);
+
+            Assert.Equal(new DerivedList() { "a", "b" }, doc.DerivedList);
+        }
+
+        [Fact]
+        public void AddOperation_AddsItem_WhenAddingToCustomListOfT()
+        {
+            var doc = new DtoWithDerivedListProperty()
+            {
+                DerivedListOfT = new DerivedListOfT<int>() { 1 }
+            };
+
+            // create patch
+            var patchDoc = new JsonPatchDocument<DtoWithDerivedListProperty>();
+            patchDoc.Add<int>(o => o.DerivedListOfT, 2);
+
+            var serialized = JsonConvert.SerializeObject(patchDoc);
+            var deserialized = JsonConvert
+                .DeserializeObject<JsonPatchDocument<DtoWithDerivedListProperty>>(serialized);
+
+            deserialized.ApplyTo(doc);
+
+            Assert.Equal(new DerivedListOfT<int>() { 1, 2 }, doc.DerivedListOfT);
+        }
     }
 }

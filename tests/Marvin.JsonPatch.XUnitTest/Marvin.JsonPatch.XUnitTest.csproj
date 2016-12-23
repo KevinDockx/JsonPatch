@@ -63,6 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DerivedDTO.cs" />
+    <Compile Include="DerivedList.cs" />
+    <Compile Include="DtoWithDerivedListProperty.cs" />
     <Compile Include="JsonPropertyDTO.cs" />
     <Compile Include="JsonPropertyTests.cs" />
     <Compile Include="NestedDTO.cs" />
