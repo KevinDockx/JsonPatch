@@ -22,12 +22,12 @@ namespace Marvin.JsonPatch.Helpers
         /// <typeparam name="TProp">Property type on class</typeparam>
         /// <param name="expr">Expression the path must be returned from</param>
         /// <returns>Property path</returns>
-        public static string GetPath<T, TProp>(Expression<Func<T, TProp>> expr) where T : class
+        public static string GetPath<T, TProp>(Expression<Func<T, TProp>> expr, CaseTransformType caseTransformType) where T : class
         {        
-            return "/" + GetPath(expr.Body, true);
+            return "/" + GetPath(expr.Body, caseTransformType, true);
         }
  
-        private static string GetPath(Expression expr, bool firstTime)
+        private static string GetPath(Expression expr, CaseTransformType caseTransformType, bool firstTime)
         {
             switch (expr.NodeType)
             {
@@ -36,12 +36,12 @@ namespace Marvin.JsonPatch.Helpers
 
                     if (ContinueWithSubPath(binaryExpression.Left.NodeType, false))
                     {
-                        var leftFromBinaryExpression = GetPath(binaryExpression.Left, false);
-                        return leftFromBinaryExpression + "/" + binaryExpression.Right.ToString();
+                        var leftFromBinaryExpression = GetPath(binaryExpression.Left, caseTransformType, false);
+                        return leftFromBinaryExpression + "/" + CaseTransform(binaryExpression.Right.ToString(), caseTransformType);
                     }
                     else
                     {
-                        return binaryExpression.Right.ToString();
+                        return CaseTransform(binaryExpression.Right.ToString(), caseTransformType);
                     }
 
                 case ExpressionType.Call:
@@ -49,24 +49,24 @@ namespace Marvin.JsonPatch.Helpers
 
                     if (ContinueWithSubPath(methodCallExpression.Object.NodeType, false))
                     {
-                        var leftFromMemberCallExpression = GetPath(methodCallExpression.Object, false);
+                        var leftFromMemberCallExpression = GetPath(methodCallExpression.Object, caseTransformType, false);
                         return leftFromMemberCallExpression + "/" +
-                            GetIndexerInvocation(methodCallExpression.Arguments[0]);
+                            CaseTransform(GetIndexerInvocation(methodCallExpression.Arguments[0]), caseTransformType);
                     }
                     else
                     {
-                        return GetIndexerInvocation(methodCallExpression.Arguments[0]);
+                        return CaseTransform(GetIndexerInvocation(methodCallExpression.Arguments[0]), caseTransformType);
                     }
 
                 case ExpressionType.Convert:
-                    return GetPath(((UnaryExpression)expr).Operand, false);
+                    return GetPath(((UnaryExpression)expr).Operand, caseTransformType, false);
 
                 case ExpressionType.MemberAccess:
                     var memberExpression = expr as MemberExpression;
 
                     if (ContinueWithSubPath(memberExpression.Expression.NodeType, false))
                     {
-                        var left = GetPath(memberExpression.Expression, false);
+                        var left = GetPath(memberExpression.Expression, caseTransformType, false);
 
                         // if there's a JsonProperty attribute, we must return the PropertyName
                         // from the attribute rather than the member name 
@@ -79,10 +79,10 @@ namespace Marvin.JsonPatch.Helpers
                         {
                             // get value
                             var castedAttribrute = jsonPropertyAttribute[0] as JsonPropertyAttribute;
-                            return left + "/" + castedAttribrute.PropertyName;
+                            return left + "/" + CaseTransform(castedAttribrute.PropertyName, caseTransformType);
                         }
 
-                        return left + "/" + memberExpression.Member.Name;
+                        return left + "/" + CaseTransform(memberExpression.Member.Name, caseTransformType);
                     }
                     else
                     {
@@ -97,10 +97,10 @@ namespace Marvin.JsonPatch.Helpers
                         {
                             // get value
                             var castedAttribrute = jsonPropertyAttribute[0] as JsonPropertyAttribute;
-                            return castedAttribrute.PropertyName;
+                            return CaseTransform(castedAttribrute.PropertyName, caseTransformType);
                         }
 
-                        return memberExpression.Member.Name;
+                        return CaseTransform(memberExpression.Member.Name, caseTransformType);
                     }
 
                 case ExpressionType.Parameter:
@@ -141,6 +141,34 @@ namespace Marvin.JsonPatch.Helpers
             func = lambda.Compile();
 
             return Convert.ToString(func(null), CultureInfo.InvariantCulture);
+        }
+
+        public static string CaseTransform(string propertyName, CaseTransformType type)
+        {
+
+            if (string.IsNullOrWhiteSpace(propertyName)) return propertyName;
+
+            string result = string.Empty;
+
+            switch (type)
+            {
+                case CaseTransformType.CamelCase:
+                    result = Char.ToLowerInvariant(propertyName[0]) + propertyName.Substring(1);
+                    break;
+                case CaseTransformType.LowerCase:
+                    result = propertyName.ToLowerInvariant();
+                    break;
+                case CaseTransformType.UpperCase:
+                    result = propertyName.ToUpperInvariant();
+                    break;
+                case CaseTransformType.OriginalCase:
+                    result = propertyName;
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return result;
         }
     }
 }
