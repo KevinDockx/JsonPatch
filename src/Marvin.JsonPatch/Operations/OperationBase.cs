@@ -8,7 +8,7 @@ using System;
 
 namespace Marvin.JsonPatch.Operations
 {
-    public class Operation
+    public class OperationBase
     {
         [JsonIgnore]
         public OperationType OperationType
@@ -30,18 +30,18 @@ namespace Marvin.JsonPatch.Operations
         [JsonProperty("from")]
         public string from { get; set; }
         
-        public Operation()
+        public OperationBase()
         {
         }
 
-        public Operation(string op, string path, string from)
+        public OperationBase(string op, string path, string from)
         {
             this.op = op;
             this.path = path;
             this.from = from;
         }
      
-         public Operation(string op, string path, string from, object value)
+         public OperationBase(string op, string path, string from, object value)
              : this(op, path, from)
          {
              this.value = value;

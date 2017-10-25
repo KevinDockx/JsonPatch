@@ -3,18 +3,17 @@
 //
 // Enjoy :-)
 
-using System;
+using Marvin.JsonPatch.Operations;
+
 namespace Marvin.JsonPatch.Adapters
 {
-    public interface IObjectAdapter<T>
-     where T : class
+    public interface IObjectAdapter
     {
-        void Add(Marvin.JsonPatch.Operations.Operation<T> operation, T objectToApplyTo);
-        void Copy(Marvin.JsonPatch.Operations.Operation<T> operation, T objectToApplyTo);
-        void Move(Marvin.JsonPatch.Operations.Operation<T> operation, T objectToApplyTo);
-        void Remove(Marvin.JsonPatch.Operations.Operation<T> operation, T objectToApplyTo);
-        void Replace(Marvin.JsonPatch.Operations.Operation<T> operation, T objectToApplyTo);
-        void Test(Marvin.JsonPatch.Operations.Operation<T> operation, T objectToApplyTo);
+        void Add(Operation operation, object objectToApplyTo);
+        void Copy(Operation operation, object objectToApplyTo);
+        void Move(Operation operation, object objectToApplyTo);
+        void Remove(Operation operation, object objectToApplyTo);
+        void Replace(Operation operation, object objectToApplyTo);
     }
 
    

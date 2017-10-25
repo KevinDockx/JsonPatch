@@ -10,7 +10,7 @@ namespace Marvin.JsonPatch.Exceptions
 {
     public class JsonPatchException : Exception
     {
-        public Operation FailedOperation { get; private set; }
+        public OperationBase FailedOperation { get; private set; }
         public object AffectedObject { get; private set; }
         
         public int SuggestedStatusCode { get; internal set; }

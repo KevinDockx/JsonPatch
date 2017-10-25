@@ -215,7 +215,7 @@ namespace Marvin.JsonPatch.Helpers
         internal static ActualPropertyPathResult GetActualPropertyPath(
             string propertyPath,
             object objectToApplyTo,
-            Operation operationToReport,
+            OperationBase operationToReport,
             bool forPath)
         {
             if (propertyPath.EndsWith("/-"))

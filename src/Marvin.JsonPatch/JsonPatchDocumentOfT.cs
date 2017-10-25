@@ -7,10 +7,13 @@ using Marvin.JsonPatch.Adapters;
 using Marvin.JsonPatch.Converters;
 using Marvin.JsonPatch.Helpers;
 using Marvin.JsonPatch.Operations;
+using Marvin.JsonPatch.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 
 // Implementation details: the purpose of this type of patch document is to ensure we can do type-checking
@@ -19,11 +22,11 @@ using System.Linq.Expressions;
 // not according to RFC 6902, and would thus break cross-platform compatibility. 
 
 namespace Marvin.JsonPatch
-{  
+{
     [JsonConverter(typeof(TypedJsonPatchDocumentConverter))]
-    public class JsonPatchDocument<T>: IJsonPatchDocument where T:class 
+    public class JsonPatchDocument<TModel> : IJsonPatchDocument where TModel : class
     {
-        public List<Operation<T>> Operations { get; private set; }
+        public List<Operation<TModel>> Operations { get; private set; }
 
         [JsonIgnore]
         public IContractResolver ContractResolver { get; set; }
@@ -31,92 +34,45 @@ namespace Marvin.JsonPatch
         [JsonIgnore]
         public CaseTransformType CaseTransformType { get; set; }
 
-        /// <summary>
-        /// Create a new JsonPatchDocument
-        /// </summary>
-        public JsonPatchDocument() :
-            this(new List<Operation<T>>(), new DefaultContractResolver(), CaseTransformType.LowerCase)
+        public JsonPatchDocument() : this(CaseTransformType.LowerCase)
         {
         }
 
-        /// <summary>
-        /// Create a new JsonPatchDocument, and pass in a custom contract resolver
-        /// to use when applying the document.
-        /// </summary>
-        /// <param name="contractResolver">A custom IContractResolver</param>
-        public JsonPatchDocument(IContractResolver contractResolver)
-            : this (new List<Operation<T>>(), contractResolver, CaseTransformType.LowerCase)
-        {
-        }
-        
-        /// <summary>
-        /// Create a new JsonPatchDocument from a list of operations
-        /// </summary>
-        /// <param name="operations">A list of operations</param>
-        public JsonPatchDocument(List<Operation<T>> operations)
-            : this(operations, new DefaultContractResolver(), CaseTransformType.LowerCase)
-        {
-        }
-
-        /// <summary>
-        /// Create a new JsonPatchDocument and pass in a CaseTransformType
-        /// </summary>
-        /// <param name="caseTransformType">Defines the case used when seralizing the object to JSON</param>
         public JsonPatchDocument(CaseTransformType caseTransformType)
-            : this(new List<Operation<T>>(), new DefaultContractResolver(), caseTransformType)
         {
-        }
-
-        /// <summary>
-        /// Create a new JsonPatchDocument from a list of operations and pass in a CaseTransformType
-        /// </summary>
-        /// <param name="operations">A list of operations</param>
-        /// <param name="caseTransformType">Defines the case used when seralizing the object to JSON</param>
-        public JsonPatchDocument(List<Operation<T>> operations, CaseTransformType caseTransformType)
-            : this(operations, new DefaultContractResolver(), caseTransformType)
-        {
-        }
-
-        /// <summary>
-        /// Create a new JsonPatchDocument, and pass in a CaseTransformType and
-        /// custom contract resolver to use when applying the document.
-        /// </summary>
-        /// <param name="contractResolver">A custom IContractResolver</param>
-        /// <param name="caseTransformType">Defines the case used when seralizing the object to JSON</param>
-        public JsonPatchDocument(IContractResolver contractResolver, CaseTransformType caseTransformType)
-            : this(new List<Operation<T>>(), contractResolver, caseTransformType)
-        {
-        }
-
-        /// <summary>
-        /// Create a new JsonPatchDocument from a list of operations, and pass in a custom contract resolver 
-        /// to use when applying the document.
-        /// </summary>
-        /// <param name="operations">A list of operations</param>
-        /// <param name="contractResolver">A custom IContractResolver</param>
-        public JsonPatchDocument(List<Operation<T>> operations, IContractResolver contractResolver)
-            : this(operations, contractResolver, CaseTransformType.LowerCase)
-        {
-        }
-
-        public JsonPatchDocument(List<Operation<T>> operations, IContractResolver contractResolver, CaseTransformType caseTransformType)
-        {
-            Operations = operations;
-            ContractResolver = contractResolver;
+            Operations = new List<Operation<TModel>>();
+            ContractResolver = new DefaultContractResolver();
             CaseTransformType = caseTransformType;
         }
 
+        // Create from list of operations
+        public JsonPatchDocument(List<Operation<TModel>> operations, IContractResolver contractResolver)
+        {
+            Operations = operations ?? throw new ArgumentNullException(nameof(operations));
+            ContractResolver = contractResolver ?? throw new ArgumentNullException(nameof(contractResolver));
+        }
+
         /// <summary>
-        /// Add operation.  Will result in, for example, 
+        /// Add operation.  Will result in, for example,
         /// { "op": "add", "path": "/a/b/c", "value": [ "foo", "bar" ] }
         /// </summary>
         /// <typeparam name="TProp">value type</typeparam>
-        /// <param name="path">path</param>
+        /// <param name="path">target location</param>
         /// <param name="value">value</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, TProp>> path, TProp value)
+        public JsonPatchDocument<TModel> Add<TProp>(Expression<Func<TModel, TProp>> path, TProp value)
         {
-            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, TProp>(path, CaseTransformType), null, value));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "add",
+                GetPath(path, null),
+                from: null,
+                value: value));
+
             return this;
         }
 
@@ -124,26 +80,49 @@ namespace Marvin.JsonPatch
         /// Add value to list at given position
         /// </summary>
         /// <typeparam name="TProp">value type</typeparam>
-        /// <param name="path">path</param>
+        /// <param name="path">target location</param>
         /// <param name="value">value</param>
         /// <param name="position">position</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value, int position)
+        public JsonPatchDocument<TModel> Add<TProp>(
+            Expression<Func<TModel, IList<TProp>>> path,
+            TProp value,
+            int position)
         {
-            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) + "/" + position, null, value));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "add",
+                GetPath(path, position.ToString()),
+                from: null,
+                value: value));
+
             return this;
         }
 
-         /// <summary>
-         /// Add value at end of list
-         /// </summary>
+        /// <summary>
+        /// Add value to the end of the list
+        /// </summary>
         /// <typeparam name="TProp">value type</typeparam>
-        /// <param name="path">path</param>
+        /// <param name="path">target location</param>
         /// <param name="value">value</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Add<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value)
+        public JsonPatchDocument<TModel> Add<TProp>(Expression<Func<TModel, IList<TProp>>> path, TProp value)
         {
-            Operations.Add(new Operation<T>("add", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) + "/-", null, value));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "add",
+                GetPath(path, "-"),
+                from: null,
+                value: value));
+
             return this;
         }
 
@@ -151,12 +130,17 @@ namespace Marvin.JsonPatch
         /// Remove value at target location.  Will result in, for example,
         /// { "op": "remove", "path": "/a/b/c" }
         /// </summary>
-        /// <param name="remove"></param>
-        /// <param name="path"></param>
+        /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Remove<TProp>(Expression<Func<T, TProp>> path)
+        public JsonPatchDocument<TModel> Remove<TProp>(Expression<Func<TModel, TProp>> path)
         {
-            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, TProp>(path, CaseTransformType), null));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>("remove", GetPath(path, null), from: null));
+
             return this;
         }
 
@@ -167,9 +151,18 @@ namespace Marvin.JsonPatch
         /// <param name="path">target location</param>
         /// <param name="position">position</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Remove<TProp>(Expression<Func<T, IList<TProp>>> path, int position)
+        public JsonPatchDocument<TModel> Remove<TProp>(Expression<Func<TModel, IList<TProp>>> path, int position)
         {
-            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) + "/" + position, null));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "remove",
+                GetPath(path, position.ToString()),
+                from: null));
+
             return this;
         }
 
@@ -179,9 +172,18 @@ namespace Marvin.JsonPatch
         /// <typeparam name="TProp">value type</typeparam>
         /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Remove<TProp>(Expression<Func<T, IList<TProp>>> path)
+        public JsonPatchDocument<TModel> Remove<TProp>(Expression<Func<TModel, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("remove", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) + "/-", null));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "remove",
+                GetPath(path, "-"),
+                from: null));
+
             return this;
         }
 
@@ -189,12 +191,22 @@ namespace Marvin.JsonPatch
         /// Replace value.  Will result in, for example,
         /// { "op": "replace", "path": "/a/b/c", "value": 42 }
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="value"></param>
+        /// <param name="path">target location</param>
+        /// <param name="value">value</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Replace<TProp>(Expression<Func<T, TProp>> path, TProp value)
+        public JsonPatchDocument<TModel> Replace<TProp>(Expression<Func<TModel, TProp>> path, TProp value)
         {
-            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, TProp>(path, CaseTransformType), null, value));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "replace",
+                GetPath(path, null),
+                from: null,
+                value: value));
+
             return this;
         }
 
@@ -203,11 +215,23 @@ namespace Marvin.JsonPatch
         /// </summary>
         /// <typeparam name="TProp">value type</typeparam>
         /// <param name="path">target location</param>
+        /// <param name="value">value</param>
         /// <param name="position">position</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Replace<TProp>(Expression<Func<T, IList<TProp>>> path,  TProp value, int position)
+        public JsonPatchDocument<TModel> Replace<TProp>(Expression<Func<TModel, IList<TProp>>> path,
+            TProp value, int position)
         {
-            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) + "/" + position, null, value));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "replace",
+                GetPath(path, position.ToString()),
+                from: null,
+                value: value));
+
             return this;
         }
 
@@ -216,10 +240,21 @@ namespace Marvin.JsonPatch
         /// </summary>
         /// <typeparam name="TProp">value type</typeparam>
         /// <param name="path">target location</param>
+        /// <param name="value">value</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Replace<TProp>(Expression<Func<T, IList<TProp>>> path, TProp value)
+        public JsonPatchDocument<TModel> Replace<TProp>(Expression<Func<TModel, IList<TProp>>> path, TProp value)
         {
-            Operations.Add(new Operation<T>("replace", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) + "/-", null, value));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "replace",
+                GetPath(path, "-"),
+                from: null,
+                value: value));
+
             return this;
         }
 
@@ -227,28 +262,59 @@ namespace Marvin.JsonPatch
         /// Removes value at specified location and add it to the target location.  Will result in, for example:
         /// { "op": "move", "from": "/a/b/c", "path": "/a/b/d" }
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, TProp>> path)
+        public JsonPatchDocument<TModel> Move<TProp>(
+            Expression<Func<TModel, TProp>> from,
+            Expression<Func<TModel, TProp>> path)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, TProp>(path, CaseTransformType)
-                , ExpressionHelpers.GetPath<T, TProp>(from, CaseTransformType)));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "move",
+                GetPath(path, null),
+                GetPath(from, null)));
+
             return this;
         }
-        
+
         /// <summary>
         /// Move from a position in a list to a new location
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="positionFrom">position</param>
+        /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom, Expression<Func<T, TProp>> path)
+        public JsonPatchDocument<TModel> Move<TProp>(
+            Expression<Func<TModel, IList<TProp>>> from,
+            int positionFrom,
+            Expression<Func<TModel, TProp>> path)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, TProp>(path, CaseTransformType)
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, CaseTransformType) + "/" + positionFrom));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "move",
+                GetPath(path, null),
+                GetPath(from, positionFrom.ToString())));
+
             return this;
         }
 
@@ -256,16 +322,30 @@ namespace Marvin.JsonPatch
         /// Move from a property to a location in a list
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="path">target location</param>
+        /// <param name="positionTo">position</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, TProp>> from,
-            Expression<Func<T, IList<TProp>>> path, int positionTo)
+        public JsonPatchDocument<TModel> Move<TProp>(
+            Expression<Func<TModel, TProp>> from,
+            Expression<Func<TModel, IList<TProp>>> path,
+            int positionTo)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType)
-                + "/" + positionTo
-              , ExpressionHelpers.GetPath<T, TProp>(from, CaseTransformType)));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "move",
+                GetPath(path, positionTo.ToString()),
+                GetPath(from, null)));
+
             return this;
         }
 
@@ -273,16 +353,32 @@ namespace Marvin.JsonPatch
         /// Move from a position in a list to another location in a list
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="positionFrom">position (source)</param>
+        /// <param name="path">target location</param>
+        /// <param name="positionTo">position (target)</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom,
-            Expression<Func<T, IList<TProp>>> path, int positionTo)
+        public JsonPatchDocument<TModel> Move<TProp>(
+            Expression<Func<TModel, IList<TProp>>> from,
+            int positionFrom,
+            Expression<Func<TModel, IList<TProp>>> path,
+            int positionTo)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType)
-                + "/" + positionTo
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, CaseTransformType)+ "/" + positionFrom));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "move",
+                GetPath(path, positionTo.ToString()),
+                GetPath(from, positionFrom.ToString())));
+
             return this;
         }
 
@@ -290,16 +386,30 @@ namespace Marvin.JsonPatch
         /// Move from a position in a list to the end of another list
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="positionFrom">position</param>
+        /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom,
-            Expression<Func<T, IList<TProp>>> path)
+        public JsonPatchDocument<TModel> Move<TProp>(
+            Expression<Func<TModel, IList<TProp>>> from,
+            int positionFrom,
+            Expression<Func<TModel, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType)
-                + "/-"
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, CaseTransformType) + "/" + positionFrom));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "move",
+                GetPath(path, "-"),
+                GetPath(from, positionFrom.ToString())));
+
             return this;
         }
 
@@ -307,14 +417,28 @@ namespace Marvin.JsonPatch
         /// Move to the end of a list
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Move<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, IList<TProp>>> path)
+        public JsonPatchDocument<TModel> Move<TProp>(
+           Expression<Func<TModel, TProp>> from,
+           Expression<Func<TModel, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("move", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) + "/-"
-              , ExpressionHelpers.GetPath<T, TProp>(from, CaseTransformType)));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "move",
+                GetPath(path, "-"),
+                GetPath(from, null)));
+
             return this;
         }
 
@@ -322,13 +446,28 @@ namespace Marvin.JsonPatch
         /// Copy the value at specified location to the target location.  Willr esult in, for example:
         /// { "op": "copy", "from": "/a/b/c", "path": "/a/b/e" }
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, TProp>> path)
+        public JsonPatchDocument<TModel> Copy<TProp>(
+           Expression<Func<TModel, TProp>> from,
+           Expression<Func<TModel, TProp>> path)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, TProp>(path, CaseTransformType)
-              , ExpressionHelpers.GetPath<T, TProp>(from, CaseTransformType)));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "copy",
+                GetPath(path, null),
+                GetPath(from, null)));
+
             return this;
         }
 
@@ -336,14 +475,30 @@ namespace Marvin.JsonPatch
         /// Copy from a position in a list to a new location
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="positionFrom">position</param>
+        /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom, Expression<Func<T, TProp>> path)
+        public JsonPatchDocument<TModel> Copy<TProp>(
+           Expression<Func<TModel, IList<TProp>>> from,
+            int positionFrom,
+           Expression<Func<TModel, TProp>> path)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, TProp>(path, CaseTransformType)
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, CaseTransformType) + "/" + positionFrom));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "copy",
+                GetPath(path, null),
+                GetPath(from, positionFrom.ToString())));
+
             return this;
         }
 
@@ -351,16 +506,30 @@ namespace Marvin.JsonPatch
         /// Copy from a property to a location in a list
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="path">target location</param>
+        /// <param name="positionTo">position</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, TProp>> from, 
-            Expression<Func<T, IList<TProp>>> path,  int positionTo)
+        public JsonPatchDocument<TModel> Copy<TProp>(
+            Expression<Func<TModel, TProp>> from,
+            Expression<Func<TModel, IList<TProp>>> path,
+            int positionTo)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T,IList< TProp>>(path, CaseTransformType)
-                + "/" + positionTo
-              , ExpressionHelpers.GetPath<T, TProp>(from, CaseTransformType)));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "copy",
+                GetPath(path, positionTo.ToString()),
+                GetPath(from, null)));
+
             return this;
         }
 
@@ -368,16 +537,32 @@ namespace Marvin.JsonPatch
         /// Copy from a position in a list to a new location in a list
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="positionFrom">position (source)</param>
+        /// <param name="path">target location</param>
+        /// <param name="positionTo">position (target)</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom, 
-            Expression<Func<T, IList<TProp>>> path, int positionTo)
+        public JsonPatchDocument<TModel> Copy<TProp>(
+            Expression<Func<TModel, IList<TProp>>> from,
+            int positionFrom,
+            Expression<Func<TModel, IList<TProp>>> path,
+            int positionTo)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) 
-                + "/" + positionTo
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, CaseTransformType) + "/" + positionFrom));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "copy",
+                GetPath(path, positionTo.ToString()),
+                GetPath(from, positionFrom.ToString())));
+
             return this;
         }
 
@@ -385,16 +570,30 @@ namespace Marvin.JsonPatch
         /// Copy from a position in a list to the end of another list
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="positionFrom">position</param>
+        /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, IList<TProp>>> from, int positionFrom,
-            Expression<Func<T, IList<TProp>>> path)
+        public JsonPatchDocument<TModel> Copy<TProp>(
+            Expression<Func<TModel, IList<TProp>>> from,
+            int positionFrom,
+            Expression<Func<TModel, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) 
-                + "/-"
-              , ExpressionHelpers.GetPath<T, IList<TProp>>(from, CaseTransformType) + "/" + positionFrom));
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "copy",
+                GetPath(path, "-"),
+                GetPath(from, positionFrom.ToString())));
+
             return this;
         }
 
@@ -402,34 +601,92 @@ namespace Marvin.JsonPatch
         /// Copy to the end of a list
         /// </summary>
         /// <typeparam name="TProp"></typeparam>
-        /// <param name="from"></param>
-        /// <param name="positionFrom"></param>
-        /// <param name="path"></param>
+        /// <param name="from">source location</param>
+        /// <param name="path">target location</param>
         /// <returns></returns>
-        public JsonPatchDocument<T> Copy<TProp>(Expression<Func<T, TProp>> from, Expression<Func<T, IList<TProp>>> path)
+        public JsonPatchDocument<TModel> Copy<TProp>(
+            Expression<Func<TModel, TProp>> from,
+            Expression<Func<TModel, IList<TProp>>> path)
         {
-            Operations.Add(new Operation<T>("copy", ExpressionHelpers.GetPath<T, IList<TProp>>(path, CaseTransformType) + "/-"
-              , ExpressionHelpers.GetPath<T, TProp>(from, CaseTransformType)));
-            return this;
-        }         
+            if (from == null)
+            {
+                throw new ArgumentNullException(nameof(from));
+            }
 
-        /// <summary>
-        /// Apply the patch document.  This method will change the passed-in object.
-        /// </summary>
-        /// <param name="objectToApplyTo">The object to apply the JsonPatchDocument to</param>
-        public void ApplyTo(T objectToApplyTo)
-        {
-            ApplyTo(objectToApplyTo, new ObjectAdapter<T>(ContractResolver));
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            Operations.Add(new Operation<TModel>(
+                "copy",
+                GetPath(path, "-"),
+                GetPath(from, null)));
+
+            return this;
         }
 
         /// <summary>
-        /// Apply the patch document, passing in a custom IObjectAdapter<typeparamref name=">"/>. 
-        /// This method will change the passed-in object.
+        /// Apply this JsonPatchDocument
         /// </summary>
-        /// <param name="objectToApplyTo">The object to apply the JsonPatchDocument to</param>
-        /// <param name="adapter">The IObjectAdapter instance to use</param>
-        public void ApplyTo(T objectToApplyTo, IObjectAdapter<T> adapter)
+        /// <param name="objectToApplyTo">Object to apply the JsonPatchDocument to</param>
+        public void ApplyTo(TModel objectToApplyTo)
         {
+            if (objectToApplyTo == null)
+            {
+                throw new ArgumentNullException(nameof(objectToApplyTo));
+            }
+
+            ApplyTo(objectToApplyTo, new ObjectAdapter(ContractResolver, logErrorAction: null));
+        }
+
+        /// <summary>
+        /// Apply this JsonPatchDocument
+        /// </summary>
+        /// <param name="objectToApplyTo">Object to apply the JsonPatchDocument to</param>
+        /// <param name="logErrorAction">Action to log errors</param>
+        public void ApplyTo(TModel objectToApplyTo, Action<JsonPatchError> logErrorAction)
+        {
+            if (objectToApplyTo == null)
+            {
+                throw new ArgumentNullException(nameof(objectToApplyTo));
+            }
+
+            var adapter = new ObjectAdapter(ContractResolver, logErrorAction);
+            foreach (var op in Operations)
+            {
+                try
+                {
+                    op.Apply(objectToApplyTo, adapter);
+                }
+                catch (Exception jsonPatchException)
+                {
+                    var errorReporter = logErrorAction ?? Internal.ErrorReporter.Default;
+                    errorReporter(new JsonPatchError(objectToApplyTo, op, jsonPatchException.Message));
+
+                    // As per JSON Patch spec if an operation results in error, further operations should not be executed.
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Apply this JsonPatchDocument
+        /// </summary>
+        /// <param name="objectToApplyTo">Object to apply the JsonPatchDocument to</param>
+        /// <param name="adapter">IObjectAdapter instance to use when applying</param>
+        public void ApplyTo(TModel objectToApplyTo, IObjectAdapter adapter)
+        {
+            if (objectToApplyTo == null)
+            {
+                throw new ArgumentNullException(nameof(objectToApplyTo));
+            }
+
+            if (adapter == null)
+            {
+                throw new ArgumentNullException(nameof(adapter));
+            }
+
             // apply each operation in order
             foreach (var op in Operations)
             {
@@ -444,7 +701,7 @@ namespace Marvin.JsonPatch
             if (Operations != null)
             {
                 foreach (var op in Operations)
-                {                    
+                {
                     var untypedOp = new Operation();
 
                     untypedOp.op = op.op;
@@ -455,7 +712,97 @@ namespace Marvin.JsonPatch
                     allOps.Add(untypedOp);
                 }
             }
+
             return allOps;
+        }
+
+        // Internal for testing
+        internal string GetPath<TProp>(Expression<Func<TModel, TProp>> expr, string position)
+        {
+            var segments = GetPathSegments(expr.Body);
+            var path = String.Join("/", segments);
+            if (position != null)
+            {
+                path += "/" + position;
+                if (segments.Count == 0)
+                {
+                    return "/" + path;
+                }
+            }
+
+            return "/" + path;
+        }
+
+        private List<string> GetPathSegments(Expression expr)
+        {
+            var listOfSegments = new List<string>();
+            switch (expr.NodeType)
+            {
+                case ExpressionType.ArrayIndex:
+                    var binaryExpression = (BinaryExpression)expr;
+                    listOfSegments.AddRange(GetPathSegments(binaryExpression.Left));
+                    listOfSegments.Add(ExpressionHelpers.CaseTransform(binaryExpression.Right.ToString(), CaseTransformType));
+                    return listOfSegments;
+
+                case ExpressionType.Call:
+                    var methodCallExpression = (MethodCallExpression)expr;
+                    listOfSegments.AddRange(GetPathSegments(methodCallExpression.Object));
+                    listOfSegments.Add(ExpressionHelpers.CaseTransform(EvaluateExpression(methodCallExpression.Arguments[0]), CaseTransformType));
+                    return listOfSegments;
+
+                case ExpressionType.Convert:
+                    listOfSegments.AddRange(GetPathSegments(((UnaryExpression)expr).Operand));
+                    return listOfSegments;
+
+                case ExpressionType.MemberAccess:
+                    var memberExpression = expr as MemberExpression;
+                    listOfSegments.AddRange(GetPathSegments(memberExpression.Expression));
+                    // Get property name, respecting JsonProperty attribute
+                    listOfSegments.Add(ExpressionHelpers.CaseTransform(GetPropertyNameFromMemberExpression(memberExpression), CaseTransformType));
+                    return listOfSegments;
+
+                case ExpressionType.Parameter:
+                    // Fits "x => x" (the whole document which is "" as JSON pointer)
+                    return listOfSegments;
+
+                default:
+                    throw new InvalidOperationException(Resources.FormatExpressionTypeNotSupported(expr));
+            }
+        }
+
+        private string GetPropertyNameFromMemberExpression(MemberExpression memberExpression)
+        {
+            var jsonObjectContract = ContractResolver.ResolveContract(memberExpression.Expression.Type) as JsonObjectContract;
+            if (jsonObjectContract != null)
+            {
+                return jsonObjectContract.Properties
+                    .First(jsonProperty => jsonProperty.UnderlyingName == memberExpression.Member.Name)
+                    .PropertyName;
+            }
+
+            return null;
+        }
+
+        private static bool ContinueWithSubPath(ExpressionType expressionType)
+        {
+            return (expressionType == ExpressionType.ArrayIndex
+                || expressionType == ExpressionType.Call
+                || expressionType == ExpressionType.Convert
+                || expressionType == ExpressionType.MemberAccess);
+
+        }
+
+        // Evaluates the value of the key or index which may be an int or a string, 
+        // or some other expression type.
+        // The expression is converted to a delegate and the result of executing the delegate is returned as a string.
+        private static string EvaluateExpression(Expression expression)
+        {
+            var converted = Expression.Convert(expression, typeof(object));
+            var fakeParameter = Expression.Parameter(typeof(object), null);
+            var lambda = Expression.Lambda<Func<object, object>>(converted, fakeParameter);
+            var func = lambda.Compile();
+
+            return Convert.ToString(func(null), CultureInfo.InvariantCulture);
         }
     }
 }
