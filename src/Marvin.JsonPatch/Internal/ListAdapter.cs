@@ -215,7 +215,7 @@ namespace Marvin.JsonPatch.Internal
             }
             else
             {
-                var genericList = listType.GetType(); // ClosedGenericMatcher.ExtractGenericInterface(listType, typeof(IList<>));
+                var genericList = listType.GetType();
                 if (genericList == null)
                 {
                     errorMessage = Resources.FormatPatchNotSupportedForNonGenericLists(listType.FullName);
