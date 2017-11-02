@@ -4,14 +4,16 @@
 // Enjoy :-)
 
 using Marvin.JsonPatch.Adapters;
+using Marvin.JsonPatch.Properties;
 using System;
 
 namespace Marvin.JsonPatch.Operations
 {
-    public class Operation<T> : Operation where T : class
-    {   
+    public class Operation : OperationBase
+    {
         public Operation()
         {
+
         }
 
         public Operation(string op, string path, string from, object value)
@@ -23,10 +25,20 @@ namespace Marvin.JsonPatch.Operations
         public Operation(string op, string path, string from)
             : base(op, path, from)
         {
-        } 
+        }
 
-        internal void Apply(T objectToApplyTo, IObjectAdapter<T> adapter)
+        public void Apply(object objectToApplyTo, IObjectAdapter adapter)
         {
+            if (objectToApplyTo == null)
+            {
+                throw new ArgumentNullException(nameof(objectToApplyTo));
+            }
+
+            if (adapter == null)
+            {
+                throw new ArgumentNullException(nameof(adapter));
+            }
+
             switch (OperationType)
             {
                 case OperationType.Add:
@@ -45,10 +57,17 @@ namespace Marvin.JsonPatch.Operations
                     adapter.Copy(this, objectToApplyTo);
                     break;
                 case OperationType.Test:
-                    throw new NotImplementedException("Test is currently not implemented.");   
+                    throw new NotSupportedException(Resources.TestOperationNotSupported);
                 default:
                     break;
             }
+        }
+
+        public bool ShouldSerializevalue()
+        {
+            return (OperationType == OperationType.Add
+                || OperationType == OperationType.Replace
+                || OperationType == OperationType.Test);
         }
     }
 }

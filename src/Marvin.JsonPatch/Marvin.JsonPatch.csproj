@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="Adapters\IObjectAdapter.cs" />
     <Compile Include="Adapters\ObjectAdapter.cs" />
+    <Compile Include="Converters\JsonPatchDocumentConverter.cs" />
     <Compile Include="Converters\TypedJsonPatchDocumentConverter.cs" />
     <Compile Include="Exceptions\JsonPatchException.cs" />
     <Compile Include="Helpers\ActualPropertyPathResult.cs" />
@@ -52,17 +53,39 @@
     <Compile Include="Helpers\PropertyHelpers.cs" />
     <Compile Include="Helpers\RemovedPropertyTypeResult.cs" />
     <Compile Include="IJsonPatchDocument.cs" />
+    <Compile Include="Internal\ConversionResult.cs" />
+    <Compile Include="Internal\ConversionResultProvider.cs" />
+    <Compile Include="Internal\DictionaryAdapterOfTU.cs" />
+    <Compile Include="Internal\ErrorReporter.cs" />
+    <Compile Include="Internal\IAdapter.cs" />
+    <Compile Include="Internal\ListAdapter.cs" />
+    <Compile Include="Internal\ObjectVisitor.cs" />
+    <Compile Include="Internal\ParsedPath.cs" />
+    <Compile Include="Internal\PathHelpers.cs" />
+    <Compile Include="Internal\PocoAdapter.cs" />
+    <Compile Include="JsonPatchDocument.cs" />
+    <Compile Include="JsonPatchDocumentOfT.cs" />
     <Compile Include="JsonPatchError.cs" />
     <Compile Include="Operations\OperationBase.cs" />
+    <Compile Include="Operations\Operation.cs" />
+    <Compile Include="Operations\OperationOfT.cs" />
     <Compile Include="Operations\OperationType.cs" />
-    <Compile Include="Operations\TypedOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="JsonPatchDocumentOfT.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

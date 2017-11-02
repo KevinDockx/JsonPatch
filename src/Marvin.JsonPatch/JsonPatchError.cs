@@ -19,7 +19,7 @@ namespace Marvin.JsonPatch
         /// <param name="errorMessage">The error message.</param>
         public JsonPatchError(
              object affectedObject,
-             Operation operation,
+             OperationBase operation,
              string errorMessage)
         {
             AffectedObject = affectedObject;
@@ -35,7 +35,7 @@ namespace Marvin.JsonPatch
         /// <summary>
         /// Gets the <see cref="Operation"/> that caused the error.
         /// </summary>
-        public Operation Operation { get; private set; }
+        public OperationBase Operation { get; private set; }
 
         /// <summary>
         /// Gets the error message.

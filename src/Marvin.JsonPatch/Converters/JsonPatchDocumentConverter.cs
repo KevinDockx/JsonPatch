@@ -5,6 +5,7 @@
 
 using Marvin.JsonPatch.Exceptions;
 using Marvin.JsonPatch.Operations;
+using Marvin.JsonPatch.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -13,36 +14,37 @@ using System.Collections.Generic;
 
 namespace Marvin.JsonPatch.Converters
 {
-    public class TypedJsonPatchDocumentConverter : JsonConverter
+    public class JsonPatchDocumentConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
             return true;
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer)
         {
+            if (objectType != typeof(JsonPatchDocument))
+            {
+                throw new ArgumentException(Resources.FormatParameterMustMatchType("objectType", "JsonPatchDocumentNew"), "objectType");
+            }
+
             try
             {
                 if (reader.TokenType == JsonToken.Null)
+                {
                     return null;
-
-                Type genericType = objectType.GetGenericArguments()[0];
+                }
 
                 // load jObject
-                JArray jObject = JArray.Load(reader);
+                var jObject = JArray.Load(reader);
 
-                // Create target object for Json => list of operations, typed to genericType
-                var genericOperation = typeof(Operation<>);
-                var concreteOperationType = genericOperation.MakeGenericType(genericType);
+                // Create target object for Json => list of operations
+                var targetOperations = new List<Operation>();
 
-                var genericList = typeof(List<>);
-                var concreteList = genericList.MakeGenericType(concreteOperationType);
-
-                var targetOperations = Activator.CreateInstance(concreteList);
-
-                //Create a new reader for this jObject, and set all properties to match the original reader.
-                JsonReader jObjectReader = jObject.CreateReader();
+                // Create a new reader for this jObject, and set all properties 
+                // to match the original reader.
+                var jObjectReader = jObject.CreateReader();
                 jObjectReader.Culture = reader.Culture;
                 jObjectReader.DateParseHandling = reader.DateParseHandling;
                 jObjectReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
@@ -51,20 +53,18 @@ namespace Marvin.JsonPatch.Converters
                 // Populate the object properties
                 serializer.Populate(jObjectReader, targetOperations);
 
-                // container target: the typed JsonPatchDocument. 
-                var container = Activator.CreateInstance(objectType, targetOperations, new DefaultContractResolver());
+                // container target: the JsonPatchDocument. 
+                var container = new JsonPatchDocument(targetOperations, new DefaultContractResolver());
 
                 return container;
             }
             catch (Exception ex)
             {
-                throw new JsonPatchException(
-                    new JsonPatchError(null, null, "The JsonPatchDocument was malformed and could not be parsed."), ex, 400);
+                throw new JsonPatchException(Resources.FormatInvalidJsonPatchDocument(objectType.Name), ex);
             }
         }
 
-        public override void WriteJson(JsonWriter writer, object value,
-            JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value is IJsonPatchDocument)
             {
