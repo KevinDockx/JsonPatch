@@ -140,10 +140,29 @@ namespace Marvin.JsonPatch
         }
 
         /// <summary>
-        /// Apply this JsonPatchDocument
+        /// Test value.  Will result in, for example,
+        /// { "op": "test", "path": "/a/b/c", "value": 42 }
         /// </summary>
-        /// <param name="objectToApplyTo">Object to apply the JsonPatchDocument to</param>
-        public void ApplyTo(object objectToApplyTo)
+        /// <param name="path">target location</param>
+        /// <param name="value">value</param>
+        /// <returns></returns>
+        public JsonPatchDocument Test(string path, object value)
+        {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+ 
+            Operations.Add(new Operation("test", PathHelpers.NormalizePath(path), null, value));
+            return this;
+        }
+
+
+    /// <summary>
+    /// Apply this JsonPatchDocument
+    /// </summary>
+    /// <param name="objectToApplyTo">Object to apply the JsonPatchDocument to</param>
+    public void ApplyTo(object objectToApplyTo)
         {
             if (objectToApplyTo == null)
             {

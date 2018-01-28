@@ -57,7 +57,8 @@ namespace Marvin.JsonPatch.Operations
                     adapter.Copy(this, objectToApplyTo);
                     break;
                 case OperationType.Test:
-                    throw new NotSupportedException(Resources.TestOperationNotSupported);
+                    adapter.Test(this, objectToApplyTo);
+                    break;
                 default:
                     break;
             }
