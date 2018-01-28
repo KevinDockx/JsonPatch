@@ -367,6 +367,54 @@ namespace Marvin.JsonPatch.Adapters
             }
         }
 
+        /// <summary>
+        /// Using the "test" operation a value at the target location is compared for
+        /// equality to a specified value.
+        /// 
+        /// The operation object MUST contain a "value" member that specifies 
+        /// value to be compared to the target location's value.
+        /// 
+        /// The target location MUST be equal to the "value" value for the 
+        /// operation to be considered successful.
+        /// 
+        /// For example:
+        /// { "op": "test", "path": "/a/b/c", "value": "foo" }
+        /// 
+        /// See RFC 6902 https://tools.ietf.org/html/rfc6902#page-7
+        /// </summary>
+        /// <param name="operation">The test operation.</param>
+        /// <param name="objectToApplyTo">Object to apply the operation to.</param>
+        public void Test(Operation operation, object objectToApplyTo)
+        {
+            if (operation == null)
+            {
+                throw new ArgumentNullException(nameof(operation));
+            }
+
+            if (objectToApplyTo == null)
+            {
+                throw new ArgumentNullException(nameof(objectToApplyTo));
+            }
+
+            var parsedPath = new ParsedPath(operation.path);
+            var visitor = new ObjectVisitor(parsedPath, ContractResolver);
+
+            var target = objectToApplyTo;
+            if (!visitor.TryVisit(ref target, out var adapter, out var errorMessage))
+            {
+                var error = CreatePathNotFoundError(objectToApplyTo, operation.path, operation, errorMessage);
+                ErrorReporter(error);
+                return;
+            }
+
+            if (!adapter.TryTest(target, parsedPath.LastSegment, ContractResolver, operation.value, out errorMessage))
+            {
+                var error = CreateOperationFailedError(objectToApplyTo, operation.path, operation, errorMessage);
+                ErrorReporter(error);
+                return;
+            }
+        }
+
         private bool TryGetValue(
             string fromLocation,
             object objectToGetValueFrom,

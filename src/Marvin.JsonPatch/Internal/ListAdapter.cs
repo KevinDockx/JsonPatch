@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
 using Marvin.JsonPatch.Properties;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Marvin.JsonPatch.Internal
 {
@@ -146,6 +148,43 @@ namespace Marvin.JsonPatch.Internal
 
             errorMessage = null;
             return true;
+        }
+
+        public bool TryTest(
+           object target,
+           string segment,
+           IContractResolver contractResolver,
+           object value,
+           out string errorMessage)
+        {
+            var list = (IList)target;
+
+            if (!TryGetListTypeArgument(list, out var typeArgument, out errorMessage))
+            {
+                return false;
+            }
+
+            if (!TryGetPositionInfo(list, segment, OperationType.Replace, out var positionInfo, out errorMessage))
+            {
+                return false;
+            }
+
+            if (!TryConvertValue(value, typeArgument, segment, out var convertedValue, out errorMessage))
+            {
+                return false;
+            }
+
+            var currentValue = list[positionInfo.Index];
+            if (!JToken.DeepEquals(JsonConvert.SerializeObject(currentValue), JsonConvert.SerializeObject(convertedValue)))
+            {
+                errorMessage = Resources.FormatValueAtListPositionNotEqualToTestValue(currentValue, value, positionInfo.Index);
+                return false;
+            }
+            else
+            {
+                errorMessage = null;
+                return true;
+            }
         }
 
         public bool TryTraverse(

@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Marvin.JsonPatch.Properties
-{
+namespace Marvin.JsonPatch.Properties {
+    using System;
     using System.Globalization;
-    using System.Resources;
+
 
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
@@ -20,11 +20,10 @@ namespace Marvin.JsonPatch.Properties
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources
-    {
+    internal class Resources {
 
         private static global::System.Resources.ResourceManager resourceMan;
 
@@ -335,6 +334,54 @@ namespace Marvin.JsonPatch.Properties
         internal static string FormatTestOperationNotSupported()
             => GetString("TestOperationNotSupported");
 
+        /// <summary>
+        ///  The current value '{0}' at position '{2}' is not equal to the test value '{1}'.
+        /// </summary>
+        internal static string ValueAtListPositionNotEqualToTestValue {
+            get {
+                return ResourceManager.GetString("ValueAtListPositionNotEqualToTestValue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        /// The current value '{0}' at position '{2}' is not equal to the test value '{1}'.
+        /// </summary>
+        internal static string FormatValueAtListPositionNotEqualToTestValue(object p0, object p1, object p2)
+            => string.Format(CultureInfo.CurrentCulture, GetString("ValueAtListPositionNotEqualToTestValue"), p0, p1, p2);
+
+
+        /// <summary>
+        ///  The value at '{0}' cannot be null or empty to perform the test operation.
+        /// </summary>
+        internal static string ValueForTargetSegmentCannotBeNullOrEmpty {
+            get {
+                return ResourceManager.GetString("ValueForTargetSegmentCannotBeNullOrEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        /// The value at '{0}' cannot be null or empty to perform the test operation.
+        /// </summary>
+        internal static string FormatValueForTargetSegmentCannotBeNullOrEmpty(object p0)
+            => string.Format(CultureInfo.CurrentCulture, GetString("ValueForTargetSegmentCannotBeNullOrEmpty"), p0);
+
+
+        /// <summary>
+        /// The current value '{0}' at path '{2}' is not equal to the test value '{1}'.
+        /// </summary>
+        internal static string ValueNotEqualToTestValue {
+            get {
+                return ResourceManager.GetString("ValueNotEqualToTestValue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        /// The current value '{0}' at path '{2}' is not equal to the test value '{1}'.
+        /// </summary>
+        internal static string FormatValueNotEqualToTestValue(object p0, object p1, object p2)
+            => string.Format(CultureInfo.CurrentCulture, GetString("ValueNotEqualToTestValue"), p0, p1, p2);
+
+
         private static string GetString(string name, params string[] formatterNames)
         {
             var value = ResourceManager.GetString(name);
@@ -351,5 +398,6 @@ namespace Marvin.JsonPatch.Properties
 
             return value;
         }
+
     }
 }
