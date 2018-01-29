@@ -1,4 +1,5 @@
 ﻿using Marvin.JsonPatch.Exceptions;
+using Marvin.JsonPatch.XUnitTest.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.XUnitTest.Tests
 {
     public class ObjectAdapterTestsOnNested
     {

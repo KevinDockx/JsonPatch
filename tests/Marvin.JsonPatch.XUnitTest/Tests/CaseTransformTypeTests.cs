@@ -1,8 +1,9 @@
 using Marvin.JsonPatch.Helpers;
+using Marvin.JsonPatch.XUnitTest.Models;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.XUnitTest.Tests
 {
     public class CaseTransformTypeTests
     {

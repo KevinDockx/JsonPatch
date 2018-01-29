@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Marvin.JsonPatch.XUnitTest.Models;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Xunit;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.XUnitTest.Tests
 {
     public class ObjectAdapterTestsOnDerived
     {

@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 using Xunit;
 using Marvin.JsonPatch.Internal;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.XUnitTest.Tests
 {
     public class DictionaryAdapterTest
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.XUnitTest.Models
 {
     internal class DerivedDTO : SimpleDTO
     {

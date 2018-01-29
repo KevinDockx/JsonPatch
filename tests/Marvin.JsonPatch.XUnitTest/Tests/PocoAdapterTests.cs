@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using Xunit;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.XUnitTest.Tests
 {
     public class PocoAdapterTests
     {

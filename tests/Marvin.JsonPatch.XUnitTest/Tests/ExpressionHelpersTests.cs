@@ -3,7 +3,7 @@ using System.Linq;
 using Marvin.JsonPatch.Helpers;
 using Xunit;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.XUnitTest.Tests
 {
     public class ExpressionHelpersTests
     {

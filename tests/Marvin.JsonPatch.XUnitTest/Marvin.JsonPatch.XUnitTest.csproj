@@ -61,26 +61,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Car.cs" />
-    <Compile Include="DerivedDTO.cs" />
-    <Compile Include="DerivedList.cs" />
-    <Compile Include="DictionaryAdapterTest.cs" />
-    <Compile Include="DtoWithDerivedListProperty.cs" />
-    <Compile Include="Engine.cs" />
-    <Compile Include="ExpressionHelpersTests.cs" />
-    <Compile Include="JsonPropertyDTO.cs" />
-    <Compile Include="JsonPropertyTests.cs" />
-    <Compile Include="NestedDTO.cs" />
-    <Compile Include="CaseTransformTypeTests.cs" />
-    <Compile Include="JsonPropertyAttributeTests.cs" />
-    <Compile Include="ObjectAdapterTestsOnDerived.cs" />
-    <Compile Include="ObjectAdapterTestsOnNested.cs" />
-    <Compile Include="PocoAdapterTests.cs" />
+    <Compile Include="Models\Car.cs" />
+    <Compile Include="Models\DerivedDTO.cs" />
+    <Compile Include="Models\DerivedList.cs" />
+    <Compile Include="Tests\DictionaryAdapterTest.cs" />
+    <Compile Include="Models\DtoWithDerivedListProperty.cs" />
+    <Compile Include="Models\Engine.cs" />
+    <Compile Include="Tests\ExpressionHelpersTests.cs" />
+    <Compile Include="Models\JsonPropertyDTO.cs" />
+    <Compile Include="Tests\JsonPropertyTests.cs" />
+    <Compile Include="Models\NestedDTO.cs" />
+    <Compile Include="Tests\CaseTransformTypeTests.cs" />
+    <Compile Include="Tests\JsonPropertyAttributeTests.cs" />
+    <Compile Include="Tests\ObjectAdapterTestsOnDerived.cs" />
+    <Compile Include="Tests\ObjectAdapterTestsOnNested.cs" />
+    <Compile Include="Tests\PocoAdapterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleDTO.cs" />
-    <Compile Include="SimpleDTOWithNestedDTO.cs" />
-    <Compile Include="ObjectAdapterTests.cs" />
-    <Compile Include="SimpleObject.cs" />
+    <Compile Include="Models\SimpleDTO.cs" />
+    <Compile Include="Models\SimpleDTOWithNestedDTO.cs" />
+    <Compile Include="Tests\ObjectAdapterTests.cs" />
+    <Compile Include="Models\SimpleObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Marvin.JsonPatch\Marvin.JsonPatch.csproj">

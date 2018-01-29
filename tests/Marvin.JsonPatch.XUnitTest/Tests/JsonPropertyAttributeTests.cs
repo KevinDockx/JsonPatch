@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Marvin.JsonPatch.XUnitTest.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.XUnitTest.Tests
 {
     public class JsonPropertyAttributeTests
     {

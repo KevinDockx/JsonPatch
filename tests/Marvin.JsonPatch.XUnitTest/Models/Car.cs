@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Marvin.JsonPatch.XUnitTest
+namespace Marvin.JsonPatch.XUnitTest.Models
 {
     public class Car
     {
