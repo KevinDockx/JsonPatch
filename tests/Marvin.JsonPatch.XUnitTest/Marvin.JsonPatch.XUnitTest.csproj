@@ -72,7 +72,7 @@
     <Compile Include="JsonPropertyTests.cs" />
     <Compile Include="NestedDTO.cs" />
     <Compile Include="CaseTransformTypeTests.cs" />
-    <Compile Include="NullValueHandlingTests.cs" />
+    <Compile Include="JsonPropertyAttributeTests.cs" />
     <Compile Include="ObjectAdapterTestsOnDerived.cs" />
     <Compile Include="ObjectAdapterTestsOnNested.cs" />
     <Compile Include="PocoAdapterTests.cs" />
