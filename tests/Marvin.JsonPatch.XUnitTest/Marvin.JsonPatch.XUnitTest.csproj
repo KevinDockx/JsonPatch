@@ -61,15 +61,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Car.cs" />
     <Compile Include="DerivedDTO.cs" />
     <Compile Include="DerivedList.cs" />
     <Compile Include="DictionaryAdapterTest.cs" />
     <Compile Include="DtoWithDerivedListProperty.cs" />
+    <Compile Include="Engine.cs" />
     <Compile Include="ExpressionHelpersTests.cs" />
     <Compile Include="JsonPropertyDTO.cs" />
     <Compile Include="JsonPropertyTests.cs" />
     <Compile Include="NestedDTO.cs" />
     <Compile Include="CaseTransformTypeTests.cs" />
+    <Compile Include="NullValueHandlingTests.cs" />
     <Compile Include="ObjectAdapterTestsOnDerived.cs" />
     <Compile Include="ObjectAdapterTestsOnNested.cs" />
     <Compile Include="PocoAdapterTests.cs" />
