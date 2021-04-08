@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net40;net45</TargetFrameworks>
     <AssemblyTitle>Json Patch (RFC 6902) support for .NET</AssemblyTitle>
     <Company>Kevin Dockx (Marvin)</Company>
     <Product>Json Patch (RFC 6902) support for .NET</Product>
