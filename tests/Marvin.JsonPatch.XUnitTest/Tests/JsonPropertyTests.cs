@@ -125,7 +125,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
 
             deserialized.ApplyTo(doc);
 
-            Assert.Equal(null, doc.Name);
+            Assert.Null(doc.Name);
         }        
     }
 }

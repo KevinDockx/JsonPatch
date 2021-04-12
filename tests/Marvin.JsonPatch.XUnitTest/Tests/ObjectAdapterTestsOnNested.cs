@@ -397,7 +397,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
 
             patchDoc.ApplyTo(doc);
 
-            Assert.Equal(null, doc.SimpleDTO.StringProperty);
+            Assert.Null(doc.SimpleDTO.StringProperty);
 
         }
 
@@ -424,7 +424,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
 
             deserialized.ApplyTo(doc);
 
-            Assert.Equal(null, doc.SimpleDTO.StringProperty);
+            Assert.Null(doc.SimpleDTO.StringProperty);
 
         }
 
@@ -1343,7 +1343,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
             patchDoc.ApplyTo(doc);
 
             Assert.Equal("A", doc.SimpleDTO.AnotherStringProperty);
-            Assert.Equal(null, doc.SimpleDTO.StringProperty);
+            Assert.Null(doc.SimpleDTO.StringProperty);
         }
 
 
@@ -1368,12 +1368,8 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
             deserialized.ApplyTo(doc);
 
             Assert.Equal("A", doc.SimpleDTO.AnotherStringProperty);
-            Assert.Equal(null, doc.SimpleDTO.StringProperty);
-        }
-
-
-
-
+            Assert.Null(doc.SimpleDTO.StringProperty);
+        } 
 
         [Fact]
         public void MoveInList()

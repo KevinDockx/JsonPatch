@@ -333,7 +333,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
 
             patchDoc.ApplyTo(doc);
 
-            Assert.Equal(null, doc.StringProperty);
+            Assert.Null(doc.StringProperty);
         }
 
         [Fact]
@@ -389,7 +389,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
 
             deserialized.ApplyTo(doc);
 
-            Assert.Equal(null, doc.StringProperty);
+            Assert.Null(doc.StringProperty);
 
         }
 
@@ -658,9 +658,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
             var serialized = JsonConvert.SerializeObject(patchDoc);
 
             Assert.Equal(false, serialized.Contains("operations"));
-            Assert.Equal(false, serialized.Contains("Operations"));
-
-
+            Assert.Equal(false, serialized.Contains("Operations")); 
         }
 
 
@@ -807,7 +805,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
 
             Assert.Equal(1, doc.SimpleDTO.DoubleValue);
             Assert.Equal(0, doc.SimpleDTO.IntegerValue);
-            Assert.Equal(null, doc.SimpleDTO.IntegerList);
+            Assert.Null(doc.SimpleDTO.IntegerList);
 
 
         }
@@ -1415,7 +1413,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
             patchDoc.ApplyTo(doc);
 
             Assert.Equal("A", doc.AnotherStringProperty);
-            Assert.Equal(null, doc.StringProperty);
+            Assert.Null(doc.StringProperty);
         }
 
         [Fact]
@@ -1437,12 +1435,8 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
             deserialized.ApplyTo(doc);
 
             Assert.Equal("A", doc.AnotherStringProperty);
-            Assert.Equal(null, doc.StringProperty);
+            Assert.Null(doc.StringProperty);
         }
-
-
-
-
 
         [Fact]
         public void MoveInList()

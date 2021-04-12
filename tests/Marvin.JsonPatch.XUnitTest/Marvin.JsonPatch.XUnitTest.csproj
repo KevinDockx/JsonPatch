@@ -1,20 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net40;net45;net50</TargetFrameworks>
+    <TargetFrameworks>net50</TargetFrameworks>
     <AssemblyTitle>Marvin.JsonPatch.XUnitTest</AssemblyTitle>
     <Product>Marvin.JsonPatch.XUnitTest</Product>
-    <Copyright>Copyright ©  2015-2021</Copyright>
+    <Copyright>Copyright © 2015-2021</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
-  <ItemGroup Condition="$(TargetFramework) != 'net40'">
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-  </ItemGroup>
-  <ItemGroup Condition="$(TargetFramework) == 'net40'">
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="xunit" Version="1.8.0.1545" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.0.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" /> 
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Marvin.JsonPatch\Marvin.JsonPatch.csproj" />
