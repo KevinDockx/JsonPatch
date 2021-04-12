@@ -13,7 +13,7 @@ One of the things this can be used for is partial updates for REST-ful API's, or
 That's what this package is all about. Web API supports the HttpPatch method, but there's currently no implementation of the JsonPatchDocument in .NET, making it hard to pass in a set of changes that have to be applied - especially if you're working cross-platform and standardization of your API is essential.
 
 Have a look at the project site for the current status of this package and to learn how to get started.</Description>
-    <Copyright>Copyright 2014, 2015</Copyright>
+    <Copyright>Copyright 2014 - 2021</Copyright>
     <Version>2.1.1</Version>
     <AssemblyVersion>2.1.1</AssemblyVersion>
     <FileVersion>2.1.1</FileVersion>
