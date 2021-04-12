@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net50</TargetFrameworks>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyTitle>Marvin.JsonPatch.XUnitTest</AssemblyTitle>
     <Product>Marvin.JsonPatch.XUnitTest</Product>
     <Copyright>Copyright © 2015-2021</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
