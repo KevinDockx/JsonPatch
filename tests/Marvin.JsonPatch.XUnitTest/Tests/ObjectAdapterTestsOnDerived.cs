@@ -7,6 +7,7 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
 {
     public class ObjectAdapterTestsOnDerived
     {
+        #if !NET40
         [Fact]
         public void ReplacePropertyWithNewKeyword()
         {
@@ -17,5 +18,6 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
             patchDoc.ApplyTo(doc);
             Assert.Equal(replacementCollection, doc.IntegerList);
         }
+        #endif
     }
 }

@@ -156,3 +156,6 @@ $RECYCLE.BIN/
 .DS_Store
 packages/
 /.vs/Marvin.JsonPatch/v16/Server/sqlite3
+
+# Rider files
+.idea/

@@ -1,102 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{82226E0C-A7B3-4BB7-8DF5-7D53EC66B47A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Marvin.JsonPatch</RootNamespace>
-    <AssemblyName>Marvin.JsonPatch</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile5</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <TargetFrameworks>netstandard2.0;net40;net45</TargetFrameworks>
+    <AssemblyTitle>Json Patch (RFC 6902) support for .NET</AssemblyTitle>
+    <Company>Kevin Dockx (Marvin)</Company>
+    <Product>Json Patch (RFC 6902) support for .NET</Product>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Description>JSON Patch (https://tools.ietf.org/html/rfc6902) defines a JSON document structure for expressing a sequence of operations to apply to a JavaScript Object Notation (JSON) document; it is suitable for use with the HTTP PATCH method. The "application/json-patch+json" media type is used to identify such patch documents.
+
+One of the things this can be used for is partial updates for REST-ful API's, or, to quote the IETF: "This format is also potentially useful in other cases in which it is necessary to make partial updates to a JSON document or to a data structure that has similar constraints (i.e., they can be serialized as an object or an array using the JSON grammar)."
+
+That's what this package is all about. Web API supports the HttpPatch method, but there's currently no implementation of the JsonPatchDocument in .NET, making it hard to pass in a set of changes that have to be applied - especially if you're working cross-platform and standardization of your API is essential.
+
+Have a look at the project site for the current status of this package and to learn how to get started.</Description>
+    <Copyright>Copyright 2014, 2015</Copyright>
+    <Version>2.1.1</Version>
+    <AssemblyVersion>2.1.1</AssemblyVersion>
+    <FileVersion>2.1.1</FileVersion>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <Authors>Kevin Dockx (Marvin)</Authors>
+    <PackageProjectUrl>https://github.com/KevinDockx/JsonPatch</PackageProjectUrl>
+    <PackageTags>Web API WebAPI HttpPatch Json JsonPatch Partial Update ASP .NET</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Adapters\IObjectAdapter.cs" />
-    <Compile Include="Adapters\ObjectAdapter.cs" />
-    <Compile Include="Converters\JsonPatchDocumentConverter.cs" />
-    <Compile Include="Converters\TypedJsonPatchDocumentConverter.cs" />
-    <Compile Include="Exceptions\JsonPatchException.cs" />
-    <Compile Include="Helpers\ActualPropertyPathResult.cs" />
-    <Compile Include="Helpers\CaseTransformType.cs" />
-    <Compile Include="Helpers\ConversionResult.cs" />
-    <Compile Include="Helpers\ExpressionHelpers.cs" />
-    <Compile Include="Helpers\GetValueResult.cs" />
-    <Compile Include="Helpers\JsonPatchProperty.cs" />
-    <Compile Include="Helpers\ObjectTreeAnalysisResult.cs" />
-    <Compile Include="Helpers\PropertyHelpers.cs" />
-    <Compile Include="Helpers\RemovedPropertyTypeResult.cs" />
-    <Compile Include="IJsonPatchDocument.cs" />
-    <Compile Include="Internal\ConversionResult.cs" />
-    <Compile Include="Internal\ConversionResultProvider.cs" />
-    <Compile Include="Internal\DictionaryAdapterOfTU.cs" />
-    <Compile Include="Internal\ErrorReporter.cs" />
-    <Compile Include="Internal\IAdapter.cs" />
-    <Compile Include="Internal\ListAdapter.cs" />
-    <Compile Include="Internal\ObjectVisitor.cs" />
-    <Compile Include="Internal\ParsedPath.cs" />
-    <Compile Include="Internal\PathHelpers.cs" />
-    <Compile Include="Internal\PocoAdapter.cs" />
-    <Compile Include="JsonPatchDocument.cs" />
-    <Compile Include="JsonPatchDocumentOfT.cs" />
-    <Compile Include="JsonPatchError.cs" />
-    <Compile Include="Operations\OperationBase.cs" />
-    <Compile Include="Operations\Operation.cs" />
-    <Compile Include="Operations\OperationOfT.cs" />
-    <Compile Include="Operations\OperationType.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
