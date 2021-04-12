@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net40;net45;net5.0</TargetFrameworks>
+    <TargetFrameworks>net40;net45;net50</TargetFrameworks>
     <AssemblyTitle>Marvin.JsonPatch.XUnitTest</AssemblyTitle>
     <Product>Marvin.JsonPatch.XUnitTest</Product>
     <Copyright>Copyright ©  2015-2021</Copyright>
