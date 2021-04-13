@@ -160,3 +160,4 @@ packages/
 # Rider files
 .idea/
 /.vs/Marvin.JsonPatch/v16/TestStore/0
+/.vs/Marvin.JsonPatch/DesignTimeBuild/.dtbcache.v2
