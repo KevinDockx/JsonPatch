@@ -35,7 +35,7 @@ namespace Marvin.JsonPatch.Internal
             var targetType = typeToConvertTo;
             if (value == null)
             {
-                return new ConversionResult(IsNullableType(typeToConvertTo), null);
+                return new ConversionResult(canBeConverted: true, convertedInstance: null);
             }
             else if (typeToConvertTo.IsAssignableFrom(value.GetType()))
             {
