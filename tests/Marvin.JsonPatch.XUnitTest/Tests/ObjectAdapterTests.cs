@@ -1155,6 +1155,27 @@ namespace Marvin.JsonPatch.XUnitTest.Tests
 
 
         [Fact]
+        public void CopyNullPropertyToAnotherProperty()
+        {
+            // Arrange
+            var targetObject = new SimpleDTO()
+            {
+                StringProperty = null,
+                AnotherStringProperty = "B"
+            };
+
+            JsonPatchDocument<SimpleDTO> patchDoc = new JsonPatchDocument<SimpleDTO>();
+            patchDoc.Copy<string>(o => o.StringProperty, o => o.AnotherStringProperty);
+
+            // Act
+            patchDoc.ApplyTo(targetObject);
+
+            // Assert
+            Assert.Null(targetObject.AnotherStringProperty);
+        }
+
+
+        [Fact]
         public void CopyWithSerialization()
         {
             var doc = new SimpleDTO()

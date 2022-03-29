@@ -350,7 +350,7 @@ namespace Marvin.JsonPatch.Adapters
             if (TryGetValue(operation.from, objectToApplyTo, operation, out var propertyValue))
             {
                 // Create deep copy
-                var copyResult = ConversionResultProvider.CopyTo(propertyValue, propertyValue.GetType());
+                var copyResult = ConversionResultProvider.CopyTo(propertyValue, propertyValue?.GetType());
                 if (copyResult.CanBeConverted)
                 {
                     Add(operation.path,
