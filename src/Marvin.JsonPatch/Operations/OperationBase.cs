@@ -10,14 +10,18 @@ namespace Marvin.JsonPatch.Operations
 {
     public class OperationBase
     {
+        private string _op;
+        private OperationType _operationType;
+
         [JsonIgnore]
         public OperationType OperationType
         {
             get
             {
-                return (OperationType)Enum.Parse(typeof(OperationType), op, true);
+                return _operationType;
             }
         }
+
         [JsonProperty("value")]
         public object value { get; set; }
 
@@ -25,7 +29,23 @@ namespace Marvin.JsonPatch.Operations
         public string path { get; set; }
 
         [JsonProperty("op")]
-        public string op { get; set; }
+        public string op
+        {
+            get
+            {
+                return _op;
+            }
+            set
+            {
+                OperationType result;
+                if (!Enum.TryParse(value, ignoreCase: true, result: out result))
+                {
+                    result = OperationType.Invalid;
+                }
+                _operationType = result;
+                _op = value;
+            }
+        }
 
         [JsonProperty("from")]
         public string from { get; set; }
